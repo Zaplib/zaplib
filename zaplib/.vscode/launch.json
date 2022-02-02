@@ -1,0 +1,277 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug executable 'example_lots_of_buttons'",
+        "cargo": {
+          "args": [
+            "build",
+            "--bin=example_lots_of_buttons",
+            "--package=example_lots_of_buttons"
+          ],
+          "filter": {
+            "name": "example_lots_of_buttons",
+            "kind": "bin"
+          }
+        },
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": [
+          "cpp",
+          "rust"
+        ],
+      },
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug executable 'example_text'",
+        "cargo": {
+          "args": ["build", "--bin=example_text", "--package=example_text"],
+          "filter": {
+            "name": "example_text",
+            "kind": "bin"
+          }
+        },
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": ["cpp", "rust"],
+      },
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug executable 'example_shader'",
+        "cargo": {
+          "args": [
+            "build",
+            "--bin=example_shader",
+            "--package=example_shader"
+          ],
+          "filter": {
+            "name": "example_shader",
+            "kind": "bin"
+          }
+        },
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": [
+          "cpp",
+          "rust"
+        ],
+      },
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug executable 'example_charts'",
+        "cargo": {
+          "args": [
+            "build",
+            "--bin=example_charts",
+            "--package=example_charts"
+          ],
+          "filter": {
+            "name": "example_charts",
+            "kind": "bin"
+          }
+        },
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": [
+          "cpp",
+          "rust"
+        ],
+      },
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug executable 'test_many_quads'",
+        "cargo": {
+          "args": [
+            "build",
+            "--bin=test_many_quads",
+            "--package=test_many_quads"
+          ],
+          "filter": {
+            "name": "test_many_quads",
+            "kind": "bin"
+          }
+        },
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": [
+          "cpp",
+          "rust"
+        ],
+      },
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug executable 'test_layout'",
+        "cargo": {
+          "args": ["build", "--bin=test_layout", "--package=test_layout"],
+          "filter": {
+            "name": "test_layout",
+            "kind": "bin"
+          }
+        },
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": ["cpp", "rust"],
+      },
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug executable 'test_padding'",
+        "cargo": {
+          "args": ["build", "--bin=test_padding", "--package=test_padding"],
+          "filter": {
+            "name": "test_padding",
+            "kind": "bin"
+          }
+        },
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": ["cpp", "rust"],
+      },
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug executable 'test_bottom_bar'",
+        "cargo": {
+          "args": ["build", "--bin=test_bottom_bar", "--package=test_bottom_bar"],
+          "filter": {
+            "name": "test_bottom_bar",
+            "kind": "bin"
+          }
+        },
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": ["cpp", "rust"],
+      },
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug executable 'test_multithread'",
+        "cargo": {
+          "args": [
+            "build",
+            "--bin=test_multithread",
+            "--package=test_multithread"
+          ],
+          "filter": {
+            "name": "test_multithread",
+            "kind": "bin"
+          }
+        },
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": [
+          "cpp",
+          "rust"
+        ],
+      },
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug executable 'example_bigedit'",
+        "cargo": {
+          "args": [
+            "build",
+            "--bin=example_bigedit",
+            "--package=example_bigedit"
+          ],
+          "filter": {
+            "name": "example_bigedit",
+            "kind": "bin"
+          }
+        },
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": [
+          "cpp",
+          "rust"
+        ],
+      },
+      {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Debug executable 'test_suite'",
+        "cargo": {
+          "args": [
+            "build",
+            "--bin=test_suite",
+            "--package=test_suite"
+          ],
+          "filter": {
+            "name": "test_suite",
+            "kind": "bin"
+          }
+        },
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": [
+          "cpp",
+          "rust"
+        ]
+      },
+      {
+        "type": "lldb",
+        "request": "attach",
+        "name": "Attach to running 'test_suite'",
+        "program": "target/debug/test_suite",
+        "sourceMap": {
+          "/Users/spotify-buildagent/buildAgent/work/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+          "/Users/spotify-buildagent/buildAgent/work/215ce731d4621561/CEF3_git/chromium/src/cef": "${env:HOME}/cef",
+        },
+        "sourceLanguages": [
+          "cpp",
+          "rust"
+        ]
+      },
+    ]
+  }

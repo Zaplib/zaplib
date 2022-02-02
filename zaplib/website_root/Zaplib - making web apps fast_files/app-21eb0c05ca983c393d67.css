@@ -1,0 +1,2004 @@
+/*!****************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/fonts.css ***!
+  \****************************************************************************/
+@font-face {
+	font-family: "Lyon-Text";
+	src: url(/lyon-text-regular-3be84b20b1d9ff1e3456b0a220ae449b.woff) format("woff");
+	font-style: normal;
+	font-weight: 400;
+}
+
+@font-face {
+	font-family: "Lyon-Text";
+	src: url(/lyon-text-regular-italic-437d32a42fc5b8268bb4a1e0cc8b363f.woff) format("woff");
+	font-style: italic;
+	font-weight: 400;
+}
+
+@font-face {
+	font-family: "Lyon-Text";
+	src: url(/lyon-text-semibold-acb7f110189034ff6a1afa4b730be0ed.woff) format("woff");
+	font-style: normal;
+	font-weight: 600;
+}
+
+@font-face {
+	font-family: "Lyon-Text";
+	src: url(/lyon-text-semibold-italic-1f81a2f93060f05edd7f078ac91f25e6.woff) format("woff");
+	font-style: italic;
+	font-weight: 600;
+}
+
+@font-face {
+	font-family: "iawriter-mono";
+	src: url(/iawriter-mono-regular-4b73d071988a4f1cd2283524716ad970.woff) format("woff");
+	font-style: normal;
+	font-weight: 400;
+}
+
+@font-face {
+	font-family: "iawriter-mono";
+	src: url(/iawriter-mono-italic-d5d3224c1377168e261efc6aa0ce89c6.woff) format("woff");
+	font-style: italic;
+	font-weight: 400;
+}
+
+@font-face {
+	font-family: "iawriter-mono";
+	src: url(/iawriter-mono-bold-eb96a5e539892d26cf8b0cb2367e3580.woff) format("woff");
+	font-style: normal;
+	font-weight: 600;
+}
+
+@font-face {
+	font-family: "iawriter-mono";
+	src: url(/iawriter-mono-bold-italic-743b231fa82483406c79a00fa1f12fe8.woff) format("woff");
+	font-style: italic;
+	font-weight: 600;
+}
+
+@font-face {
+	font-family: "inter";
+	src: url(/inter-ui-regular-3ae6a7d3890c33d857fc00bd2e4c4820.woff) format("woff");
+	font-style: normal;
+	font-weight: 400;
+}
+
+@font-face {
+	font-family: "inter";
+	src: url(/inter-ui-medium-95b8a98959d1af9ab432d7ffe295ef94.woff) format("woff");
+	font-style: normal;
+	font-weight: 500;
+}
+
+@font-face {
+	font-family: "inter";
+	src: url(/inter-ui-semibold-19b57197b819695d334b9961ee41910e.woff) format("woff");
+	font-style: normal;
+	font-weight: 600;
+}
+
+@font-face {
+	font-family: "inter";
+	src: url(/inter-ui-bold-001893789f7f342b520f29ac8af7d6ca.woff) format("woff");
+	font-style: normal;
+	font-weight: 700;
+}
+
+@font-face {
+	font-family: "permanent-marker";
+	src: url(/permanent-marker-a6d62939e7c920a184ddddcf4149e62c.woff) format("woff");
+	font-style: normal;
+	font-weight: 400;
+}
+
+/*!****************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/katex.css ***!
+  \****************************************************************************/
+.notion-frame .katex-display .katex {
+	padding-right: 32px;
+}
+
+/* Make KaTeX responsive to smaller screens */
+.notion-frame .katex > .katex-html {
+	white-space: normal;
+}
+
+.notion-frame .katex-display .base {
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+.notion-frame .notion-text-equation-token .katex {
+    /* katex.css sets this to 1.2, which causes baseline jitter. */
+    line-height: 1;
+}
+
+/*!********************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/normalize.css ***!
+  \********************************************************************************/
+/*! normalize.css v3.0.2 | MIT License | git.io/normalize */
+
+/**
+ * 1. Set default font family to sans-serif.
+ * 2. Prevent iOS text size adjust after orientation change, without disabling
+ *    user zoom.
+ */
+
+html {
+  font-family: sans-serif; /* 1 */
+  -ms-text-size-adjust: 100%; /* 2 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+}
+
+/**
+ * Remove default margin.
+ */
+
+body {
+  margin: 0;
+}
+
+/* HTML5 display definitions
+   ========================================================================== */
+
+/**
+ * Correct `block` display not defined for any HTML5 element in IE 8/9.
+ * Correct `block` display not defined for `details` or `summary` in IE 10/11
+ * and Firefox.
+ * Correct `block` display not defined for `main` in IE 11.
+ */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+  display: block;
+}
+
+/**
+ * 1. Correct `inline-block` display not defined in IE 8/9.
+ * 2. Normalize vertical alignment of `progress` in Chrome, Firefox, and Opera.
+ */
+
+audio,
+canvas,
+progress,
+video {
+  display: inline-block; /* 1 */
+  vertical-align: baseline; /* 2 */
+}
+
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+
+audio:not([controls]) {
+  display: none;
+  height: 0;
+}
+
+/**
+ * Address `[hidden]` styling not present in IE 8/9/10.
+ * Hide the `template` element in IE 8/9/11, Safari, and Firefox < 22.
+ */
+
+[hidden],
+template {
+  display: none;
+}
+
+/* Links
+   ========================================================================== */
+
+/**
+ * Remove the gray background color from active links in IE 10.
+ */
+
+a {
+  background-color: transparent;
+}
+
+/**
+ * Improve readability when hovered and also mouse hovered in all browsers.
+ */
+
+a:active,
+a:hover {
+  outline: 0;
+}
+
+/* Text-level semantics
+   ========================================================================== */
+
+/**
+ * Address styling not present in IE 8/9/10/11, Safari, and Chrome.
+ */
+
+abbr[title] {
+  border-bottom: 1px dotted;
+}
+
+/**
+ * Address style set to `bolder` in Firefox 4+, Safari, and Chrome.
+ */
+
+b,
+strong {
+  font-weight: bold;
+}
+
+/**
+ * Address styling not present in Safari and Chrome.
+ */
+
+dfn {
+  font-style: italic;
+}
+
+/**
+ * Address variable `h1` font-size and margin within `section` and `article`
+ * contexts in Firefox 4+, Safari, and Chrome.
+ */
+
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+/**
+ * Address styling not present in IE 8/9.
+ */
+
+mark {
+  background: #ff0;
+  color: #000;
+}
+
+/**
+ * Address inconsistent and variable font size in all browsers.
+ */
+
+small {
+  font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ */
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sup {
+  top: -0.5em;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+/* Embedded content
+   ========================================================================== */
+
+/**
+ * Remove border when inside `a` element in IE 8/9/10.
+ */
+
+img {
+  border: 0;
+}
+
+/**
+ * Correct overflow not hidden in IE 9/10/11.
+ */
+
+svg:not(:root) {
+  overflow: hidden;
+}
+
+/* Grouping content
+   ========================================================================== */
+
+/**
+ * Address margin not present in IE 8/9 and Safari.
+ */
+
+figure {
+  margin: 1em 40px;
+}
+
+/**
+ * Address differences between Firefox and other browsers.
+ */
+
+hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  height: 0;
+}
+
+/**
+ * Contain overflow in all browsers.
+ */
+
+/*pre {
+  overflow: auto;
+}*/
+
+/**
+ * Address odd `em`-unit font size rendering in all browsers.
+ */
+
+code,
+kbd,
+pre,
+samp {
+  font-family: inherit;
+}
+
+/* Forms
+   ========================================================================== */
+
+/**
+ * Known limitation: by default, Chrome and Safari on OS X allow very limited
+ * styling of `select`, unless a `border` property is set.
+ */
+
+/**
+ * 1. Correct color not being inherited.
+ *    Known issue: affects color of disabled elements.
+ * 2. Correct font properties not being inherited.
+ * 3. Address margins set differently in Firefox 4+, Safari, and Chrome.
+ */
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  color: inherit; /* 1 */
+  font: inherit; /* 2 */
+  margin: 0; /* 3 */
+}
+
+/**
+ * Address `overflow` set to `hidden` in IE 8/9/10/11.
+ */
+
+button {
+  overflow: visible;
+}
+
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Firefox, IE 8/9/10/11, and Opera.
+ * Correct `select` style inheritance in Firefox.
+ */
+
+button,
+select {
+  text-transform: none;
+}
+
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ */
+
+button,
+html input[type="button"], /* 1 */
+input[type="reset"],
+input[type="submit"] {
+  -webkit-appearance: button; /* 2 */
+  cursor: pointer; /* 3 */
+}
+
+/**
+ * Re-set default cursor for disabled elements.
+ */
+
+button[disabled],
+html input[disabled] {
+  cursor: default;
+}
+
+/**
+ * Remove inner padding and border in Firefox 4+.
+ */
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+/**
+ * Address Firefox 4+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+/*
+input {
+  line-height: normal;
+}*/
+
+/**
+ * It's recommended that you don't attempt to style these elements.
+ * Firefox's implementation doesn't respect box-sizing, padding, or width.
+ *
+ * 1. Address box sizing set to `content-box` in IE 8/9/10.
+ * 2. Remove excess padding in IE 8/9/10.
+ */
+
+input[type="checkbox"],
+input[type="radio"] {
+  box-sizing: border-box; /* 1 */
+  padding: 0; /* 2 */
+}
+
+/**
+ * Fix the cursor style for Chrome's increment/decrement buttons. For certain
+ * `font-size` values of the `input`, it causes the cursor style of the
+ * decrement button to change from `default` to `text`.
+ */
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/**
+ * 1. Address `appearance` set to `searchfield` in Safari and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari and Chrome
+ *    (include `-moz` to future-proof).
+ */
+
+input[type="search"] {
+  -webkit-appearance: textfield; /* 1 */
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box; /* 2 */
+  box-sizing: content-box;
+}
+
+/**
+ * Remove inner padding and search cancel button in Safari and Chrome on OS X.
+ * Safari (but not Chrome) clips the cancel button when the search input has
+ * padding (and `textfield` appearance).
+ */
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/**
+ * Define consistent border, margin, and padding.
+ */
+
+fieldset {
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em;
+}
+
+/**
+ * 1. Correct `color` not being inherited in IE 8/9/10/11.
+ * 2. Remove padding so people aren't caught out if they zero out fieldsets.
+ */
+
+legend {
+  border: 0; /* 1 */
+  padding: 0; /* 2 */
+}
+
+/**
+ * Remove default vertical scrollbar in IE 8/9/10/11.
+ */
+
+textarea {
+  overflow: auto;
+}
+
+/**
+ * Don't inherit the `font-weight` (applied by a rule above).
+ * NOTE: the default cannot safely be changed in Chrome and Safari on OS X.
+ */
+
+optgroup {
+  font-weight: bold;
+}
+
+/* Tables
+   ========================================================================== */
+
+/**
+ * Remove most spacing between table cells.
+ */
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+td,
+th {
+  padding: 0;
+}
+
+/*!*****************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/notion.css ***!
+  \*****************************************************************************/
+/* ==================================================================== */
+/* Hover Feedback */
+/* ==================================================================== */
+
+.notion-link {
+	transition: 100ms ease-in;
+}
+
+.notion-link:hover {
+	color: #eb5757 !important; /* Front red color. */
+}
+
+.notion-mobile-tapping {
+	opacity: 0.6;
+}
+
+.notion-reminder.notion-enable-hover:hover {
+	text-decoration: underline;
+}
+
+.notion-token-remove-button:hover {
+	opacity: 0.8;
+}
+
+.notion-notion-external-object,
+.notion-page-mention-token {
+	box-shadow: 0 0 0 3px rgba(148, 148, 148, 0);
+}
+
+.notion-page-mention-token.notion-enable-hover:hover,
+.notion-external-object-token.notion-enable-hover:hover {
+	cursor: pointer !important;
+	background: rgba(148, 148, 148, 0.15);
+	box-shadow: 0 0 0 3px rgba(148, 148, 148, 0.15);
+	border-radius: 1px;
+}
+
+/* required to correctly highlight the icons within a page/external object
+mention token. */
+.notion-page-mention-token::selection,
+.notion-external-object-token::selection {
+	background: rgba(46, 170, 220, 0.2);
+}
+
+/* ==================================================================== */
+/* Focus Feedback */
+/* ==================================================================== */
+
+.notion-focusable {
+	transition: box-shadow 300ms;
+}
+
+/* NOTE: do not try to combine these next two rules, if you do, it will
+   break the blue focus ring on Safari */
+.notion-focusable-within:focus-within {
+	box-shadow: rgba(46, 170, 220, 0.7) 0px 0px 0px 1px inset,
+		rgba(46, 170, 220, 0.4) 0px 0px 0px 2px !important;
+}
+
+.notion-focusable:focus-visible {
+	box-shadow: rgba(46, 170, 220, 0.7) 0px 0px 0px 1px inset,
+		rgba(46, 170, 220, 0.4) 0px 0px 0px 2px !important;
+}
+
+/* ==================================================================== */
+/* Cursor */
+/* ==================================================================== */
+
+.notion-cursor-default {
+	cursor: default;
+}
+
+.notion-cursor-pointer {
+	cursor: pointer;
+}
+
+.notion-sidebar-container,
+.notion-topbar {
+	cursor: default;
+}
+
+.notion-disable-local-cursor .notion-sidebar-container,
+.notion-disable-local-cursor .notion-topbar,
+.notion-disable-local-cursor .notion-cursor-default,
+.notion-disable-local-cursor .notion-cursor-pointer {
+	cursor: inherit;
+}
+
+.notion-disable-webkit-user-select,
+.notion-disable-webkit-user-select * {
+	-webkit-user-select: none;
+}
+
+#notion-app a {
+	cursor: inherit;
+}
+
+/* ==================================================================== */
+/* Animation */
+/* ==================================================================== */
+
+.notion-fadein {
+	animation: fadein ease-in 330ms;
+}
+
+.notion-fadein-fast {
+	animation: fadein ease-in 230ms;
+}
+
+.notion-fadein-slow {
+	animation: fadein ease-in 600ms;
+}
+
+@keyframes fadein {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+/* ==================================================================== */
+/* Overwrite for CodeBlock */
+/* ==================================================================== */
+
+.line-numbers .line-numbers-rows {
+	border-right: none !important;
+}
+
+.line-numbers-rows > span:before {
+	color: #ccc !important;
+}
+
+/* ==================================================================== */
+/* Mobile.
+/* ==================================================================== */
+
+.notion-mobile * {
+	/* Remove the tap highlight */
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* - Disable the bouncy scrolling in OSX. */
+/* - Let the main scroller to handle scrolling */
+html.notion-html,
+body.notion-body,
+#notion-app {
+	height: 100vh;
+	overflow: hidden;
+	position: relative;
+	background-color: transparent;
+}
+.notion-app-inner {
+	height: 100%;
+}
+
+html.notion-mobile:not(.notion-front-page) div:not([contenteditable]) {
+	-webkit-user-select: none;
+}
+
+html.notion-mobile:not(.notion-front-page)
+	body:not(.notion-disable-webkit-user-select)
+	[contenteditable] {
+	-webkit-user-select: text;
+}
+
+/* Front page allow the scroll bounce */
+html.notion-front-page,
+html.notion-front-page body,
+html.notion-front-page #notion-app {
+	height: initial;
+	overflow-x: initial;
+	overflow-y: initial;
+	background: #fffefc; /* Same as front bg in colors.ts */
+}
+
+/* Disable scroll */
+html.notion-front-page body.disable-scroll {
+	overflow: hidden;
+}
+
+html.notion-front-page .notion-app-inner {
+	height: initial;
+}
+
+/* ==================================================================== */
+/* Contenteditable placeholders.
+/* ==================================================================== */
+
+[contenteditable]:empty:after,
+.forcePlaceholder:after {
+	content: attr(placeholder);
+}
+
+/* ==================================================================== */
+/* Intercom.
+/* ==================================================================== */
+
+#intercom-container {
+	/* On top of OverlayContainer. */
+	z-index: 1000 !important;
+}
+
+/* ==================================================================== */
+/* Prism.
+/* ==================================================================== */
+
+.token.operator.operator {
+	background: transparent;
+}
+
+/* ==================================================================== */
+/* Loading Spinner.
+/* ==================================================================== */
+
+.loading-spinner {
+	-webkit-animation: rotate 1000ms linear infinite;
+	animation: rotate 1000ms linear infinite;
+	-webkit-transform-origin: center center;
+	transform-origin: center center;
+	width: 1em;
+	height: 1em;
+	opacity: 0.5;
+	display: block;
+	pointer-events: none;
+}
+@-webkit-keyframes rotate {
+	0% {
+		-webkit-transform: rotate(0deg) translateZ(0);
+		transform: rotate(0deg) translateZ(0);
+	}
+	100% {
+		-webkit-transform: rotate(360deg) translateZ(0);
+		transform: rotate(360deg) translateZ(0);
+	}
+}
+@keyframes rotate {
+	0% {
+		-webkit-transform: rotate(0deg) translateZ(0);
+		transform: rotate(0deg) translateZ(0);
+	}
+	100% {
+		-webkit-transform: rotate(360deg) translateZ(0);
+		transform: rotate(360deg) translateZ(0);
+	}
+}
+
+/* ==================================================================== */
+/* Sidebar loading skeleton shimmer
+/* ==================================================================== */
+
+.notion-sidebar-loading-skeleton-shimmer {
+	overflow: hidden;
+	position: relative;
+}
+.notion-sidebar-loading-skeleton-shimmer::before {
+	content: "";
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	z-index: 1;
+	animation: shimmer 1s infinite;
+}
+.notion-light-theme .notion-sidebar-loading-skeleton-shimmer::before {
+	background: linear-gradient(
+		90deg,
+		rgba(255, 255, 255, 0) 0%,
+		rgba(255, 255, 255, 0.4) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
+}
+.notion-dark-theme .notion-sidebar-loading-skeleton-shimmer::before {
+	background: linear-gradient(
+		90deg,
+		rgba(86, 86, 86, 0) 0%,
+		rgba(86, 86, 86, 0.4) 50%,
+		rgba(86, 86, 86, 0) 100%
+	);
+}
+@keyframes shimmer {
+	0% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+/* ==================================================================== */
+/* Front pages.
+/* ==================================================================== */
+
+.notion-quote {
+	position: relative;
+}
+
+.notion-quote::before {
+	content: "“";
+	position: absolute;
+	left: -0.5em;
+	opacity: 0.6;
+}
+
+.notion-quote::after {
+	content: "”";
+	margin-left: 0.1em;
+	opacity: 0.6;
+}
+
+@media only screen and (max-width: 1020px) {
+	.br-desktop {
+		display: none;
+	}
+}
+
+/* ==================================================================== */
+/* Admin.
+/* ==================================================================== */
+
+.pretty-json-container .variable-value > * > * {
+	cursor: pointer !important;
+}
+
+/* ==================================================================== */
+/* Editor force select hack (see Editable.tsx).
+/* ==================================================================== */
+
+.editor-force-select {
+	user-select: auto !important;
+	-webkit-user-select: auto !important;
+	-moz-user-select: auto !important;
+}
+
+/* ==================================================================== */
+/* width-max-content polyfill.
+/* ==================================================================== */
+
+.width-max-content {
+	width: max-content;
+	width: -moz-max-content; /* Firefox/Gecko */
+	width: -webkit-max-content; /* Chrome */
+}
+
+/* ==================================================================== */
+/* hidden.
+/* ==================================================================== */
+
+.hidden {
+	display: none !important;
+}
+
+/* ==================================================================== */
+/* input-hide-arrows.
+/* ==================================================================== */
+
+/* Chrome, Safari, Edge, Opera */
+input.input-hide-arrows::-webkit-outer-spin-button,
+input.input-hide-arrows::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+/* Firefox */
+input[type="number"].input-hide-arrows {
+	-moz-appearance: textfield;
+}
+
+@keyframes leftOrRight {
+	from {
+		left: -50%;
+	}
+	to {
+		left: 250%;
+	}
+}
+
+/* ==================================================================== */
+/* Customizable class utilities.
+ * see shared/cssHelpers.ts
+ *
+ * Use css variables to customize styles for pesudoselectors we
+ * can't easily target from inline style properties.
+ *
+ * Each class defined below should be added to customizableClassnameHelpers.ts.
+ * For each CSS property, use var(`--${className}--${propertyName}`) as the value.
+ *
+ * We use camelCase names here so they're easier to write in Typescript.
+ * TODO: use something like linaria to automate this shenanigans.
+/* ==================================================================== */
+
+.pseudoAfter:after {
+	color: var(--pseudoAfter--color);
+	content: var(--pseudoAfter--content);
+	border: var(--pseudoAfter--border);
+	width: var(--pseudoAfter--width);
+	height: var(--pseudoAfter--height);
+	display: var(--pseudoAfter--display);
+	background: var(--pseudoAfter--background);
+}
+
+.pseudoBefore:before {
+	color: var(--pseudoBefore--color);
+	content: var(--pseudoBefore--content);
+	border: var(--pseudoBefore--border);
+	width: var(--pseudoBefore--width);
+	height: var(--pseudoBefore--height);
+	display: var(--pseudoBefore--display) !important;
+	background: var(--pseudoBefore--background);
+	font-family: var(--pseudoBefore--fontFamily);
+}
+
+.pseudoSelection ::selection,
+.pseudoSelection::selection {
+	color: var(--pseudoSelection--color);
+	-webkit-text-fill-color: var(--pseudoSelection--WebkitTextFillColor);
+	background: var(--pseudoSelection--background);
+	text-shadow: var(--pseudoSelection--textShadow);
+}
+
+/** Conditional style when self is contentEditable */
+.whenContentEditable[contenteditable="true"] {
+	caret-color: var(--whenContentEditable--caretColor);
+	-webkit-user-modify: var(--whenContentEditable--WebkitUserModify);
+}
+
+/** Conditional style when a content-editable root is editable */
+[data-content-editable-selecting="true"] .whenRootSelecting {
+	display: var(--whenRootSelecting--display) !important;
+}
+
+/** Conditional style when an element is or is inside a focused contentEditable. */
+.whenFocusedEditable[contenteditable="true"]:focus,
+[contenteditable="true"]:focus-within .whenFocusedEditable {
+	-webkit-user-modify: var(--whenFocusedEditable--WebkitUserModify) !important;
+	-webkit-user-select: var(--whenFocusedEditable--WebkitUserSelect) !important;
+	user-select: var(--whenFocusedEditable--userSelect) !important;
+}
+
+/*!*************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/react-datetime.css ***!
+  \*************************************************************************************/
+/*!
+ * https://github.com/arqex/react-datetime
+ */
+
+.rdt {
+	position: relative;
+	-webkit-user-select: none;
+}
+
+.rdtPicker {
+	display: none;
+	position: absolute;
+	width: 100%;
+	margin-top: 1px;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+}
+.rdtOpen .rdtPicker {
+	display: block;
+}
+.rdtStatic .rdtPicker {
+	box-shadow: none;
+	position: static;
+}
+
+.rdtPicker .rdtTimeToggle {
+	text-align: center;
+}
+
+.rdtPicker table {
+	width: 100%;
+	margin: 0;
+}
+.rdtPicker td,
+.rdtPicker th {
+	text-align: center;
+	height: 28px;
+}
+
+.rdtPicker td.rdtDay:hover,
+.rdtPicker td.rdtToday:hover,
+.rdtPicker td.rdtHour:hover,
+.rdtPicker td.rdtMinute:hover,
+.rdtPicker td.rdtSecond:hover,
+.rdtPicker .rdtTimeToggle:hover {
+	background: #eeeeee;
+	cursor: pointer;
+}
+.rdtPicker td.rdtOld,
+.rdtPicker td.rdtNew {
+	color: #999999;
+}
+.rdtPicker td.rdtToday {
+	position: relative;
+}
+.rdtPicker td.rdtToday:before {
+	content: '';
+	display: inline-block;
+	border-left: 7px solid transparent;
+	border-bottom: 7px solid #428bca;
+	border-top-color: rgba(0, 0, 0, 0.2);
+	position: absolute;
+	bottom: 4px;
+	right: 4px;
+}
+.rdtPicker td.rdtActive,
+.rdtPicker td.rdtActive:hover {
+	background-color: #428bca;
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.rdtPicker td.rdtActive.rdtToday:before {
+	border-bottom-color: #fff;
+}
+.rdtPicker td.rdtDisabled,
+.rdtPicker td.rdtDisabled:hover {
+	background: none;
+	color: #999999;
+	cursor: not-allowed;
+}
+
+.rdtPicker td span.rdtOld {
+	color: #999999;
+}
+.rdtPicker td span.rdtDisabled,
+.rdtPicker td span.rdtDisabled:hover {
+	background: none;
+	color: #999999;
+	cursor: not-allowed;
+}
+.rdtPicker .dow {
+	width: 14.2857%;
+	border-bottom: none;
+}
+.rdtPicker th.rdtSwitch {
+	width: 100px;
+}
+.rdtPicker th.rdtNext,
+.rdtPicker th.rdtPrev {
+	font-size: 21px;
+	vertical-align: top;
+}
+.rdtPicker th.rdtDisabled,
+.rdtPicker th.rdtDisabled:hover {
+	background: none;
+	color: #999999;
+	cursor: not-allowed;
+}
+.rdtPicker thead tr:first-child th {
+	cursor: pointer;
+}
+.rdtPicker thead tr:first-child th:hover {
+	background: #eeeeee;
+}
+
+.rdtPicker tfoot {
+	border-top: 1px solid #f9f9f9;
+}
+
+.rdtPicker button {
+	border: none;
+	background: none;
+	cursor: pointer;
+}
+.rdtPicker button:hover {
+	background-color: #eee;
+}
+
+.rdtPicker thead button {
+	width: 100%;
+	height: 100%;
+}
+
+td.rdtMonth,
+td.rdtYear {
+	height: 50px;
+	width: 25%;
+	cursor: pointer;
+}
+td.rdtMonth:hover,
+td.rdtYear:hover {
+	background: #eee;
+}
+
+.rdtCounters {
+	display: inline-block;
+}
+
+.rdtCounters > div {
+	float: left;
+}
+
+.rdtCounter {
+	height: 100px;
+}
+
+.rdtCounter {
+	width: 40px;
+}
+
+.rdtCounterSeparator {
+	line-height: 100px;
+}
+
+.rdtCounter .rdtBtn {
+	height: 40%;
+	line-height: 40px;
+	cursor: pointer;
+}
+.rdtCounter .rdtBtn:hover {
+	background: #eee;
+}
+.rdtCounter .rdtCount {
+	height: 20%;
+	font-size: 1.2em;
+}
+
+.rdtMilli {
+	vertical-align: middle;
+	padding-left: 8px;
+	width: 48px;
+}
+
+.rdtMilli input {
+	width: 100%;
+	font-size: 1.2em;
+	margin-top: 37px;
+}
+
+/*!****************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/reset.css ***!
+  \****************************************************************************/
+*,
+*:focus {
+	outline: 0;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+table > tr {
+	vertical-align: top;
+}
+
+/* Input placeholder style. Match the opacity with style/base.ts .*/
+::-webkit-input-placeholder {
+	/* Safari, Chrome and Opera */
+	color: inherit;
+	opacity: 0.375;
+}
+::-webkit-contacts-auto-fill-button {
+	visibility: hidden;
+	display: none !important;
+	pointer-events: none;
+	position: absolute;
+	right: 0;
+}
+:-moz-placeholder {
+	/* Firefox 18- */
+	color: inherit;
+	opacity: 0.375;
+}
+::-moz-placeholder {
+	/* Firefox 19+ */
+	color: inherit;
+	opacity: 0.375;
+}
+:-ms-input-placeholder {
+	/* IE 10+ */
+	color: inherit;
+	opacity: 0.375;
+}
+::-ms-input-placeholder {
+	/* Edge */
+	color: inherit;
+	opacity: 0.375;
+}
+
+*::selection {
+	/* Notion brand blue */
+	background: rgba(45, 170, 219, 0.3);
+}
+
+#notion-app b {
+	font-weight: 600;
+}
+
+[contenteditable] {
+	-webkit-tap-highlight-color: transparent;
+}
+
+/*!*******************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/tutorial.css ***!
+  \*******************************************************************************/
+@keyframes pulse-ring {
+	0% {
+		transform: scale(0.33);
+	}
+	80%,
+	100% {
+		opacity: 0;
+	}
+}
+
+@keyframes pulse-dot {
+	0% {
+		transform: scale(0.8);
+	}
+	50% {
+		transform: scale(1);
+	}
+	100% {
+		transform: scale(0.8);
+	}
+}
+
+@keyframes bounce-left {
+	0% {
+		transform: translateX(-200%);
+	}
+	25% {
+		transform: translateX(-199%);
+	}
+	100% {
+		transform: translateX(0%);
+	}
+}
+
+/*!********************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/keyframes.css ***!
+  \********************************************************************************/
+/* Onboarding animations */
+@keyframes pulsing-button-border {
+	0% {
+		border-color: rgba(46, 170, 220, 1);
+	}
+	50% {
+		border-color: rgba(46, 170, 220, 0);
+	}
+	100% {
+		border-color: rgba(46, 170, 220, 1);
+	}
+}
+
+@keyframes pulsing-button {
+	0% {
+		filter: brightness(1);
+	}
+	50% {
+		filter: brightness(1.15);
+	}
+	100% {
+		filter: brightness(1);
+	}
+}
+
+/*!****************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/front.css ***!
+  \****************************************************************************/
+.front-fadein-slow {
+	animation: fadein ease-in 500ms;
+}
+
+.front-fadein-fast {
+	animation: fadein ease-in 150ms;
+}
+
+/*!*************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/hide-scrollbar.css ***!
+  \*************************************************************************************/
+/**
+ * Utility to hide scrollbars while retaining scroll functionality.
+ * This can't be done with React inline styles because of the
+ * ::-webkit-scrollbar pseudo-element selector.
+*/
+.hide-scrollbar {
+	/* Hide scrollbars in IE 10+. */
+	-ms-overflow-style: none;
+
+	/* Hide scrollbar in FF. */
+	scrollbar-width: none;
+}
+
+/* Hide scrollbar for Chrome/Safari/Webkit browsers. */
+.hide-scrollbar::-webkit-scrollbar {
+	width: 0 !important;
+	height: 0 !important;
+}
+
+/*!****************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/prism.css ***!
+  \****************************************************************************/
+/* WARNING: This is a generated file. Do not touch! */
+/* Run `notion build-prism` to rebuild. */
+
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+.notion-light-theme code[class*="language-"],
+.notion-light-theme pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+.notion-light-theme pre[class*="language-"]::-moz-selection, .notion-light-theme pre[class*="language-"] ::-moz-selection, .notion-light-theme code[class*="language-"]::-moz-selection, .notion-light-theme code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+.notion-light-theme pre[class*="language-"]::selection, .notion-light-theme pre[class*="language-"] ::selection, .notion-light-theme code[class*="language-"]::selection, .notion-light-theme code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+@media print {
+	.notion-light-theme code[class*="language-"],
+	.notion-light-theme pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+/* Code blocks */
+.notion-light-theme pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+.notion-light-theme :not(pre) > code[class*="language-"],
+.notion-light-theme pre[class*="language-"] {
+	background: #f5f2f0;
+}
+/* Inline code */
+.notion-light-theme :not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+.notion-light-theme .token.comment,
+.notion-light-theme .token.prolog,
+.notion-light-theme .token.doctype,
+.notion-light-theme .token.cdata {
+	color: slategray;
+}
+.notion-light-theme .token.punctuation {
+	color: #999;
+}
+.notion-light-theme .token.namespace {
+	opacity: .7;
+}
+.notion-light-theme .token.property,
+.notion-light-theme .token.tag,
+.notion-light-theme .token.boolean,
+.notion-light-theme .token.number,
+.notion-light-theme .token.constant,
+.notion-light-theme .token.symbol,
+.notion-light-theme .token.deleted {
+	color: #905;
+}
+.notion-light-theme .token.selector,
+.notion-light-theme .token.attr-name,
+.notion-light-theme .token.string,
+.notion-light-theme .token.char,
+.notion-light-theme .token.builtin,
+.notion-light-theme .token.inserted {
+	color: #690;
+}
+.notion-light-theme .token.operator,
+.notion-light-theme .token.entity,
+.notion-light-theme .token.url,
+.notion-light-theme .language-css .token.string,
+.notion-light-theme .style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+.notion-light-theme .token.atrule,
+.notion-light-theme .token.attr-value,
+.notion-light-theme .token.keyword {
+	color: #07a;
+}
+.notion-light-theme .token.function,
+.notion-light-theme .token.class-name {
+	color: #DD4A68;
+}
+.notion-light-theme .token.regex,
+.notion-light-theme .token.important,
+.notion-light-theme .token.variable {
+	color: #e90;
+}
+.notion-light-theme .token.important,
+.notion-light-theme .token.bold {
+	font-weight: bold;
+}
+.notion-light-theme .token.italic {
+	font-style: italic;
+}
+.notion-light-theme .token.entity {
+	cursor: help;
+}
+
+/**
+ * prism.js Dark theme for JavaScript, CSS and HTML
+ * Based on the slides of the talk “/Reg(exp){2}lained/”
+ * @author Lea Verou
+ */
+
+.notion-dark-theme code[class*="language-"],
+.notion-dark-theme pre[class*="language-"] {
+	color: white;
+	background: none;
+	text-shadow: 0 -.1em .2em black;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+@media print {
+	.notion-dark-theme code[class*="language-"],
+	.notion-dark-theme pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+.notion-dark-theme pre[class*="language-"],
+.notion-dark-theme :not(pre) > code[class*="language-"] {
+	background: hsl(30, 20%, 25%);
+}
+
+/* Code blocks */
+
+.notion-dark-theme pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+	border: .3em solid hsl(30, 20%, 40%);
+	border-radius: .5em;
+	box-shadow: 1px 1px .5em black inset;
+}
+
+/* Inline code */
+
+.notion-dark-theme :not(pre) > code[class*="language-"] {
+	padding: .15em .2em .05em;
+	border-radius: .3em;
+	border: .13em solid hsl(30, 20%, 40%);
+	box-shadow: 1px 1px .3em -.1em black inset;
+	white-space: normal;
+}
+
+.notion-dark-theme .token.comment,
+.notion-dark-theme .token.prolog,
+.notion-dark-theme .token.doctype,
+.notion-dark-theme .token.cdata {
+	color: hsl(30, 20%, 50%);
+}
+
+.notion-dark-theme .token.punctuation {
+	opacity: .7;
+}
+
+.notion-dark-theme .token.namespace {
+	opacity: .7;
+}
+
+.notion-dark-theme .token.property,
+.notion-dark-theme .token.tag,
+.notion-dark-theme .token.boolean,
+.notion-dark-theme .token.number,
+.notion-dark-theme .token.constant,
+.notion-dark-theme .token.symbol {
+	color: hsl(350, 40%, 70%);
+}
+
+.notion-dark-theme .token.selector,
+.notion-dark-theme .token.attr-name,
+.notion-dark-theme .token.string,
+.notion-dark-theme .token.char,
+.notion-dark-theme .token.builtin,
+.notion-dark-theme .token.inserted {
+	color: hsl(75, 70%, 60%);
+}
+
+.notion-dark-theme .token.operator,
+.notion-dark-theme .token.entity,
+.notion-dark-theme .token.url,
+.notion-dark-theme .language-css .token.string,
+.notion-dark-theme .style .token.string,
+.notion-dark-theme .token.variable {
+	color: hsl(40, 90%, 60%);
+}
+
+.notion-dark-theme .token.atrule,
+.notion-dark-theme .token.attr-value,
+.notion-dark-theme .token.keyword {
+	color: hsl(350, 40%, 70%);
+}
+
+.notion-dark-theme .token.regex,
+.notion-dark-theme .token.important {
+	color: #e90;
+}
+
+.notion-dark-theme .token.important,
+.notion-dark-theme .token.bold {
+	font-weight: bold;
+}
+
+.notion-dark-theme .token.italic {
+	font-style: italic;
+}
+
+.notion-dark-theme .token.entity {
+	cursor: help;
+}
+
+.notion-dark-theme .token.deleted {
+	color: red;
+}
+/*!***********************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/react-day-picker/lib/style.css ***!
+  \***********************************************************************************************/
+/* DayPicker styles */
+
+.DayPicker {
+  display: inline-block;
+  font-size: 1rem;
+}
+
+.DayPicker-wrapper {
+  position: relative;
+
+  flex-direction: row;
+  padding-bottom: 1em;
+
+  -webkit-user-select: none;
+
+     -moz-user-select: none;
+
+      -ms-user-select: none;
+
+          user-select: none;
+}
+
+.DayPicker-Months {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.DayPicker-Month {
+  display: table;
+  margin: 0 1em;
+  margin-top: 1em;
+  border-spacing: 0;
+  border-collapse: collapse;
+
+  -webkit-user-select: none;
+
+     -moz-user-select: none;
+
+      -ms-user-select: none;
+
+          user-select: none;
+}
+
+.DayPicker-NavBar {
+}
+
+.DayPicker-NavButton {
+  position: absolute;
+  top: 1em;
+  right: 1.5em;
+  left: auto;
+
+  display: inline-block;
+  margin-top: 2px;
+  width: 1.25em;
+  height: 1.25em;
+  background-position: center;
+  background-size: 50%;
+  background-repeat: no-repeat;
+  color: #8B9898;
+  cursor: pointer;
+}
+
+.DayPicker-NavButton:hover {
+  opacity: 0.8;
+}
+
+.DayPicker-NavButton--prev {
+  margin-right: 1.5em;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAwCAYAAAB5R9gVAAAABGdBTUEAALGPC/xhBQAAAVVJREFUWAnN2G0KgjAYwPHpGfRkaZeqvgQaK+hY3SUHrk1YzNLay/OiEFp92I+/Mp2F2Mh2lLISWnflFjzH263RQjzMZ19wgs73ez0o1WmtW+dgA01VxrE3p6l2GLsnBy1VYQOtVSEH/atCCgqpQgKKqYIOiq2CBkqtggLKqQIKgqgCBjpJ2Y5CdJ+zrT9A7HHSTA1dxUdHgzCqJIEwq0SDsKsEg6iqBIEoq/wEcVRZBXFV+QJxV5mBtlDFB5VjYTaGZ2sf4R9PM7U9ZU+lLuaetPP/5Die3ToO1+u+MKtHs06qODB2zBnI/jBd4MPQm1VkY79Tb18gB+C62FdBFsZR6yeIo1YQiLJWMIiqVjQIu1YSCLNWFgijVjYIuhYYCKoWKAiiFgoopxYaKLUWOii2FgkophYp6F3r42W5A9s9OcgNvva8xQaysKXlFytoqdYmQH6tF3toSUo0INq9AAAAAElFTkSuQmCC');
+}
+
+.DayPicker-NavButton--next {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAwCAYAAAB5R9gVAAAABGdBTUEAALGPC/xhBQAAAXRJREFUWAnN119ugjAcwPHWzJ1gnmxzB/BBE0n24m4xfNkTaOL7wOtsl3AXMMb+Vjaa1BG00N8fSEibPpAP3xAKKs2yjzTPH9RAjhEo9WzPr/Vm8zgE0+gXATAxxuxtqeJ9t5tIwv5AtQAApsfT6TPdbp+kUBcgVwvO51KqVhMkXKsVJFXrOkigVhCIs1Y4iKlWZxB1rX4gwlpRIIpa8SDkWmggrFq4IIRaJKCYWnSgnrXIQV1r8YD+1Vrn+bReagysIFfLABRt31v8oBu1xEBttfRbltmfjgEcWh9snUS2kNdBK6WN1vrOWxObWsz+fjxevsxmB1GQDfINWiev83nhaoiB/CoOU438oPrhXS0WpQ9xc1ZQWxWHqUYe0I0qrKCQKjygDlXIQV2r0IF6ViEBxVTBBSFUQQNhVYkHIVeJAtkNsbQ7c1LtzP6FsObhb2rCKv7NBIGoq4SDmKoEgTirXAcJVGkFSVVpgoSrXICGUMUH/QBZNSUy5XWUhwAAAABJRU5ErkJggg==');
+}
+
+.DayPicker-NavButton--interactionDisabled {
+  display: none;
+}
+
+.DayPicker-Caption {
+  display: table-caption;
+  margin-bottom: 0.5em;
+  padding: 0 0.5em;
+  text-align: left;
+}
+
+.DayPicker-Caption > div {
+  font-weight: 500;
+  font-size: 1.15em;
+}
+
+.DayPicker-Weekdays {
+  display: table-header-group;
+  margin-top: 1em;
+}
+
+.DayPicker-WeekdaysRow {
+  display: table-row;
+}
+
+.DayPicker-Weekday {
+  display: table-cell;
+  padding: 0.5em;
+  color: #8B9898;
+  text-align: center;
+  font-size: 0.875em;
+}
+
+.DayPicker-Weekday abbr[title] {
+  border-bottom: none;
+  text-decoration: none;
+}
+
+.DayPicker-Body {
+  display: table-row-group;
+}
+
+.DayPicker-Week {
+  display: table-row;
+}
+
+.DayPicker-Day {
+  display: table-cell;
+  padding: 0.5em;
+  border-radius: 50%;
+  vertical-align: middle;
+  text-align: center;
+  cursor: pointer;
+}
+
+.DayPicker-WeekNumber {
+  display: table-cell;
+  padding: 0.5em;
+  min-width: 1em;
+  border-right: 1px solid #EAECEC;
+  color: #8B9898;
+  vertical-align: middle;
+  text-align: right;
+  font-size: 0.75em;
+  cursor: pointer;
+}
+
+.DayPicker--interactionDisabled .DayPicker-Day {
+  cursor: default;
+}
+
+.DayPicker-Footer {
+  padding-top: 0.5em;
+}
+
+.DayPicker-TodayButton {
+  border: none;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  color: #4A90E2;
+  font-size: 0.875em;
+  cursor: pointer;
+}
+
+/* Default modifiers */
+
+.DayPicker-Day--today {
+  color: #D0021B;
+  font-weight: 700;
+}
+
+.DayPicker-Day--outside {
+  color: #8B9898;
+  cursor: default;
+}
+
+.DayPicker-Day--disabled {
+  color: #DCE0E0;
+  cursor: default;
+  /* background-color: #eff1f1; */
+}
+
+/* Example modifiers */
+
+.DayPicker-Day--sunday {
+  background-color: #F7F8F8;
+}
+
+.DayPicker-Day--sunday:not(.DayPicker-Day--today) {
+  color: #DCE0E0;
+}
+
+.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside) {
+  position: relative;
+
+  background-color: #4A90E2;
+  color: #F0F8FF;
+}
+
+.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside):hover {
+  background-color: #51A0FA;
+}
+
+.DayPicker:not(.DayPicker--interactionDisabled)
+  .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--outside):hover {
+  background-color: #F0F8FF;
+}
+
+/* DayPickerInput */
+
+.DayPickerInput {
+  display: inline-block;
+}
+
+.DayPickerInput-OverlayWrapper {
+  position: relative;
+}
+
+.DayPickerInput-Overlay {
+  position: absolute;
+  left: 0;
+  z-index: 1;
+
+  background: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/*!***************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/react-day-picker.css ***!
+  \***************************************************************************************/
+/* =============================================================================
+
+	react-day-picker.css.
+	Prefix everything with #notion-app to increase the precedence of these rules
+	so they will always override the default CSS regardless of the order in which
+	they are concatenated.
+
+// ========================================================================== */
+
+/* =============================================================================
+	Desktop Styles.
+============================================================================= */
+
+#notion-app .DayPicker-Day {
+	border-radius: 3px;
+}
+
+#notion-app .DayPicker-Day.DayPicker-Day--range {
+	border-radius: 0;
+}
+
+#notion-app .DayPicker-Day.DayPicker-Day--range.DayPicker-Day--start {
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+#notion-app .DayPicker-Day.DayPicker-Day--range.DayPicker-Day--end {
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+#notion-app
+	.DayPicker-Day.DayPicker-Day--range.DayPicker-Day--start.DayPicker-Day--end {
+	border-radius: 3px;
+}
+
+#notion-app
+	.DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside),
+#notion-app
+	.DayPicker-Day--value:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside) {
+	background: rgb(45, 170, 219); /* Notion blue */
+	color: #fff;
+}
+
+#notion-app
+	.DayPicker:not(.DayPicker--interactionDisabled)
+	.DayPicker-Day--outside:hover,
+#notion-app
+	.DayPicker:not(.DayPicker--interactionDisabled)
+	.DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--value):not(.DayPicker-Day--start):not(.DayPicker-Day--end):hover {
+	background-color: rgba(45, 156, 219, 0.2);
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+#notion-app .DayPicker-Months {
+	font-size: 14px;
+}
+
+#notion-app
+	.DayPicker-Day--today:not(.DayPicker-Day--selected):not(.DayPicker-Day--value):not(.DayPicker-Day--start):not(.DayPicker-Day--end) {
+	position: relative;
+	color: white;
+	z-index: 1;
+}
+
+#notion-app .DayPicker-Day--today {
+	color: inherit;
+}
+
+#notion-app
+	.DayPicker-Day--today:not(.DayPicker-Day--selected):not(.DayPicker-Day--value):not(.DayPicker-Day--start):not(.DayPicker-Day--end)::after {
+	content: "";
+	display: block;
+	width: 26px;
+	height: 26px;
+	background: rgb(235, 87, 87);
+	border-radius: 100%;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate3d(-50%, -50%, 0);
+	z-index: -1;
+}
+
+#notion-app .DayPicker-Caption > div {
+	font-size: 14px;
+	font-weight: 500;
+}
+
+#notion-app .DayPicker-Month {
+	margin: 0;
+}
+
+#notion-app .DayPicker-wrapper {
+	padding-bottom: 0;
+}
+
+#notion-app .DayPicker-Week,
+#notion-app .DayPicker-WeekdaysRow {
+	display: flex;
+}
+
+#notion-app .DayPicker-Weekdays {
+	display: block;
+	margin-top: 0;
+}
+
+#notion-app .DayPicker-Caption {
+	margin-bottom: 8px;
+}
+
+#notion-app .DayPicker-Weekday,
+#notion-app .DayPicker-Day {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 30px;
+	line-height: 1.2;
+}
+
+/* =============================================================================
+	Mobile Styles.
+============================================================================= */
+
+@media only screen and (max-width: 600px) {
+	#notion-app .DayPicker-Months,
+	#notion-app .DayPicker-Caption > div {
+		font-size: 16px;
+	}
+
+	#notion-app .DayPicker-Month,
+	#notion-app .DayPicker {
+		width: 100%;
+	}
+
+	#notion-app .DayPicker-Weekday,
+	#notion-app .DayPicker-Day {
+		flex-grow: 1;
+	}
+
+	#notion-app .DayPicker-Weekday,
+	#notion-app .DayPicker-Day {
+		height: 44px;
+	}
+
+	#notion-app .DayPicker-Caption {
+		padding-left: 4%;
+		margin-top: 4px;
+	}
+
+	#notion-app
+		.DayPicker-Day--today:not(.DayPicker-Day--selected):not(.DayPicker-Day--value):not(.DayPicker-Day--range)::after {
+		width: 32px;
+		height: 32px;
+	}
+}
+
+/*!********************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/client/css/react-pdf.css ***!
+  \********************************************************************************/
+.react-pdf__Page {
+	padding-bottom: 8px;
+}
+
+.react-pdf__Page__textContent {
+	position: absolute;
+	top: 0 !important;
+	left: 0 !important;
+	transform: none !important;
+	cursor: text;
+}
+

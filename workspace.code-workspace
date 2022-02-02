@@ -1,0 +1,34 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "zaplib/web"
+		},
+	],
+	"settings": {
+		// Use our own TypeScript SDK, not the global one
+		"typescript.tsdk": "web/node_modules/typescript/lib",
+		// This tells VSCode not to treat our vanilla/flow-typed JS as TypeScript
+		"javascript.validate.enable": false,
+		"files.exclude": {
+			// zaplib/web/dist
+			"dist/**": true
+		},
+		"search.exclude": {
+			// zaplib/web/dist
+			"dist/**": true,
+		},
+		"rust-analyzer.diagnostics.disabled": [
+			"unresolved-macro-call",
+			"macro-error"
+		],
+	},
+	"extensions": {
+		"recommendations": [
+			"matklad.rust-analyzer",
+			"vadimcn.vscode-lldb"
+		]
+	},
+}

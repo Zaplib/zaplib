@@ -1,0 +1,215 @@
+<html>
+
+<head>
+    <title>Shader 2D Primitives</title>
+    <style>
+        body {
+            background-color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            position: relative;
+            margin: 40px 0 0px 640px;
+            width: 601;
+            height: 601;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas" width=601 height=601></canvas>
+    <script>
+        function draw_grid(cx, w, h, cell_size) {
+            const color_light = "#888";
+            const color_dark = "#444"
+
+            cx.beginPath();
+            cx.lineWidth = 1;
+            cx.strokeStyle = color_light;
+            for (let x = 0; x <= w; x += cell_size) {
+                cx.moveTo(x, 0);
+                cx.lineTo(x, h);
+            }
+            for (let y = 0; y <= h; y += cell_size) {
+                cx.moveTo(0, y);
+                cx.lineTo(w, y);
+            }
+            cx.stroke();
+
+            cx.beginPath();
+            cx.lineWidth = 1;
+            cx.strokeStyle = color_dark;
+            for (let x = 0.5 * cell_size; x <= w; x += cell_size) {
+                cx.moveTo(x, 0);
+                cx.lineTo(x, h);
+            }
+            for (let y = 0.5 * cell_size; y <= h; y += cell_size) {
+                cx.moveTo(0, y);
+                cx.lineTo(w, y);
+            }
+            cx.stroke();
+        }
+
+        function draw_primitive(cx, type, style, x, y, size) {
+            cx.beginPath();
+
+            x += 0.25 * size;
+            y += 0.25 * size;
+            size /= 2;
+
+            switch (type) {
+                case 0:
+                    cx.arc(x + 0.5 * size, y + 0.5 * size, 0.5 * size, 0, 2 * Math.PI);
+                    break;
+
+                case 1:
+                    cx.arc(x, y + size, size, 3 / 2 * Math.PI, 2 * Math.PI);
+                    break;
+
+                case 2: {
+                    // Multiply by 2 because we want to use original size
+                    const r = 2.0 * 0.15 * size;
+                    cx.moveTo(x + r, y);
+                    cx.arcTo(x + size, y, x + size, y + size, r);
+                    cx.arcTo(x + size, y + size, x, y + size, r);
+                    cx.arcTo(x, y + size, x, y, r);
+                    cx.arcTo(x, y, x + size, y, r);
+                    cx.closePath();
+                    break;
+                }
+
+                case 3:
+                    cx.rect(x, y, size, size);
+                    break;
+
+                case 4:
+                    const r = 0.5 * size;
+                    const x0 = x + 0.5 * size;
+                    const y0 = y + 0.5 * size;
+                    cx.moveTo(x0, y0 + r);
+                    let phi = 0;
+                    for (let i = 0; i < 6; i++) {
+                        const x1 = r * Math.sin(phi);
+                        const y1 = r * Math.cos(phi);
+                        phi += Math.PI / 3;
+                        cx.lineTo(x0 + x1, y0 + y1);
+                    }
+                    cx.closePath();
+                    break;
+
+                case 5:
+                    cx.moveTo(x, y);
+                    cx.lineTo(x + 0.25 * size, y + 0.3 * size);
+                    cx.lineTo(x + 0.5 * size, y + 0.15 * size);
+                    cx.lineTo(x + 0.75 * size, y + 0.8 * size);
+                    cx.lineTo(x + 0.25 * size, y + 0.9 * size);
+                    cx.lineTo(x + 0.1 * size, y + 0.5 * size);
+                    break;
+
+                case 6:
+                    cx.moveTo(x, y);
+                    cx.lineTo(x + 0.25 * size, y + 0.3 * size);
+                    cx.lineTo(x + 0.5 * size, y + 0.15 * size);
+                    cx.lineTo(x + 0.75 * size, y + 0.8 * size);
+                    cx.lineTo(x + 0.25 * size, y + 0.9 * size);
+                    cx.lineTo(x + 0.1 * size, y + 0.5 * size);
+                    cx.closePath();
+                    break;
+
+                case 7:
+                    cx.moveTo(x, y + size);
+                    cx.lineTo(x + 0.5 * size, y);
+                    cx.lineTo(x + size, y + size);
+                    cx.closePath();
+                    break;
+
+                default:
+                    return;
+            }
+
+            switch (style) {
+                case 0:
+                    cx.fillStyle = "#f00";
+                    cx.fill();
+                    break;
+
+                case 1:
+                    cx.lineWidth = 1;
+                    cx.strokeStyle = "#0f0";
+                    cx.stroke();
+                    break;
+
+                case 2:
+                    cx.lineWidth = 5;
+                    cx.strokeStyle = "#0f0";
+                    cx.stroke();
+                    break;
+
+                case 3:
+                    cx.lineWidth = 10;
+                    cx.strokeStyle = "#0f0";
+                    cx.stroke();
+                    break;
+
+                case 4:
+                    cx.fillStyle = "#f00";
+                    cx.fill();
+                    cx.lineWidth = 1;
+                    cx.strokeStyle = "#0f0";
+                    cx.stroke();
+                    break;
+
+                case 5:
+                    cx.fillStyle = "#f00";
+                    cx.fill();
+                    cx.lineWidth = 5;
+                    cx.strokeStyle = "#0f0";
+                    cx.stroke();
+                    break;
+
+                case 6:
+                    cx.fillStyle = "#f00";
+                    cx.fill();
+                    cx.lineWidth = 10;
+                    cx.strokeStyle = "#0f0";
+                    cx.stroke();
+                    break;
+
+                default:
+                    return;
+            }
+
+        }
+
+        function draw_primitives(cx, w, h, cell_size) {
+            let primitive_type = 0;
+            for (let y = 0; y <= h; y += cell_size) {
+                let style_type = 0;
+                for (let x = 0; x <= w; x += cell_size) {
+                    draw_primitive(cx, primitive_type, style_type, x, y, cell_size);
+                    style_type++;
+                }
+                primitive_type++;
+            }
+        }
+
+        var canvas = document.getElementById("myCanvas");
+        var cx = canvas.getContext("2d");
+
+        // Attempt to avoid antialising by offseting all drawing by half a pixel
+        // See: https://stackoverflow.com/a/3279863
+        cx.translate(0.5, 0.5);
+
+        const { width, height } = canvas;
+        const prim_count = 10;
+        const cell_size = (width - 1) / prim_count;
+
+        draw_grid(cx, width, height, cell_size);
+        draw_primitives(cx, width, height, cell_size);
+
+    </script>
+</body>
+
+</html>

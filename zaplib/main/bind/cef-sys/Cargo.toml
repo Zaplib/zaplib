@@ -1,0 +1,20 @@
+[package]
+name = "zaplib_cef_sys"
+version = "0.0.3"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/Zaplib/zaplib"
+repository = "https://github.com/Zaplib/zaplib"
+readme = "README.md"
+description = "The CEF bindings for Zaplib"
+build = "build.rs"
+links = "cef"
+
+[features]
+debug=[] # Use a debug build of CEF instead of a release build. Useful for its assertions!
+
+[dependencies]
+
+[build-dependencies]
+fs_extra = "1.1"
+bindgen = "0.59"

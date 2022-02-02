@@ -1,0 +1,15 @@
+# Note! Keep in sync with the version in zaplib_open_source_root.
+
+edition = "2021"
+use_field_init_shorthand = true
+max_width = 130
+use_small_heuristics = "Max"
+
+# This stuff is necessary to work around a formatting bug which only happens
+# when you have multiline strings that exceed `max_width`:
+# https://github.com/rust-lang/rustfmt/issues/4904
+# Once that is fixed we can remove these ones (which would be nice since this
+# makes it so we require `+nightly` for formatting..)
+error_on_line_overflow = true
+error_on_unformatted = true
+format_strings = true

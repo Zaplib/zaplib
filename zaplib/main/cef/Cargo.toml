@@ -1,0 +1,18 @@
+[package]
+name = "zaplib_cef"
+version = "0.0.3"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/Zaplib/zaplib"
+repository = "https://github.com/Zaplib/zaplib"
+description = "CEF helpers for Zaplib"
+
+[features]
+debug=["zaplib_cef_sys/debug"] # Use a debug build of CEF instead of a release build. Useful for its assertions!
+
+[dependencies]
+widestring = "0.4.0"
+
+[dependencies.zaplib_cef_sys]
+path="../bind/cef-sys"
+version = "0.0.3"

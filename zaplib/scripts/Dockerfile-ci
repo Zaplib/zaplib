@@ -1,0 +1,14 @@
+FROM rust:1.54
+
+RUN apt update
+RUN apt -y install sudo
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+RUN git clone https://github.com/plaurent/gnustep-build && gnustep-build/debian-10-clang-8.0/GNUstep-buildon-debian10.sh
+RUN apt install -y libatk1.0-0 libatk-bridge2.0-0 libxkbcommon0
+
+COPY ./rust-toolchain.toml ./rust-toolchain.toml
+RUN cargo install cargo-zaplib
+RUN cargo zaplib install-deps --ci
+RUN rustup target add x86_64-pc-windows-msvc
+RUN rustup target add x86_64-pc-windows-gnu
+RUN rustup target add x86_64-apple-darwin

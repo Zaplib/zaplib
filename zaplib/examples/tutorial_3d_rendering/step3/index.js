@@ -1,0 +1,1 @@
+zaplib.initialize({ filename: '/target/wasm32-unknown-unknown/debug/tutorial_3d_rendering_step3.wasm', defaultStyles: true });

@@ -1,0 +1,15 @@
+[package]
+name = "bigedit_microserde_derive"
+version = "0.0.1"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "^1.0.0"
+
+[dependencies.bigedit_macrolib]
+path="../../macrolib"

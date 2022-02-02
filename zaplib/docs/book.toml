@@ -1,0 +1,6 @@
+[book]
+authors = ["JP Posma", "Paras Sanghavi", "Hernan Saez", "Dmitry Panin"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Zaplib docs"

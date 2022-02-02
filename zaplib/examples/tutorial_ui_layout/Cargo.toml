@@ -1,0 +1,8 @@
+[package]
+name = "tutorial_ui_layout"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+zaplib = { path="../../main" }
+zaplib_components = { path="../../components" }

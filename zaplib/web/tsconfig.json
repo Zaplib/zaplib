@@ -1,0 +1,16 @@
+{
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "compilerOptions": {
+        "module": "es2020",
+        "lib": [
+            "dom",
+            "ESNext.WeakRef"
+        ],
+        "target": "es6",
+        "strict": true
+    },
+    "sourceMap": true,
+    "allowJs": true,
+    "moduleResolution": "node"
+}

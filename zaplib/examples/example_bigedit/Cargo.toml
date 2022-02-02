@@ -1,0 +1,13 @@
+[package]
+name = "example_bigedit"
+version = "0.0.1"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+zaplib = { path="../../main" }
+zaplib_components = { path="../../components" }
+bigedit_http = { path="http" }
+bigedit_microserde = { path="microserde" }
+bigedit_hub = { path="hub" }

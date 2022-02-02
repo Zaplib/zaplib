@@ -1,0 +1,81 @@
+html,
+body,
+#notion-app {
+	height: auto !important;
+	overflow: auto !important;
+	font-size: 14px !important;
+	-webkit-print-color-adjust: exact;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.notion-help-button,
+.notion-print-ignore,
+.notion-overlay-container,
+.notion-sidebar-container,
+.notion-presence-container,
+.notion-topbar,
+.notion-topbar-export-popup,
+.notion-selectable-halo,
+.notion-help-button,
+.notion-page-controls {
+	display: none !important;
+}
+
+.notion-frame {
+	width: 100% !important;
+	height: auto !important;
+	border: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	-webkit-print-color-adjust: exact;
+}
+
+.notion-scroller {
+	height: auto !important;
+	width: 100% !important;
+	max-height: none !important;
+	max-width: none !important;
+	overflow: visible !important;
+	padding: 0 !important;
+	margin: 0 !important;
+
+	/* Remove the extra padding when the screen is wide. */
+	display: block !important;
+}
+
+html {
+	height: auto !important;
+	overflow: auto !important;
+	font-size: 14px !important;
+}
+
+.notion-invoice {
+	height: auto !important;
+}
+
+.notion-code-block > div {
+	white-space: normal !important;
+}
+
+.notion-selectable {
+	page-break-inside: avoid;
+	-webkit-region-break-inside: avoid;
+	position: relative;
+	overflow: initial;
+	min-height: 0;
+	max-width: none !important;
+}
+
+.notion-page-content {
+	display: block !important;
+	width: 100% !important;
+	position: relative;
+	overflow: initial;
+	min-height: 0;
+}
+
+@page {
+	size: auto;
+	margin: 20mm 0 20mm 0;
+}

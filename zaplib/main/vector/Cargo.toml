@@ -1,0 +1,9 @@
+[package]
+name = "zaplib_vector"
+version = "0.0.3"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/Zaplib/zaplib"
+repository = "https://github.com/Zaplib/zaplib"
+readme = "README.md"
+description = "The vector library for Zaplib"

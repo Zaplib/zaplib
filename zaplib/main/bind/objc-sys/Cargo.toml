@@ -1,0 +1,12 @@
+# Forked from http://github.com/SSheldon/rust-objc
+[package]
+name = "zaplib_objc_sys"
+version = "0.0.3"
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/Zaplib/zaplib"
+repository = "https://github.com/Zaplib/zaplib"
+readme = "README.md"
+description = "The Objective-C bindings for Zaplib"
+
+[dev-dependencies]
+libc = "0.2"

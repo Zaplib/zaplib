@@ -1,0 +1,14 @@
+[package]
+name = "test_shader_2d_primitives"
+version = "0.0.1"
+edition = "2021"
+publish = false
+
+[features]
+cef=["zaplib/cef"] # Enable native browser support through CEF; experimental!
+cef-server=["zaplib/cef-server"] # Serve web files from the application bundle
+
+[dependencies]
+zaplib = { path="../../main" }
+zaplib_components = { path="../../components" }
+

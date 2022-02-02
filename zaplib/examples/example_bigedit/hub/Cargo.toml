@@ -1,0 +1,12 @@
+[package]
+name = "bigedit_hub"
+version = "0.0.1"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies.bigedit_microserde]
+path="../microserde"
+
+[dependencies.bigedit_http]
+path="../http"

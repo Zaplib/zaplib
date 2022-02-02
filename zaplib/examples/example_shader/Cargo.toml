@@ -1,0 +1,9 @@
+[package]
+name = "example_shader"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+zaplib = { path="../../main" }
+zaplib_components = { path="../../components" }
