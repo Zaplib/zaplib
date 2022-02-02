@@ -2,7 +2,7 @@
 
 First let's install some dependencies:
 * [Install Rust](https://www.rust-lang.org/tools/install)
-* Clone the repo: `git clone git@github.com:Zaplib/zaplib.git`
+* Clone the repo: `git clone https://github.com/Zaplib/zaplib.git`
 * Navigate to the repo: `cd zaplib`
 * Install the Cargo extension for Zaplib `cargo install cargo-zaplib`
 * Run the dependency installation using Zaplib Cargo tool `cargo zaplib install-deps`
