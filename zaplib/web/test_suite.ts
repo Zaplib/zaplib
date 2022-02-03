@@ -49,11 +49,11 @@ zaplib
     filename: `target/wasm32-unknown-unknown/${env}/test_suite.wasm`,
     defaultStyles: true,
   })
-  .then(() => {
+  .then(async () => {
     // Initialize the worker by sending a "zap worker port" to it in the first message.
     if (zaplib.jsRuntime === "wasm") {
       const zapWorkerPort = zaplib.newWorkerPort();
-      rpc.send("initWasm", zapWorkerPort, [zapWorkerPort]);
+      await rpc.send("initWasm", zapWorkerPort, [zapWorkerPort]);
     }
 
     zaplib.registerCallJsCallbacks({
