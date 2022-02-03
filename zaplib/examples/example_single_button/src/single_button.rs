@@ -4,20 +4,19 @@ use zaplib_components::*;
 #[derive(Default)]
 pub struct SingleButton {
     button: Button,
-
-    clicked: bool,
+    clicks: u32,
 }
 
 impl SingleButton {
     pub fn handle(&mut self, cx: &mut Cx, event: &mut Event) {
         if let ButtonEvent::Clicked = self.button.handle(cx, event) {
-            self.clicked = true;
+            self.clicks = self.clicks + 1;
             cx.request_draw();
         }
     }
 
     pub fn draw(&mut self, cx: &mut Cx) {
-        self.button.draw(cx, if self.clicked { "Hello world!" } else { "Click me!" });
+        self.button.draw(cx, &format!("I've been clicked {} times", self.clicks));
     }
 }
 
@@ -27,17 +26,17 @@ Equivalent React component-style:
 
 class SingleButton {
     state = {
-        clicked: false,
+        clicks: 0,
     },
 
     onButtonClick = () => {
-        this.setState({ clicked: true });
+        this.setState({ clicks: this.state.clicks + 1 });
     }
 
     render() {
         return (
             <button onClick={this.onButtonClick}>
-              {this.clicked ? "Hello world!" : "Click me!"}
+              I've been clicked {this.state.clicks} times
             </button>
         );
     }
@@ -46,15 +45,10 @@ class SingleButton {
 Equivalent React functional-style:
 
 function SingleButton() {
-    const [clicked, setClicked] = useState(false);
-
-    const onButtonClick = useCallback(() => {
-        setClicked(true);
-    }, [setClicked]);
-
+    const [clicks, setClicks] = useState(false);
     return (
-        <button onClick={onButtonClick}>
-            {clicked ? "Hello world!" : "Click me!"}
+        <button onClick={() => setClicks(clicks + 1)}>
+            I've been clicked {clicks} times
         </button>
     );
 }
