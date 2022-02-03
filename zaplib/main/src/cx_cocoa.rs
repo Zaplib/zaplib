@@ -445,7 +445,7 @@ impl CocoaApp {
                         }
                         None => {
                             self.last_paint_start_time = now;
-                            self.do_callback(&mut vec![Event::SystemEvent(SystemEvent::Paint)]);
+                            self.do_callback(&mut vec![Event::System(SystemEvent::Paint)]);
                         }
                     }
                 }
@@ -1301,7 +1301,7 @@ pub(crate) fn define_cocoa_timer_delegate() -> *const Class {
 
     extern "C" fn received_paint(this: &Object, _: Sel, _nstimer: id) {
         let ca = get_cocoa_app(this);
-        ca.do_callback(&mut vec![Event::SystemEvent(SystemEvent::Paint)]);
+        ca.do_callback(&mut vec![Event::System(SystemEvent::Paint)]);
         CocoaApp::unblock_event_loop_and_paint();
     }
 
@@ -1328,7 +1328,7 @@ pub(crate) fn define_cocoa_timer_delegate() -> *const Class {
                 *cef_timer = nil;
             }
         }
-        ca.do_callback(&mut vec![Event::SystemEvent(SystemEvent::CefDoMessageLoopWork)]);
+        ca.do_callback(&mut vec![Event::System(SystemEvent::CefDoMessageLoopWork)]);
         // No need to call CocoaApp::unblock_event_loop_and_paint since this is an internal event that shouldn't
         // ever case a repaint.
     }

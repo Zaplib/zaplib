@@ -304,7 +304,7 @@ impl RenderProcessHandler for MyRenderProcessHandler {
             let name = args[0].get_string_value();
             let params = get_zap_params(&args[1]);
             let callback_id = args[2].get_uint_value();
-            Cx::send_event_from_any_thread(Event::SystemEvent(SystemEvent::WebRustCall(Some(WebRustCallEvent {
+            Cx::send_event_from_any_thread(Event::System(SystemEvent::WebRustCall(Some(WebRustCallEvent {
                 name,
                 params,
                 callback_id,

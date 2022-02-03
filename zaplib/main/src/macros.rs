@@ -15,7 +15,7 @@ macro_rules! main_app {
             let mut cxafterdraw = CxAfterDraw::new(&mut cx);
             cx.event_loop(|cx, mut event| {
                 match event {
-                    Event::SystemEvent(e) => {
+                    Event::System(e) => {
                         match e {
                             SystemEvent::Draw => {
                                 app.draw(cx);
@@ -71,7 +71,7 @@ macro_rules! main_app {
             let appcx = &*(appcx as *mut (*mut $app, *mut Cx, *mut CxAfterDraw));
             (*appcx.1).process_wasm_events(msg_bytes, |cx, mut event| {
                 match event {
-                    Event::SystemEvent(e) => {
+                    Event::System(e) => {
                         match e {
                             SystemEvent::Draw => {
                                 (*appcx.0).draw(cx);

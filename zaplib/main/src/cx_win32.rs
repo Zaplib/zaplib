@@ -136,14 +136,14 @@ impl Win32App {
                     } else {
                         winuser::TranslateMessage(&msg);
                         winuser::DispatchMessageW(&msg);
-                        self.do_callback(&mut vec![Event::SystemEvent(SystemEvent::Paint)]);
+                        self.do_callback(&mut vec![Event::System(SystemEvent::Paint)]);
                     }
                 } else {
                     let mut msg = std::mem::MaybeUninit::uninit();
                     let ret = winuser::PeekMessageW(msg.as_mut_ptr(), ptr::null_mut(), 0, 0, 1);
                     let msg = msg.assume_init();
                     if ret == 0 {
-                        self.do_callback(&mut vec![Event::SystemEvent(SystemEvent::Paint)])
+                        self.do_callback(&mut vec![Event::System(SystemEvent::Paint)])
                     } else {
                         winuser::TranslateMessage(&msg);
                         winuser::DispatchMessageW(&msg);
@@ -201,7 +201,7 @@ impl Win32App {
                     win32_app.do_callback(&mut vec![Event::Timer(TimerEvent { timer_id })]);
                 }
                 Win32Timer::Resize { .. } => {
-                    win32_app.do_callback(&mut vec![Event::SystemEvent(SystemEvent::Paint)]);
+                    win32_app.do_callback(&mut vec![Event::System(SystemEvent::Paint)]);
                 }
                 _ => (),
             }
@@ -466,43 +466,35 @@ impl Win32Window {
                 if xcoord < rect.left + EDGE {
                     (*window.win32_app).current_cursor = MouseCursor::Hidden;
                     if ycoord < rect.top + EDGE {
-                        window.do_callback(&mut vec![Event::SystemEvent(SystemEvent::WindowSetHoverCursor(
-                            MouseCursor::NwseResize,
-                        ))]);
+                        window.do_callback(&mut vec![Event::System(SystemEvent::WindowSetHoverCursor(MouseCursor::NwseResize))]);
                         return winuser::HTTOPLEFT;
                     }
                     if ycoord > rect.bottom - EDGE {
-                        window.do_callback(&mut vec![Event::SystemEvent(SystemEvent::WindowSetHoverCursor(
-                            MouseCursor::NeswResize,
-                        ))]);
+                        window.do_callback(&mut vec![Event::System(SystemEvent::WindowSetHoverCursor(MouseCursor::NeswResize))]);
                         return winuser::HTBOTTOMLEFT;
                     }
-                    window.do_callback(&mut vec![Event::SystemEvent(SystemEvent::WindowSetHoverCursor(MouseCursor::EwResize))]);
+                    window.do_callback(&mut vec![Event::System(SystemEvent::WindowSetHoverCursor(MouseCursor::EwResize))]);
                     return winuser::HTLEFT;
                 }
                 if xcoord > rect.right - EDGE {
                     (*window.win32_app).current_cursor = MouseCursor::Hidden;
                     if ycoord < rect.top + EDGE {
-                        window.do_callback(&mut vec![Event::SystemEvent(SystemEvent::WindowSetHoverCursor(
-                            MouseCursor::NeswResize,
-                        ))]);
+                        window.do_callback(&mut vec![Event::System(SystemEvent::WindowSetHoverCursor(MouseCursor::NeswResize))]);
                         return winuser::HTTOPRIGHT;
                     }
                     if ycoord > rect.bottom - EDGE {
-                        window.do_callback(&mut vec![Event::SystemEvent(SystemEvent::WindowSetHoverCursor(
-                            MouseCursor::NwseResize,
-                        ))]);
+                        window.do_callback(&mut vec![Event::System(SystemEvent::WindowSetHoverCursor(MouseCursor::NwseResize))]);
                         return winuser::HTBOTTOMRIGHT;
                     }
-                    window.do_callback(&mut vec![Event::SystemEvent(SystemEvent::WindowSetHoverCursor(MouseCursor::EwResize))]);
+                    window.do_callback(&mut vec![Event::System(SystemEvent::WindowSetHoverCursor(MouseCursor::EwResize))]);
                     return winuser::HTRIGHT;
                 }
                 if ycoord < rect.top + EDGE {
-                    window.do_callback(&mut vec![Event::SystemEvent(SystemEvent::WindowSetHoverCursor(MouseCursor::NsResize))]);
+                    window.do_callback(&mut vec![Event::System(SystemEvent::WindowSetHoverCursor(MouseCursor::NsResize))]);
                     return winuser::HTTOP;
                 }
                 if ycoord > rect.bottom - EDGE {
-                    window.do_callback(&mut vec![Event::SystemEvent(SystemEvent::WindowSetHoverCursor(MouseCursor::NsResize))]);
+                    window.do_callback(&mut vec![Event::System(SystemEvent::WindowSetHoverCursor(MouseCursor::NsResize))]);
                     return winuser::HTBOTTOM;
                 }
                 let mut events = vec![Event::WindowDragQuery(WindowDragQueryEvent {
@@ -515,15 +507,11 @@ impl Win32Window {
                     Event::WindowDragQuery(wd) => match &wd.response {
                         WindowDragQueryResponse::Client => return winuser::HTCLIENT,
                         WindowDragQueryResponse::Caption => {
-                            window.do_callback(&mut vec![Event::SystemEvent(SystemEvent::WindowSetHoverCursor(
-                                MouseCursor::Default,
-                            ))]);
+                            window.do_callback(&mut vec![Event::System(SystemEvent::WindowSetHoverCursor(MouseCursor::Default))]);
                             return winuser::HTCAPTION;
                         }
                         WindowDragQueryResponse::SysMenu => {
-                            window.do_callback(&mut vec![Event::SystemEvent(SystemEvent::WindowSetHoverCursor(
-                                MouseCursor::Default,
-                            ))]);
+                            window.do_callback(&mut vec![Event::System(SystemEvent::WindowSetHoverCursor(MouseCursor::Default))]);
                             return winuser::HTSYSMENU;
                         }
                         _ => (),
@@ -914,7 +902,7 @@ impl Win32Window {
 
         self.do_callback(&mut vec![
             Event::WindowGeomChange(WindowGeomChangeEvent { window_id: self.window_id, old_geom, new_geom }),
-            Event::SystemEvent(SystemEvent::Paint),
+            Event::System(SystemEvent::Paint),
         ]);
     }
 

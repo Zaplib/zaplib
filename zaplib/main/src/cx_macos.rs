@@ -95,7 +95,7 @@ impl Cx {
                         #[cfg(feature = "cef-debug")]
                         zaplib_cef::shutdown();
                     }
-                    Event::SystemEvent(e) => {
+                    Event::System(e) => {
                         match e {
                             SystemEvent::Paint => {
                                 let _vsync = self.process_desktop_paint_callbacks();
