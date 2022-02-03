@@ -46,8 +46,13 @@ Equivalent React functional-style:
 
 function SingleButton() {
     const [clicks, setClicks] = useState(false);
+    
+    const onButtonClick = useCallback(() => {
+        setClicked(clicks + 1)
+    }, [clicks, setClicks]);
+    
     return (
-        <button onClick={() => setClicks(clicks + 1)}>
+        <button onClick={onButtonClick}>
             I've been clicked {clicks} times
         </button>
     );
