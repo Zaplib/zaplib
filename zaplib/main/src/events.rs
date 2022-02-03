@@ -352,7 +352,7 @@ pub enum Event {
     /// A signal was fired using [`Cx::send_signal`].
     Signal(SignalEvent),
     Command(CommandId),
-    /// Leyboard focus changed between components.
+    /// Keyboard focus changed between components.
     KeyFocus(KeyFocusEvent),
     /// Keyboard focus was lost by a component. Returned from [`Event::hits_keyboard`].
     KeyFocusLost(KeyFocusEvent),
