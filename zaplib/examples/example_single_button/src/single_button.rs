@@ -10,7 +10,7 @@ pub struct SingleButton {
 impl SingleButton {
     pub fn handle(&mut self, cx: &mut Cx, event: &mut Event) {
         if let ButtonEvent::Clicked = self.button.handle(cx, event) {
-            self.clicks = self.clicks + 1;
+            self.clicks += 1;
             cx.request_draw();
         }
     }
