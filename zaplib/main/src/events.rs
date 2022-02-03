@@ -291,7 +291,7 @@ pub struct AppOpenFilesEvent {
     pub user_files: Vec<UserFile>,
 }
 
-/// See [`Event::SystemEvent`].
+/// See [`Event::System`].
 #[derive(Debug, Clone)]
 pub enum SystemEvent {
     /// See [`WebRustCallEvent`]. This event must have a handler registered through [`Cx::on_call_rust`].
@@ -380,7 +380,7 @@ pub enum Event {
     /// When a file is being dragged and the mouse moves out of the window
     FileDragCancel,
     /// Events that are handled internally and are not propagated to an application `handle` method.
-    SystemEvent(SystemEvent),
+    System(SystemEvent),
 }
 
 impl Default for Event {

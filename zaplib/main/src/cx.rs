@@ -665,7 +665,7 @@ impl Cx {
             self.requested_draw = false;
         }
 
-        self.call_event_handler(&mut Event::SystemEvent(SystemEvent::Draw));
+        self.call_event_handler(&mut Event::System(SystemEvent::Draw));
         self.in_redraw_cycle = false;
         if !self.view_stack.is_empty() {
             panic!("View stack disaligned, forgot an end_view(cx)");

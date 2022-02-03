@@ -89,7 +89,7 @@ impl Cx {
                         }
                         self.call_event_handler(event);
                     }
-                    Event::SystemEvent(e) => {
+                    Event::System(e) => {
                         match e {
                             SystemEvent::WindowSetHoverCursor(mc) => {
                                 self.set_hover_mouse_cursor(mc.clone());

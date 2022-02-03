@@ -390,7 +390,7 @@ impl Cx {
                     let name = zerde_parser.parse_string();
                     let params = zerde_parser.parse_zap_params();
                     let callback_id = zerde_parser.parse_u32();
-                    self.wasm_event_handler(Event::SystemEvent(SystemEvent::WebRustCall(Some(WebRustCallEvent {
+                    self.wasm_event_handler(Event::System(SystemEvent::WebRustCall(Some(WebRustCallEvent {
                         name,
                         params,
                         callback_id,
