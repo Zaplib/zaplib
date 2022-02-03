@@ -1,7 +1,7 @@
 # Web Workers
 Zaplib can also be used inside of your own Web Workers. This comes with both some extra features, as well as some caveats.
 
-First, include the Web Worker entry point (`zaplib_runtime.js`).
+First, include the Web Worker entry point (`zaplib_worker_runtime.js`).
 
 Note that when using CEF we don't support any of these functions yet.
 

@@ -12,7 +12,7 @@ for i in 0..3 {
 }
 ```
 
-`universal_thread` is our abstraction that works to Rust's [std::thread](https://doc.rust-lang.org/std/thread/), but with added support for WebAssembly.
+`universal_thread` is our abstraction that works just like Rust's [std::thread](https://doc.rust-lang.org/std/thread/), but with added support for WebAssembly.
 
 When running this (either natively or in WebAssembly), you will see something like:
 
