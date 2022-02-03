@@ -6,6 +6,7 @@ First let's install some dependencies:
 * Navigate to the repo: `cd zaplib`
 * Install the Cargo extension for Zaplib `cargo install cargo-zaplib`
 * Run the dependency installation using Zaplib Cargo tool `cargo zaplib install-deps`
+  * If you're going to do local development of Zaplib, be sue to add the `--devel` flag which installs some more dependencies, like [CEF](https://github.com/chromiumembedded) binaries.
 
 Now you're ready to run a simple example natively. Here are some fun ones to play with:
 * `cargo run -p example_single_button`
