@@ -35,3 +35,4 @@ Zaplib is still in its early days, and there are quite a few things to stabilize
 **Win/Linux**
 * Bunch of missing APIs.
 * Not well-tested.
+* Windows is currently broken altogether.

@@ -1,6 +1,6 @@
 # Tutorial: Rendering 2D Shapes
 
-Now that we've put [Hello World](./tutorial_hello_world.md)] on the screen, let's draw some more interesting shapes.
+Now that we've put [Hello World](./tutorial_hello_world.md) on the screen, let's draw some more interesting shapes.
 
 ## Step 1: Render colored rectangle
 
