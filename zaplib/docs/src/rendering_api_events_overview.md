@@ -21,7 +21,7 @@ To see if a pointer event is meant for a component, use [`hits_pointer`](/target
     self.area = cx.add_instances(shader, instance_data);
 
     // In `handle`
-    match event.hits_pointer(cx, self.area.get_rect_for_first_instance(cx)) { ... }
+    match event.hits_pointer(cx, self.component_id, self.area.get_rect_for_first_instance(cx)) { ... }
   ```
 
 For processing text input, use [`TextInput`](/target/doc/zaplib/enum.Event.html#variant.TextInput). We also have [`KeyDown`](/target/doc/zaplib/enum.Event.html#variant.KeyDown) and [`KeyUp`](/target/doc/zaplib/enum.Event.html#variant.KeyUp), useful for keyboard based navigation or shortcuts - but do not rely on these for capturing text input. Use [`TextCopy`](/target/doc/zaplib/enum.Event.html#variant.TextCopy) for handling clipboard requests.
