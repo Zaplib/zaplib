@@ -34,7 +34,9 @@ Zaplib runs on the following platforms:
 
 There is also a highly experimental feature where we embed a [Chromium](https://en.wikipedia.org/wiki/Chromium_(web_browser)) instance in a desktop build. This is similar to running Rust code alongside JavaScript in a browser using WebAssembly, except that your Rust code runs completely natively instead of in WebAssembly. Rendering is also done natively instead of using WebGL. This is generally more performant, and makes it easier to attach debuggers and profilers. We do not recommend using this in production yet, but it can be useful for debugging.
 
-## Team
+## Development
+
+Zaplib is open source, with the code hosted on <a href="https://github.com/Zaplib/zaplib">Github</a>. Communication happens on <a href="/slack.html">Slack</a>.
 
 The open source core team consists of:
 
