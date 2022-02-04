@@ -17,6 +17,7 @@ import {
 } from "./zap_buffer";
 import {
   assertNotNull,
+  createErrorCheckers,
   getZapParamType,
   initTaskWorkerSab,
   Rpc,
@@ -107,10 +108,7 @@ export const unregisterCallJsCallbacks = (fnNames: string[]): void => {
 const wasmOnline = new Uint8Array(new SharedArrayBuffer(1));
 wasmOnline[0] = 0;
 const wasmInitialized = () => wasmOnline[0] === 1;
-const checkWasm = () => {
-  if (!wasmInitialized())
-    throw new Error("Zaplib WebAssembly instance crashed");
-};
+const { checkWasm } = createErrorCheckers(wasmInitialized);
 
 // Wrap RPC so we can globally catch Rust panics
 let _rpc: Rpc<WasmWorkerRpc>;

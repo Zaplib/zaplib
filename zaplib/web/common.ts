@@ -576,3 +576,26 @@ export class RustPanic extends Error {
     this.name = "RustPanic";
   }
 }
+
+export const createErrorCheckers = (
+  wasmInitialized: () => boolean
+): {
+  checkWasm: () => void;
+  wrapWasmExports: (wasmExports: WasmExports) => WasmExports;
+} => {
+  const checkWasm = () => {
+    if (!wasmInitialized())
+      throw new Error("Zaplib WebAssembly instance crashed");
+  };
+
+  return {
+    checkWasm,
+    wrapWasmExports: (exports: WasmExports) =>
+      new Proxy(exports, {
+        get: function (obj: WasmExports, prop: keyof WasmExports) {
+          checkWasm();
+          return obj[prop];
+        },
+      }),
+  };
+};

@@ -10,6 +10,7 @@
 // Currently this is only supported in WebAssembly, not when using CEF.
 
 import {
+  createErrorCheckers,
   createWasmBuffer,
   getWasmEnv,
   getZapParamType,
@@ -50,10 +51,7 @@ let alreadyCalledInitialize = false;
 
 let wasmOnline: Uint8Array;
 const wasmInitialized = () => wasmOnline[0] === 1;
-const checkWasm = () => {
-  if (!wasmInitialized())
-    throw new Error("Zaplib WebAssembly instance crashed");
-};
+const { checkWasm, wrapWasmExports } = createErrorCheckers(wasmInitialized);
 
 export const initializeWorker = (zapWorkerPort: MessagePort): Promise<void> => {
   if (alreadyCalledInitialize) {
@@ -107,12 +105,11 @@ export const initializeWorker = (zapWorkerPort: MessagePort): Promise<void> => {
           });
 
           WebAssembly.instantiate(wasmModule, { env }).then((instance: any) => {
-            wasmExports = instance.exports;
             initThreadLocalStorageAndStackOtherWorkers(
-              wasmExports,
+              instance.exports,
               tlsAndStackData
             );
-
+            wasmExports = wrapWasmExports(instance.exports);
             resolve();
           });
         }

@@ -4,6 +4,7 @@ import {
   getWasmEnv,
   makeThreadLocalStorageAndStackDataOnExistingThread,
   initThreadLocalStorageMainWorker,
+  createErrorCheckers,
 } from "./common";
 import {
   TextareaEventKeyDown,
@@ -64,6 +65,8 @@ type WebSocketWithSendStack = WebSocket & {
 };
 
 let wasmOnline: Uint8Array;
+const wasmInitialized = () => wasmOnline[0] === 1;
+const { wrapWasmExports } = createErrorCheckers(wasmInitialized);
 
 export class WasmApp {
   memory: WebAssembly.Memory;
@@ -250,6 +253,7 @@ export class WasmApp {
     // create initial zerdeEventloopEvents
     this.zerdeEventloopEvents = new ZerdeEventloopEvents(this);
     this.initApp();
+    this.exports = wrapWasmExports(this.exports);
   }
 
   private initApp(): void {
