@@ -1,4 +1,5 @@
 [workspace]
+resolver = "2"
 members = [
     "zaplib/cargo-zaplib",
     "zaplib/examples/example_bigedit",
