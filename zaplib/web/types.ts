@@ -42,7 +42,8 @@ export type FileHandle = {
 
 export type WasmEnv = {
   memory: WebAssembly.Memory;
-  _consoleLog: (charsPtr: string, len: string, error: any) => void;
+  _consoleLog: (charsPtr: string, len: string) => void;
+  _throwError: (charsPtr: string, len: string) => void;
   readUserFileRange: (
     userFileId: number,
     bufPtr: number,

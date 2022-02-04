@@ -43,12 +43,12 @@ impl Cx {
     /// Initialize global error handlers.
     pub fn init_error_handlers() {
         std::alloc::set_alloc_error_hook(|layout: std::alloc::Layout| {
-            console_error("Allocation error! Printing the layout on the next line...");
+            throw_error("Allocation error! Printing the layout on the next line...");
             // Printing this separately, since it will do an allocation itself and so might fail!
-            console_error(&format!("Allocation layout: {:?}", layout));
+            throw_error(&format!("Allocation layout: {:?}", layout));
         });
         std::panic::set_hook(Box::new(|info: &std::panic::PanicInfo| {
-            console_error(&format!("Panic: {}", info.to_string()));
+            throw_error(&info.to_string());
         }));
     }
 
@@ -861,7 +861,8 @@ pub unsafe extern "C" fn dealloc_vec(vec_ptr: u64, vec_len: u64, vec_cap: u64) {
 }
 
 extern "C" {
-    fn _consoleLog(chars: u64, len: u64, error: bool);
+    fn _consoleLog(chars: u64, len: u64);
+    fn _throwError(chars: u64, len: u64);
     pub fn performanceNow() -> f64;
     fn _sendEventFromAnyThread(event_ptr: u64);
 }
@@ -869,14 +870,14 @@ extern "C" {
 pub fn console_log(val: &str) {
     unsafe {
         let chars = val.chars().collect::<Vec<char>>();
-        _consoleLog(chars.as_ptr() as u64, chars.len() as u64, false);
+        _consoleLog(chars.as_ptr() as u64, chars.len() as u64);
     }
 }
 
-pub fn console_error(val: &str) {
+pub fn throw_error(val: &str) {
     unsafe {
         let chars = val.chars().collect::<Vec<char>>();
-        _consoleLog(chars.as_ptr() as u64, chars.len() as u64, true);
+        _throwError(chars.as_ptr() as u64, chars.len() as u64);
     }
 }
 

@@ -47,6 +47,14 @@ let wasmMemory: WebAssembly.Memory;
 let wasmAppPtr: BigInt;
 
 let alreadyCalledInitialize = false;
+
+let wasmOnline: Uint8Array;
+const wasmInitialized = () => wasmOnline[0] === 1;
+const checkWasm = () => {
+  if (!wasmInitialized())
+    throw new Error("Zaplib WebAssembly instance crashed");
+};
+
 export const initializeWorker = (zapWorkerPort: MessagePort): Promise<void> => {
   if (alreadyCalledInitialize) {
     throw new Error("Only call zaplib.initializeWorker once");
@@ -74,7 +82,9 @@ export const initializeWorker = (zapWorkerPort: MessagePort): Promise<void> => {
           baseUri,
           appPtr,
           tlsAndStackData,
+          wasmOnline: _wasmOnline,
         }) => {
+          wasmOnline = _wasmOnline;
           wasmMemory = memory;
           wasmAppPtr = appPtr;
 
@@ -144,6 +154,8 @@ export const newWorkerPort = (): MessagePort => {
 
 // TODO(JP): Allocate buffers on the wasm memory directly here.
 export const callRust: CallRust = async (name, params = []) => {
+  checkWasm();
+
   const transformedParams = params.map((param) => {
     if (typeof param === "string") {
       return param;
@@ -173,6 +185,8 @@ export const callRustInSameThreadSync: CallRustInSameThreadSync = (
   name,
   params = []
 ) => {
+  checkWasm();
+
   const zerdeBuilder = makeZerdeBuilder(wasmMemory, wasmExports);
   zerdeBuilder.sendString(name);
   zerdeBuilder.sendU32(params.length);
@@ -227,6 +241,8 @@ export const callRustInSameThreadSync: CallRustInSameThreadSync = (
 
 // TODO(JP): See comment at CreateBufferWorkerSync type.
 export const createMutableBuffer: CreateBufferWorkerSync = (data) => {
+  checkWasm();
+
   const bufferLen = data.byteLength;
   const bufferPtr = createWasmBuffer(wasmMemory, wasmExports, data);
   return transformParamsFromRust([
@@ -242,6 +258,8 @@ export const createMutableBuffer: CreateBufferWorkerSync = (data) => {
 
 // TODO(JP): See comment at CreateBufferWorkerSync type.
 export const createReadOnlyBuffer: CreateBufferWorkerSync = (data) => {
+  checkWasm();
+
   const bufferPtr = createWasmBuffer(wasmMemory, wasmExports, data);
   const paramType = getZapParamType(data, true);
   const arcPtr = Number(

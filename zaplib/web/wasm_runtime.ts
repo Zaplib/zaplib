@@ -104,7 +104,29 @@ export const unregisterCallJsCallbacks = (fnNames: string[]): void => {
   }
 };
 
-let rpc: Rpc<WasmWorkerRpc>;
+const wasmOnline = new Uint8Array(new SharedArrayBuffer(1));
+wasmOnline[0] = 0;
+const wasmInitialized = () => wasmOnline[0] === 1;
+const checkWasm = () => {
+  if (!wasmInitialized())
+    throw new Error("Zaplib WebAssembly instance crashed");
+};
+
+// Wrap RPC so we can globally catch Rust panics
+let _rpc: Rpc<WasmWorkerRpc>;
+const rpc: Pick<typeof _rpc, "send" | "receive"> = {
+  send: async (...args) => {
+    try {
+      return await _rpc.send(...args);
+    } catch (ev) {
+      if (ev instanceof Error && ev.name === "RustPanic") {
+        wasmOnline[0] = 0;
+      }
+      throw ev;
+    }
+  },
+  receive: (...args) => _rpc.receive(...args),
+};
 
 export const newWorkerPort = (): MessagePort => {
   const channel = new MessageChannel();
@@ -162,6 +184,8 @@ export const serializeZapArrayForPostMessage = (
 };
 
 export const callRust: CallRust = async (name, params = []) => {
+  checkWasm();
+
   const transformedParams = params.map((param) => {
     if (typeof param === "string") {
       return param;
@@ -184,6 +208,8 @@ export const callRust: CallRust = async (name, params = []) => {
 };
 
 export const createMutableBuffer: CreateBuffer = async (data) => {
+  checkWasm();
+
   const bufferLen = data.byteLength;
   const bufferPtr = await rpc.send(WorkerEvent.CreateBuffer, data, [
     data.buffer,
@@ -201,6 +227,8 @@ export const createMutableBuffer: CreateBuffer = async (data) => {
 };
 
 export const createReadOnlyBuffer: CreateBuffer = async (data) => {
+  checkWasm();
+
   const bufferLen = data.byteLength;
   const { bufferPtr, arcPtr } = await rpc.send(
     WorkerEvent.CreateReadOnlyBuffer,
@@ -260,7 +288,7 @@ export const initialize: Initialize = (initParams) => {
   overwriteTypedArraysWithZapArrays();
 
   return new Promise<void>((resolve) => {
-    rpc = new Rpc(new MainWorker());
+    _rpc = new Rpc(new MainWorker());
 
     const baseUri =
       initParams.baseUri ??
@@ -284,8 +312,6 @@ export const initialize: Initialize = (initParams) => {
         addDefaultStyles();
         addLoadingIndicator();
       }
-
-      let rpcInitialized = false;
 
       rpc.receive(WorkerEvent.ShowIncompatibleBrowserNotification, () => {
         const span = document.createElement("span");
@@ -346,19 +372,19 @@ export const initialize: Initialize = (initParams) => {
             ev.stopPropagation();
             ev.preventDefault();
             dataTransfer.dropEffect = "copy";
-            if (rpcInitialized) rpc.send(WorkerEvent.DragEnter);
+            if (wasmInitialized()) rpc.send(WorkerEvent.DragEnter);
           }
         });
         document.addEventListener("dragover", (ev) => {
           ev.stopPropagation();
           ev.preventDefault();
-          if (rpcInitialized)
+          if (wasmInitialized())
             rpc.send(WorkerEvent.DragOver, { x: ev.clientX, y: ev.clientY });
         });
         document.addEventListener("dragleave", (ev) => {
           ev.stopPropagation();
           ev.preventDefault();
-          if (rpcInitialized) rpc.send(WorkerEvent.DragLeave);
+          if (wasmInitialized()) rpc.send(WorkerEvent.DragLeave);
         });
         document.addEventListener("drop", (ev) => {
           if (!ev.dataTransfer) {
@@ -382,7 +408,7 @@ export const initialize: Initialize = (initParams) => {
             fileHandlesToSend.push(fileHandle);
             fileHandles.push(fileHandle);
           }
-          if (rpcInitialized) {
+          if (wasmInitialized()) {
             rpc.send(WorkerEvent.Drop, { fileHandles, fileHandlesToSend });
           }
         });
@@ -414,21 +440,21 @@ export const initialize: Initialize = (initParams) => {
       });
 
       document.addEventListener("mousedown", (event) => {
-        if (rpcInitialized)
+        if (wasmInitialized())
           rpc.send(WorkerEvent.CanvasMouseDown, makeRpcMouseEvent(event));
       });
       window.addEventListener("mouseup", (event) => {
-        if (rpcInitialized)
+        if (wasmInitialized())
           rpc.send(WorkerEvent.WindowMouseUp, makeRpcMouseEvent(event));
       });
       window.addEventListener("mousemove", (event) => {
         document.body.scrollTop = 0;
         document.body.scrollLeft = 0;
-        if (rpcInitialized)
+        if (wasmInitialized())
           rpc.send(WorkerEvent.WindowMouseMove, makeRpcMouseEvent(event));
       });
       window.addEventListener("mouseout", (event) => {
-        if (rpcInitialized)
+        if (wasmInitialized())
           rpc.send(WorkerEvent.WindowMouseOut, makeRpcMouseEvent(event));
       });
 
@@ -436,7 +462,7 @@ export const initialize: Initialize = (initParams) => {
         "touchstart",
         (event: TouchEvent) => {
           event.preventDefault();
-          if (rpcInitialized)
+          if (wasmInitialized())
             rpc.send(WorkerEvent.WindowTouchStart, makeRpcTouchEvent(event));
         },
         { passive: false }
@@ -445,14 +471,14 @@ export const initialize: Initialize = (initParams) => {
         "touchmove",
         (event: TouchEvent) => {
           event.preventDefault();
-          if (rpcInitialized)
+          if (wasmInitialized())
             rpc.send(WorkerEvent.WindowTouchMove, makeRpcTouchEvent(event));
         },
         { passive: false }
       );
       const touchEndCancelLeave = (event: TouchEvent) => {
         event.preventDefault();
-        if (rpcInitialized)
+        if (wasmInitialized())
           rpc.send(
             WorkerEvent.WindowTouchEndCancelLeave,
             makeRpcTouchEvent(event)
@@ -462,20 +488,20 @@ export const initialize: Initialize = (initParams) => {
       window.addEventListener("touchcancel", touchEndCancelLeave);
 
       document.addEventListener("wheel", (event) => {
-        if (rpcInitialized)
+        if (wasmInitialized())
           rpc.send(WorkerEvent.CanvasWheel, makeRpcWheelEvent(event));
       });
       window.addEventListener("focus", () => {
-        if (rpcInitialized) rpc.send(WorkerEvent.WindowFocus);
+        if (wasmInitialized()) rpc.send(WorkerEvent.WindowFocus);
       });
       window.addEventListener("blur", () => {
-        if (rpcInitialized) rpc.send(WorkerEvent.WindowBlur);
+        if (wasmInitialized()) rpc.send(WorkerEvent.WindowBlur);
       });
 
       if (!isMobileSafari && !isAndroid) {
         // mobile keyboards are unusable on a UI like this
         const { showTextIME } = makeTextarea((taEvent: TextareaEvent) => {
-          if (rpcInitialized) rpc.send(taEvent.type, taEvent);
+          if (wasmInitialized()) rpc.send(taEvent.type, taEvent);
         });
         rpc.receive(WorkerEvent.ShowTextIME, showTextIME);
       }
@@ -522,7 +548,7 @@ export const initialize: Initialize = (initParams) => {
         if (webglRenderer) {
           webglRenderer.resize(sizingData);
         }
-        if (rpcInitialized) rpc.send(WorkerEvent.ScreenResize, sizingData);
+        if (wasmInitialized()) rpc.send(WorkerEvent.ScreenResize, sizingData);
       }
       window.addEventListener("resize", () => onScreenResize());
       window.addEventListener("orientationchange", () => onScreenResize());
@@ -681,11 +707,12 @@ export const initialize: Initialize = (initParams) => {
               baseUri,
               memory: wasmMemory,
               taskWorkerSab,
+              wasmOnline,
             },
             offscreenCanvas ? [offscreenCanvas] : []
           )
           .then(() => {
-            rpcInitialized = true;
+            wasmOnline[0] = 1;
             onScreenResize();
             resolve();
           });

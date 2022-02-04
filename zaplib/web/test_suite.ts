@@ -199,13 +199,7 @@ zaplib
         expect(result[3], 60);
       },
       "Call Rust (no return)": async () => {
-        const buffer = new SharedArrayBuffer(8);
-        new Uint8Array(buffer).set([1, 2, 3, 4, 5, 6, 7, 8]);
-        const uint8Part = new Uint8Array(buffer, 2, 4);
-        const result = await zaplib.callRust("call_rust_no_return", [
-          JSON.stringify(10),
-          uint8Part,
-        ]);
+        const result = await zaplib.callRust("call_rust_no_return");
         expect(result.length, 0);
       },
       "Call Rust (string return)": async () => {
@@ -380,6 +374,36 @@ zaplib
       ...zapBufferTests,
     };
 
+    const otherTests =
+      zaplib.jsRuntime === "wasm"
+        ? {
+            "Disable RPC after panic": async () => {
+              await expectThrowAsync(
+                async () => {
+                  await zaplib.callRust("panic");
+                },
+                // TODO(Paras): An exact line number here is kind of annoying. Later we can have some sort of partial matcher.
+                "panicked at 'I am panicking!', zaplib/test_suite/src/main.rs:109:17"
+              );
+
+              // all calls to Rust should fail after this
+              const funcs = [
+                () => zaplib.callRust("call_rust_no_return"),
+                () => zaplib.createMutableBuffer(new Uint8Array()),
+                () => zaplib.createReadOnlyBuffer(new Uint8Array()),
+              ];
+              for (const f of funcs) {
+                await expectThrowAsync(
+                  f,
+                  "Zaplib WebAssembly instance crashed"
+                );
+              }
+
+              await rpc.send("runTest", "testErrorAfterPanic");
+            },
+          }
+        : {};
+
     const makeButtons = () => {
       const jsRoot = assertNotNull(document.getElementById("root"));
 
@@ -417,6 +441,25 @@ zaplib
         const buttonDiv = document.createElement("div");
         buttonDiv.append(button);
         jsRoot.append(buttonDiv);
+      }
+
+      const otherTestsRoot = assertNotNull(
+        document.getElementById("other-tests")
+      );
+      for (const [name, test] of Object.entries(otherTests)) {
+        const button = document.createElement("button");
+        button.innerText = name;
+        button.onclick = async () => {
+          setInTest(true);
+          console.log(`Running test: ${name}`);
+          await test();
+          console.log(`✅ Success`);
+          setInTest(false);
+        };
+
+        const buttonDiv = document.createElement("div");
+        buttonDiv.append(button);
+        otherTestsRoot.append(buttonDiv);
       }
     };
 

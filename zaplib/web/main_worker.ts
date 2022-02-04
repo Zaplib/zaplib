@@ -63,6 +63,8 @@ type WebSocketWithSendStack = WebSocket & {
   sendStack?: Uint8Array[] | null;
 };
 
+let wasmOnline: Uint8Array;
+
 export class WasmApp {
   memory: WebAssembly.Memory;
   exports: WasmExports;
@@ -223,6 +225,7 @@ export class WasmApp {
         tlsAndStackData: makeThreadLocalStorageAndStackDataOnExistingThread(
           this.exports
         ),
+        wasmOnline,
       }));
       userWorkerRpc.receive(
         MainWorkerChannelEvent.BindMainWorkerPort,
@@ -798,8 +801,15 @@ export class WasmApp {
   sendEventFromAnyThread(eventPtr: BigInt): void {
     // Prevent an infinite loop when calling this from an event handler.
     setTimeout(() => {
-      this.zerdeEventloopEvents.sendEventFromAnyThread(eventPtr);
-      this.doWasmIo();
+      try {
+        this.zerdeEventloopEvents.sendEventFromAnyThread(eventPtr);
+        this.doWasmIo();
+      } catch (e) {
+        if (e instanceof Error && e.name === "RustPanic") {
+          wasmOnline[0] = 0;
+        }
+        throw e;
+      }
     });
   }
 
@@ -940,7 +950,10 @@ rpc.receive(
     baseUri,
     memory,
     taskWorkerSab,
+    wasmOnline: _wasmOnline,
   }) => {
+    wasmOnline = _wasmOnline;
+
     let wasmapp: WasmApp;
     return new Promise<void>((resolve, reject) => {
       const threadSpawn = (ctxPtr: BigInt) => {

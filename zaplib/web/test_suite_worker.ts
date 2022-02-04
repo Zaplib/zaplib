@@ -1,7 +1,7 @@
 /// <reference lib="WebWorker" />
 
 import * as zaplib from "./zaplib_worker_runtime";
-import { expect } from "./test_helpers";
+import { expect, expectThrow, expectThrowAsync } from "./test_helpers";
 import { Rpc } from "./common";
 import { TestSuiteWorkerSpec } from "./test_suite";
 import { Worker } from "./rpc_types";
@@ -118,6 +118,21 @@ const tests = {
   },
   testInWorker: () => {
     expect(inWorker, true);
+  },
+  testErrorAfterPanic: async () => {
+    // all calls to Rust should fail after this
+    const funcs = [
+      () => zaplib.callRustInSameThreadSync("call_rust_no_return"),
+      () => zaplib.createMutableBuffer(new Uint8Array()),
+      () => zaplib.createReadOnlyBuffer(new Uint8Array()),
+    ];
+    for (const f of funcs) {
+      expectThrow(f, "Zaplib WebAssembly instance crashed");
+    }
+    await expectThrowAsync(
+      () => zaplib.callRust("call_rust_no_return"),
+      "Zaplib WebAssembly instance crashed"
+    );
   },
 };
 export type TestSuiteTests = keyof typeof tests;
