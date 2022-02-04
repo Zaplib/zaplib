@@ -1,4 +1,4 @@
-# Note! Keep in sync with the version in zaplib_open_source_root.
+# TODO(JP): Let's have cargo-zaplib also recommend setting these in client libraries?
 
 edition = "2021"
 use_field_init_shorthand = true
