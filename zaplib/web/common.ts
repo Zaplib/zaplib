@@ -446,13 +446,12 @@ export const getWasmEnv = ({
 
   return {
     memory,
-    _consoleLog: (charsPtr, len, error) => {
+    _consoleLog: (charsPtr, len) => {
       const out = parseString(parseInt(charsPtr), parseInt(len));
-      if (error) {
-        console.error(out);
-      } else {
-        console.log(out);
-      }
+      console.log(out);
+    },
+    _throwError: (charsPtr, len) => {
+      throw new RustPanic(parseString(parseInt(charsPtr), parseInt(len)));
     },
     readUserFileRange: (userFileId, bufPtr, bufLen, fileOffset) => {
       const file = fileHandles[userFileId];
@@ -570,3 +569,33 @@ export function assertNotNull<T>(
   }
   return value;
 }
+
+export class RustPanic extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "RustPanic";
+  }
+}
+
+export const createErrorCheckers = (
+  wasmInitialized: () => boolean
+): {
+  checkWasm: () => void;
+  wrapWasmExports: (wasmExports: WasmExports) => WasmExports;
+} => {
+  const checkWasm = () => {
+    if (!wasmInitialized())
+      throw new Error("Zaplib WebAssembly instance crashed");
+  };
+
+  return {
+    checkWasm,
+    wrapWasmExports: (exports: WasmExports) =>
+      new Proxy(exports, {
+        get: function (obj: WasmExports, prop: keyof WasmExports) {
+          checkWasm();
+          return obj[prop];
+        },
+      }),
+  };
+};

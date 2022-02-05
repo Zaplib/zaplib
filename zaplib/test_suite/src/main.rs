@@ -105,6 +105,9 @@ impl TestSuiteApp {
                 let _ = Arc::into_raw(arc);
                 vec![vec![count as u8].into_param()]
             }
+            "panic" => {
+                panic!("I am panicking!");
+            }
             unknown_name => {
                 panic!("Unknown function name: {}", unknown_name)
             }

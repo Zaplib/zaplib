@@ -4,6 +4,7 @@ import {
   getWasmEnv,
   makeThreadLocalStorageAndStackDataOnExistingThread,
   initThreadLocalStorageMainWorker,
+  createErrorCheckers,
 } from "./common";
 import {
   TextareaEventKeyDown,
@@ -62,6 +63,10 @@ export type PointerScroll = Pointer & {
 type WebSocketWithSendStack = WebSocket & {
   sendStack?: Uint8Array[] | null;
 };
+
+let wasmOnline: Uint8Array;
+const wasmInitialized = () => Atomics.load(wasmOnline, 0) === 1;
+const { wrapWasmExports } = createErrorCheckers(wasmInitialized);
 
 export class WasmApp {
   memory: WebAssembly.Memory;
@@ -223,6 +228,7 @@ export class WasmApp {
         tlsAndStackData: makeThreadLocalStorageAndStackDataOnExistingThread(
           this.exports
         ),
+        wasmOnline,
       }));
       userWorkerRpc.receive(
         MainWorkerChannelEvent.BindMainWorkerPort,
@@ -247,6 +253,7 @@ export class WasmApp {
     // create initial zerdeEventloopEvents
     this.zerdeEventloopEvents = new ZerdeEventloopEvents(this);
     this.initApp();
+    this.exports = wrapWasmExports(this.exports);
   }
 
   private initApp(): void {
@@ -798,8 +805,15 @@ export class WasmApp {
   sendEventFromAnyThread(eventPtr: BigInt): void {
     // Prevent an infinite loop when calling this from an event handler.
     setTimeout(() => {
-      this.zerdeEventloopEvents.sendEventFromAnyThread(eventPtr);
-      this.doWasmIo();
+      try {
+        this.zerdeEventloopEvents.sendEventFromAnyThread(eventPtr);
+        this.doWasmIo();
+      } catch (e) {
+        if (e instanceof Error && e.name === "RustPanic") {
+          Atomics.store(wasmOnline, 0, 0);
+        }
+        throw e;
+      }
     });
   }
 
@@ -940,7 +954,10 @@ rpc.receive(
     baseUri,
     memory,
     taskWorkerSab,
+    wasmOnline: _wasmOnline,
   }) => {
+    wasmOnline = _wasmOnline;
+
     let wasmapp: WasmApp;
     return new Promise<void>((resolve, reject) => {
       const threadSpawn = (ctxPtr: BigInt) => {
