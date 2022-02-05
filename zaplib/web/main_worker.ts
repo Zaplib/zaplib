@@ -65,7 +65,7 @@ type WebSocketWithSendStack = WebSocket & {
 };
 
 let wasmOnline: Uint8Array;
-const wasmInitialized = () => wasmOnline[0] === 1;
+const wasmInitialized = () => Atomics.load(wasmOnline, 0) === 1;
 const { wrapWasmExports } = createErrorCheckers(wasmInitialized);
 
 export class WasmApp {
@@ -810,7 +810,7 @@ export class WasmApp {
         this.doWasmIo();
       } catch (e) {
         if (e instanceof Error && e.name === "RustPanic") {
-          wasmOnline[0] = 0;
+          Atomics.store(wasmOnline, 0, 0);
         }
         throw e;
       }

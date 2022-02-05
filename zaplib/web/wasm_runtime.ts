@@ -106,8 +106,8 @@ export const unregisterCallJsCallbacks = (fnNames: string[]): void => {
 };
 
 const wasmOnline = new Uint8Array(new SharedArrayBuffer(1));
-wasmOnline[0] = 0;
-const wasmInitialized = () => wasmOnline[0] === 1;
+Atomics.store(wasmOnline, 0, 0);
+const wasmInitialized = () => Atomics.load(wasmOnline, 0) === 1;
 const { checkWasm } = createErrorCheckers(wasmInitialized);
 
 // Wrap RPC so we can globally catch Rust panics
@@ -118,7 +118,7 @@ const rpc: Pick<typeof _rpc, "send" | "receive"> = {
       return await _rpc.send(...args);
     } catch (ev) {
       if (ev instanceof Error && ev.name === "RustPanic") {
-        wasmOnline[0] = 0;
+        Atomics.store(wasmOnline, 0, 0);
       }
       throw ev;
     }
@@ -710,7 +710,7 @@ export const initialize: Initialize = (initParams) => {
             offscreenCanvas ? [offscreenCanvas] : []
           )
           .then(() => {
-            wasmOnline[0] = 1;
+            Atomics.store(wasmOnline, 0, 1);
             onScreenResize();
             resolve();
           });

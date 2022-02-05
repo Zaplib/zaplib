@@ -50,7 +50,7 @@ let wasmAppPtr: BigInt;
 let alreadyCalledInitialize = false;
 
 let wasmOnline: Uint8Array;
-const wasmInitialized = () => wasmOnline[0] === 1;
+const wasmInitialized = () => Atomics.load(wasmOnline, 0) === 1;
 const { checkWasm, wrapWasmExports } = createErrorCheckers(wasmInitialized);
 
 export const initializeWorker = (zapWorkerPort: MessagePort): Promise<void> => {
