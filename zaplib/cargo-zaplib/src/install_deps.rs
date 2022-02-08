@@ -48,9 +48,6 @@ pub(crate) fn install_deps_macos(devel: bool) {
         run_command("xcode-select", &["--install"], "Failed to install Xcode command line tools;", None);
     }
 
-    // Used by `kill-descendants-on-exit.bash`.
-    run_command("brew", &["install", "pstree"], "Failed to install pstree", None);
-
     install_rust_toolchain();
     install_wasm32();
     install_rustfmt();
