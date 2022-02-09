@@ -7,5 +7,5 @@ cd "${0%/*}"
 
 TAG=$(git rev-parse HEAD | head -c 8)
 
-docker tag exviz-mp-base-ci:$TAG janpaul123/exviz-mp-base-ci:latest
-docker push janpaul123/exviz-mp-base-ci:latest
+docker tag zaplib-ci:$TAG janpaul123/zaplib-ci:latest
+docker push janpaul123/zaplib-ci:latest
