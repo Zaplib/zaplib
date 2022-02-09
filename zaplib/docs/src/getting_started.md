@@ -15,6 +15,8 @@ Now you're ready to run a simple example natively. Here are some fun ones to pla
 * `cargo run -p example_lightning` (heavy; best to do a release build; see below)
 * `cargo run -p example_bigedit` (heavy; best to do a release build; see below)
 
+**Warning:** On Mac we currently have a memory leak bug, so some examples might crash after a while. Windows doens't work at all currently. Linux hasn't been tested very well recently. WebAssembly (below) should generally work well though. Early alpha software.. stay tuned!
+
 For a more performant build, add the `--release` flag, e.g.:
 * `cargo run -p example_single_button --release`
 
