@@ -8,15 +8,23 @@
     ],
     "dependencies": {},
     "devDependencies": {
+        "@babel/preset-env": "^7.16.11",
+        "@babel/preset-typescript": "^7.16.7",
+        "@types/jest": "^27.4.0",
         "@types/offscreencanvas": "^2019.6.4",
         "@typescript-eslint/eslint-plugin": "^4.33.0",
         "@typescript-eslint/parser": "^4.33.0",
+        "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
         "css-loader": "^6.5.1",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-prettier": "^4.0.0",
+        "jest": "^27.5.1",
+        "node-self": "^1.0.0-d",
         "prettier": "^2.4.1",
+        "regenerator-runtime": "^0.13.9",
         "style-loader": "^3.3.1",
+        "ts-jest": "^27.1.3",
         "ts-loader": "^9.2.6",
         "typescript": "^4.4.3",
         "webpack": "^5.57.1",
@@ -27,6 +35,7 @@
         "prepack": "yarn run build",
         "build": "webpack --mode production",
         "watch": "webpack --watch --mode development",
-        "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+        "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+        "test": "jest"
     }
 }

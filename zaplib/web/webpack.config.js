@@ -13,6 +13,7 @@ module.exports = (env, argv) => {
       zaplib_runtime: "./zaplib_runtime.ts",
       zaplib_worker_runtime: "./zaplib_worker_runtime.ts",
       test_suite: "./test_suite.ts",
+      test_jest: "./jest/test_jest.ts",
       /* eslint-enable camelcase */
     },
     output: {
