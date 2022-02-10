@@ -216,11 +216,9 @@ impl LogoApp {
                                 self.text_editor.start_code_unfolding(cx, &self.text_buffer);
                                 self.folded = false;
                             }
-                        } else {
-                            if !self.folded {
-                                self.text_editor.start_code_folding(cx, &self.text_buffer);
-                                self.folded = true;
-                            }
+                        } else if !self.folded {
+                            self.text_editor.start_code_folding(cx, &self.text_buffer);
+                            self.folded = true;
                         }
                     }
                 }
