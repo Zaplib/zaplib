@@ -4,7 +4,7 @@ import TestSuiteWorker from "worker-loader?inline=no-fallback!./test_suite_worke
 import { assertNotNull, Rpc } from "./common";
 import { TestSuiteTests } from "./test_suite_worker";
 import { PostMessageTypedArray, ZapArray } from "./types";
-import { zapBufferTests } from "./zap_buffer.test";
+import { zapBufferTests } from "./zap_buffer_test";
 import * as zaplib from "./zaplib_runtime";
 import {
   expect,
