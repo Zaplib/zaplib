@@ -35,7 +35,6 @@
         "prepack": "yarn run build",
         "build": "webpack --mode production",
         "watch": "webpack --watch --mode development",
-        "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-        "test": "jest"
+        "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
     }
 }

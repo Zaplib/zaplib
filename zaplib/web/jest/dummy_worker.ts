@@ -1,3 +1,3 @@
-addEventListener('message', e => {
+addEventListener("message", (e) => {
   postMessage("dummy:" + e.data);
 });
