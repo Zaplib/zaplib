@@ -36,3 +36,4 @@
 
 # Misc
 - [Known Issues](./known_issues.md)
+- [Contributing](./contributing.md)
