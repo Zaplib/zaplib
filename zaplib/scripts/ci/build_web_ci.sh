@@ -9,4 +9,4 @@ cd ../../web
 yarn install
 yarn lint
 yarn build
-yarn run jest
+yarn run jest --forceExit
