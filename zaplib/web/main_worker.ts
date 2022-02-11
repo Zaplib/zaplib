@@ -250,13 +250,13 @@ export class WasmApp {
       bindMainWorkerPort(port);
     });
 
+    Atomics.store(wasmOnline, 0, 1);
+    this.exports = wrapWasmExports(this.exports);
+
+    rpc.send(WorkerEvent.RemoveLoadingIndicators);
+
     // create initial zerdeEventloopEvents
     this.zerdeEventloopEvents = new ZerdeEventloopEvents(this);
-    this.initApp();
-    this.exports = wrapWasmExports(this.exports);
-  }
-
-  private initApp(): void {
     // initialize the application
     this.zerdeEventloopEvents.init({
       width: this.sizingData.width,
@@ -267,8 +267,6 @@ export class WasmApp {
       xrIsPresenting: false,
     });
     this.doWasmIo();
-
-    rpc.send(WorkerEvent.RemoveLoadingIndicators);
   }
 
   private doWasmIo(): void {
