@@ -7,7 +7,13 @@ jobs:
       image: janpaul123/zaplib-ci@sha256:0bbef21ebbbdcdd42c46e85118bcddb2a9b668eb9cb027d46f96989b97117baf
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@master
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
       - run: zaplib/scripts/ci/build_web_ci.sh
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
   checks_for_all_targets_debug:
     runs-on: ubuntu-latest
     container:
