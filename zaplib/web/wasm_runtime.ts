@@ -16,7 +16,6 @@ import {
   checkValidZapArray,
 } from "./zap_buffer";
 import {
-  assertNotNull,
   createErrorCheckers,
   getZapParamType,
   initTaskWorkerSab,
@@ -73,6 +72,14 @@ declare global {
     webkitRequestFullscreen?: () => Promise<void>;
   }
 }
+
+type CanvasData = {
+  // Set to undefined if there's no canvas to render to. Set to OffscreenCanvas
+  // if the browser supports that. Otherwise we use the WebGLRenderer on this thread.
+  renderingMethod: OffscreenCanvas | WebGLRenderer | undefined;
+  getSizingData: () => SizingData;
+  onScreenResize: () => void;
+};
 
 const jsFunctions: Record<string, CallJsCallback> = {};
 
@@ -270,6 +277,172 @@ export const callRustInSameThreadSync: CallRustInSameThreadSync = (
   );
 };
 
+function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
+  canvas.className = "zaplib_canvas";
+
+  document.addEventListener("contextmenu", (event) => {
+    if (
+      event.target instanceof Element &&
+      !document.getElementById("zaplib_js_root")?.contains(event.target)
+    ) {
+      event.preventDefault();
+    }
+  });
+
+  document.addEventListener("mousedown", (event) => {
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.CanvasMouseDown, makeRpcMouseEvent(event));
+  });
+  window.addEventListener("mouseup", (event) => {
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.WindowMouseUp, makeRpcMouseEvent(event));
+  });
+  window.addEventListener("mousemove", (event) => {
+    document.body.scrollTop = 0;
+    document.body.scrollLeft = 0;
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.WindowMouseMove, makeRpcMouseEvent(event));
+  });
+  window.addEventListener("mouseout", (event) => {
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.WindowMouseOut, makeRpcMouseEvent(event));
+  });
+
+  document.addEventListener(
+    "touchstart",
+    (event: TouchEvent) => {
+      event.preventDefault();
+      if (wasmInitialized())
+        rpc.send(WorkerEvent.WindowTouchStart, makeRpcTouchEvent(event));
+    },
+    { passive: false }
+  );
+  window.addEventListener(
+    "touchmove",
+    (event: TouchEvent) => {
+      event.preventDefault();
+      if (wasmInitialized())
+        rpc.send(WorkerEvent.WindowTouchMove, makeRpcTouchEvent(event));
+    },
+    { passive: false }
+  );
+  const touchEndCancelLeave = (event: TouchEvent) => {
+    event.preventDefault();
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.WindowTouchEndCancelLeave, makeRpcTouchEvent(event));
+  };
+  window.addEventListener("touchend", touchEndCancelLeave);
+  window.addEventListener("touchcancel", touchEndCancelLeave);
+
+  document.addEventListener("wheel", (event) => {
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.CanvasWheel, makeRpcWheelEvent(event));
+  });
+  window.addEventListener("focus", () => {
+    if (wasmInitialized()) rpc.send(WorkerEvent.WindowFocus);
+  });
+  window.addEventListener("blur", () => {
+    if (wasmInitialized()) rpc.send(WorkerEvent.WindowBlur);
+  });
+
+  const isMobileSafari = self.navigator.platform.match(/iPhone|iPad/i);
+  const isAndroid = self.navigator.userAgent.match(/Android/i);
+
+  if (!isMobileSafari && !isAndroid) {
+    // mobile keyboards are unusable on a UI like this
+    const { showTextIME } = makeTextarea((taEvent: TextareaEvent) => {
+      if (wasmInitialized()) rpc.send(taEvent.type, taEvent);
+    });
+    rpc.receive(WorkerEvent.ShowTextIME, showTextIME);
+  }
+
+  const getSizingData = () => {
+    const canFullscreen = !!(
+      document.fullscreenEnabled ||
+      document.webkitFullscreenEnabled ||
+      document.mozFullscreenEnabled
+    );
+    const isFullscreen = !!(
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullscreenElement
+    );
+    return {
+      width: canvas.offsetWidth,
+      height: canvas.offsetHeight,
+      dpiFactor: window.devicePixelRatio,
+      canFullscreen,
+      isFullscreen,
+    };
+  };
+
+  let webglRenderer: WebGLRenderer;
+
+  const onScreenResize = () => {
+    // TODO(JP): Some day bring this back?
+    // if (is_add_to_homescreen_safari) { // extremely ugly. but whatever.
+    //     if (window.orientation == 90 || window.orientation == -90) {
+    //         h = screen.width;
+    //         w = screen.height - 90;
+    //     }
+    //     else {
+    //         w = screen.width;
+    //         h = screen.height - 80;
+    //     }
+    // }
+
+    const sizingData = getSizingData();
+    if (webglRenderer) {
+      webglRenderer.resize(sizingData);
+    }
+    if (wasmInitialized()) rpc.send(WorkerEvent.ScreenResize, sizingData);
+  };
+  window.addEventListener("resize", () => onScreenResize());
+  window.addEventListener("orientationchange", () => onScreenResize());
+
+  let dpiFactor = window.devicePixelRatio;
+  const mqString = "(resolution: " + window.devicePixelRatio + "dppx)";
+  const mq = matchMedia(mqString);
+  if (mq && mq.addEventListener) {
+    mq.addEventListener("change", () => onScreenResize());
+  } else {
+    // poll for it. yes. its terrible
+    self.setInterval(() => {
+      if (window.devicePixelRatio != dpiFactor) {
+        dpiFactor = window.devicePixelRatio;
+        onScreenResize();
+      }
+    }, 1000);
+  }
+
+  // If the browser supports OffscreenCanvas, then we'll use that. Otherwise, we render on
+  // the browser's main thread using WebGLRenderer.
+  let renderingMethod: OffscreenCanvas | WebGLRenderer;
+  try {
+    renderingMethod = canvas.transferControlToOffscreen();
+  } catch (_) {
+    webglRenderer = new WebGLRenderer(
+      canvas,
+      wasmMemory,
+      getSizingData(),
+      () => {
+        rpc.send(WorkerEvent.ShowIncompatibleBrowserNotification);
+      }
+    );
+    rpc.receive(WorkerEvent.RunWebGL, (zerdeParserPtr) => {
+      webglRenderer.processMessages(zerdeParserPtr);
+      return new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          resolve(undefined);
+        });
+      });
+    });
+    renderingMethod = webglRenderer;
+  }
+
+  return { renderingMethod, onScreenResize, getSizingData };
+}
+
 let alreadyCalledInitialize = false;
 export const initialize: Initialize = (initParams) => {
   if (alreadyCalledInitialize) {
@@ -303,18 +476,65 @@ export const initialize: Initialize = (initParams) => {
     const fileHandles: FileHandle[] = [];
 
     const loader = () => {
-      const isMobileSafari = self.navigator.platform.match(/iPhone|iPad/i);
-      const isAndroid = self.navigator.userAgent.match(/Android/i);
-
       if (initParams.defaultStyles) {
         addDefaultStyles();
         addLoadingIndicator();
       }
 
+      // Some browsers (e.g. Safari 15.2) require SharedArrayBuffers to be initialized
+      // on the browser's main thread; so that's why this has to happen here.
+      //
+      // We also do this before initializing `WebAssembly.Memory`, to make sure we have
+      // enough memory for both.. (This is mostly relevant on mobile; see note below.)
+      const taskWorkerSab = initTaskWorkerSab();
+      const taskWorkerRpc = new Rpc(new TaskWorker());
+      taskWorkerRpc.send(TaskWorkerEvent.Init, {
+        taskWorkerSab,
+        wasmMemory,
+      });
+
+      // Initial has to be equal to or higher than required by the app (which at the time of writing
+      // is around 20 pages).
+      // Maximum has to be equal to or lower than that of the app, which we've currently set to
+      // the maximum for wasm32 (4GB). Browsers should use virtual memory, as to not actually take up
+      // all this space until requested by the app. TODO(JP): We might need to check this behavior in
+      // different browsers at some point (in Chrome it seems to work fine).
+      //
+      // In Safari on my phone (JP), using maximum:65535 causes an out-of-memory error, so we instead
+      // try a hardcoded value of ~400MB.. Note that especially on mobile, all of
+      // this is quite tricky; see e.g. https://github.com/WebAssembly/design/issues/1397
+      //
+      // TODO(JP): It looks like when using shared memory, the maximum might get fully allocated on
+      // some devices (mobile?), which means that there is little room left for JS objects, and it
+      // means that the web page is at higher risk of getting evicted when switching tabs. There are a
+      // few options here:
+      // 1. Allow the user to specify a maximum by hand for mobile in general; or for specific
+      //    devices (cumbersome!).
+      // 2. Allow single-threaded operation, where we don't specify a maximum (but run the risk of
+      //    getting much less memory to use and therefore the app crashing; see again
+      //    https://github.com/WebAssembly/design/issues/1397 for more details).
+      try {
+        wasmMemory = new WebAssembly.Memory({
+          initial: 40,
+          maximum: 65535,
+          shared: true,
+        });
+      } catch (_) {
+        console.log("Can't allocate full WebAssembly memory; trying ~400MB");
+        try {
+          wasmMemory = new WebAssembly.Memory({
+            initial: 40,
+            maximum: 6000,
+            shared: true,
+          });
+        } catch (_) {
+          throw new Error("Can't initilialize WebAssembly memory..");
+        }
+      }
+
       rpc.receive(WorkerEvent.ShowIncompatibleBrowserNotification, () => {
         const span = document.createElement("span");
         span.style.color = "white";
-        assertNotNull(canvas.parentNode).replaceChild(span, canvas);
         span.innerHTML =
           "Sorry, we need browser support for WebGL to run<br/>Please update your browser to a more modern one<br/>Update to at least iOS 10, Safari 10, latest Chrome, Edge or Firefox<br/>Go and update and come back, your browser will be better, faster and more secure!<br/>If you are using chrome on OSX on a 2011/2012 mac please enable your GPU at: Override software rendering list:Enable (the top item) in: <a href='about://flags'>about://flags</a>. Or switch to Firefox or Safari.";
       });
@@ -424,220 +644,32 @@ export const initialize: Initialize = (initParams) => {
         fn(transformParamsFromRust(params));
       });
 
-      const canvas: HTMLCanvasElement = document.createElement("canvas");
-      canvas.className = "zaplib_canvas";
-      document.body.appendChild(canvas);
-
-      document.addEventListener("contextmenu", (event) => {
-        if (
-          event.target instanceof Element &&
-          !document.getElementById("zaplib_js_root")?.contains(event.target)
-        ) {
-          event.preventDefault();
-        }
-      });
-
-      document.addEventListener("mousedown", (event) => {
-        if (wasmInitialized())
-          rpc.send(WorkerEvent.CanvasMouseDown, makeRpcMouseEvent(event));
-      });
-      window.addEventListener("mouseup", (event) => {
-        if (wasmInitialized())
-          rpc.send(WorkerEvent.WindowMouseUp, makeRpcMouseEvent(event));
-      });
-      window.addEventListener("mousemove", (event) => {
-        document.body.scrollTop = 0;
-        document.body.scrollLeft = 0;
-        if (wasmInitialized())
-          rpc.send(WorkerEvent.WindowMouseMove, makeRpcMouseEvent(event));
-      });
-      window.addEventListener("mouseout", (event) => {
-        if (wasmInitialized())
-          rpc.send(WorkerEvent.WindowMouseOut, makeRpcMouseEvent(event));
-      });
-
-      document.addEventListener(
-        "touchstart",
-        (event: TouchEvent) => {
-          event.preventDefault();
-          if (wasmInitialized())
-            rpc.send(WorkerEvent.WindowTouchStart, makeRpcTouchEvent(event));
+      let canvasData: CanvasData = {
+        getSizingData: () => {
+          // Dummy sizing data if we're not rendering.
+          // TODO(JP): We should make it so we're not even sending SizingData
+          // at all if we're not rendering.
+          return {
+            width: 0,
+            height: 0,
+            dpiFactor: 1,
+            canFullscreen: false,
+            isFullscreen: false,
+          };
         },
-        { passive: false }
-      );
-      window.addEventListener(
-        "touchmove",
-        (event: TouchEvent) => {
-          event.preventDefault();
-          if (wasmInitialized())
-            rpc.send(WorkerEvent.WindowTouchMove, makeRpcTouchEvent(event));
+        onScreenResize: () => {
+          // Dummy function for if we're note rendering.
         },
-        { passive: false }
-      );
-      const touchEndCancelLeave = (event: TouchEvent) => {
-        event.preventDefault();
-        if (wasmInitialized())
-          rpc.send(
-            WorkerEvent.WindowTouchEndCancelLeave,
-            makeRpcTouchEvent(event)
-          );
+        renderingMethod: undefined,
       };
-      window.addEventListener("touchend", touchEndCancelLeave);
-      window.addEventListener("touchcancel", touchEndCancelLeave);
 
-      document.addEventListener("wheel", (event) => {
-        if (wasmInitialized())
-          rpc.send(WorkerEvent.CanvasWheel, makeRpcWheelEvent(event));
-      });
-      window.addEventListener("focus", () => {
-        if (wasmInitialized()) rpc.send(WorkerEvent.WindowFocus);
-      });
-      window.addEventListener("blur", () => {
-        if (wasmInitialized()) rpc.send(WorkerEvent.WindowBlur);
-      });
-
-      if (!isMobileSafari && !isAndroid) {
-        // mobile keyboards are unusable on a UI like this
-        const { showTextIME } = makeTextarea((taEvent: TextareaEvent) => {
-          if (wasmInitialized()) rpc.send(taEvent.type, taEvent);
-        });
-        rpc.receive(WorkerEvent.ShowTextIME, showTextIME);
+      let canvas: HTMLCanvasElement | undefined = initParams.canvas;
+      if (!canvas && initParams.defaultStyles) {
+        canvas = document.createElement("canvas");
+        document.body.appendChild(canvas);
       }
-
-      // One of these variables should get set, depending on if
-      // the browser supports OffscreenCanvas or not.
-      let offscreenCanvas: OffscreenCanvas;
-      let webglRenderer: WebGLRenderer;
-
-      function getSizingData(): SizingData {
-        const canFullscreen = !!(
-          document.fullscreenEnabled ||
-          document.webkitFullscreenEnabled ||
-          document.mozFullscreenEnabled
-        );
-        const isFullscreen = !!(
-          document.fullscreenElement ||
-          document.webkitFullscreenElement ||
-          document.mozFullscreenElement
-        );
-        return {
-          width: canvas.offsetWidth,
-          height: canvas.offsetHeight,
-          dpiFactor: window.devicePixelRatio,
-          canFullscreen,
-          isFullscreen,
-        };
-      }
-
-      function onScreenResize() {
-        // TODO(JP): Some day bring this back?
-        // if (is_add_to_homescreen_safari) { // extremely ugly. but whatever.
-        //     if (window.orientation == 90 || window.orientation == -90) {
-        //         h = screen.width;
-        //         w = screen.height - 90;
-        //     }
-        //     else {
-        //         w = screen.width;
-        //         h = screen.height - 80;
-        //     }
-        // }
-
-        const sizingData = getSizingData();
-        if (webglRenderer) {
-          webglRenderer.resize(sizingData);
-        }
-        if (wasmInitialized()) rpc.send(WorkerEvent.ScreenResize, sizingData);
-      }
-      window.addEventListener("resize", () => onScreenResize());
-      window.addEventListener("orientationchange", () => onScreenResize());
-
-      let dpiFactor = window.devicePixelRatio;
-      const mqString = "(resolution: " + window.devicePixelRatio + "dppx)";
-      const mq = matchMedia(mqString);
-      if (mq && mq.addEventListener) {
-        mq.addEventListener("change", () => onScreenResize());
-      } else {
-        // poll for it. yes. its terrible
-        self.setInterval(() => {
-          if (window.devicePixelRatio != dpiFactor) {
-            dpiFactor = window.devicePixelRatio;
-            onScreenResize();
-          }
-        }, 1000);
-      }
-
-      // Some browsers (e.g. Safari 15.2) require SharedArrayBuffers to be initialized
-      // on the browser's main thread; so that's why this has to happen here.
-      //
-      // We also do this before initializing `WebAssembly.Memory`, to make sure we have
-      // enough memory for both.. (This is mostly relevant on mobile; see note below.)
-      const taskWorkerSab = initTaskWorkerSab();
-      const taskWorkerRpc = new Rpc(new TaskWorker());
-      taskWorkerRpc.send(TaskWorkerEvent.Init, {
-        taskWorkerSab,
-        wasmMemory,
-      });
-
-      // Initial has to be equal to or higher than required by the app (which at the time of writing
-      // is around 20 pages).
-      // Maximum has to be equal to or lower than that of the app, which we've currently set to
-      // the maximum for wasm32 (4GB). Browsers should use virtual memory, as to not actually take up
-      // all this space until requested by the app. TODO(JP): We might need to check this behavior in
-      // different browsers at some point (in Chrome it seems to work fine).
-      //
-      // In Safari on my phone (JP), using maximum:65535 causes an out-of-memory error, so we instead
-      // try a hardcoded value of ~400MB.. Note that especially on mobile, all of
-      // this is quite tricky; see e.g. https://github.com/WebAssembly/design/issues/1397
-      //
-      // TODO(JP): It looks like when using shared memory, the maximum might get fully allocated on
-      // some devices (mobile?), which means that there is little room left for JS objects, and it
-      // means that the web page is at higher risk of getting evicted when switching tabs. There are a
-      // few options here:
-      // 1. Allow the user to specify a maximum by hand for mobile in general; or for specific
-      //    devices (cumbersome!).
-      // 2. Allow single-threaded operation, where we don't specify a maximum (but run the risk of
-      //    getting much less memory to use and therefore the app crashing; see again
-      //    https://github.com/WebAssembly/design/issues/1397 for more details).
-      try {
-        wasmMemory = new WebAssembly.Memory({
-          initial: 40,
-          maximum: 65535,
-          shared: true,
-        });
-      } catch (_) {
-        console.log("Can't allocate full WebAssembly memory; trying ~400MB");
-        try {
-          wasmMemory = new WebAssembly.Memory({
-            initial: 40,
-            maximum: 6000,
-            shared: true,
-          });
-        } catch (_) {
-          throw new Error("Can't initilialize WebAssembly memory..");
-        }
-      }
-
-      // If the browser supports OffscreenCanvas, then we'll use that. Otherwise, we render on
-      // the browser's main thread using WebGLRenderer.
-      try {
-        offscreenCanvas = canvas.transferControlToOffscreen();
-      } catch (_) {
-        webglRenderer = new WebGLRenderer(
-          canvas,
-          wasmMemory,
-          getSizingData(),
-          () => {
-            rpc.send(WorkerEvent.ShowIncompatibleBrowserNotification);
-          }
-        );
-        rpc.receive(WorkerEvent.RunWebGL, (zerdeParserPtr) => {
-          webglRenderer.processMessages(zerdeParserPtr);
-          return new Promise((resolve) => {
-            requestAnimationFrame(() => {
-              resolve(undefined);
-            });
-          });
-        });
+      if (canvas) {
+        canvasData = initializeCanvas(canvas);
       }
 
       wasmModulePromise.then((wasmModule) => {
@@ -695,13 +727,18 @@ export const initialize: Initialize = (initParams) => {
         };
         rpc.receive(WorkerEvent.ThreadSpawn, threadSpawn);
 
+        const offscreenCanvas =
+          canvasData.renderingMethod instanceof OffscreenCanvas
+            ? canvasData.renderingMethod
+            : undefined;
+
         rpc
           .send(
             WorkerEvent.Init,
             {
               wasmModule,
               offscreenCanvas,
-              sizingData: getSizingData(),
+              sizingData: canvasData.getSizingData(),
               baseUri,
               memory: wasmMemory,
               taskWorkerSab,
@@ -711,7 +748,7 @@ export const initialize: Initialize = (initParams) => {
           )
           .then(() => {
             Atomics.store(wasmOnline, 0, 1);
-            onScreenResize();
+            canvasData.onScreenResize();
             resolve();
           });
       });

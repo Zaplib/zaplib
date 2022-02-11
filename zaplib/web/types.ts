@@ -1,5 +1,6 @@
 export type Initialize = (initParams: {
   filename: string;
+  canvas?: HTMLCanvasElement;
   baseUri?: string;
   defaultStyles?: boolean;
 }) => Promise<void>;
