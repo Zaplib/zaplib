@@ -21,6 +21,7 @@
 - [Tutorial: Rendering 2D Shapes](./tutorial_2d_rendering.md)
 - [Tutorial: Rendering 3D Meshes](./tutorial_3d_rendering.md)
 - [API Overview](./rendering_api_overview.md)
+  - [Canvas](./rendering_api_canvas.md)
   - [Rendering model](./rendering_api_overview_model.md)
   - [Events](./rendering_api_events_overview.md)
   - [Geometry](./rendering_api_overview_geometry.md)
