@@ -747,7 +747,6 @@ export const initialize: Initialize = (initParams) => {
             offscreenCanvas ? [offscreenCanvas] : []
           )
           .then(() => {
-            Atomics.store(wasmOnline, 0, 1);
             canvasData.onScreenResize();
             resolve();
           });
