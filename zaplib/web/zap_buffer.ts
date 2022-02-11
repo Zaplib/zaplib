@@ -188,7 +188,11 @@ export function overwriteTypedArraysWithZapArrays(): void {
   }
   patchPostMessage(self);
   patchPostMessage(self.Worker);
-  patchPostMessage(self.MessagePort);
+
+  // Skipping this in nodejs case as web-worker polyfill doesn't provide MessagePort
+  if (self.MessagePort) {
+    patchPostMessage(self.MessagePort);
+  }
 }
 
 const zapBufferCache = new WeakMap<ZapBuffer, ZapArray>();

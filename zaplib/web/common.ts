@@ -430,8 +430,6 @@ export const getWasmEnv = ({
   threadSpawn: (ctxPtr: BigInt) => void;
   baseUri: string;
 }): WasmEnv => {
-  const fileReaderSync = new FileReaderSync();
-
   const parseString = (ptr: number, len: number) => {
     let out = "";
     // Can't use TextDecoder here since it doesn't work with SharedArrayBuffer.
@@ -469,6 +467,7 @@ export const getWasmEnv = ({
       // Maybe we can avoid this by using a stream with a ReadableStreamBYOBReader, but that is
       // asynchronous, so we'd have to do a dance with another thread and atomics and all that,
       // and I don't know if that overhead would be worth it..
+      const fileReaderSync = new FileReaderSync();
       const buffer = fileReaderSync.readAsArrayBuffer(
         file.file.slice(start, end)
       );

@@ -6,7 +6,7 @@ const path = require("path");
 // TODO(Paras): Export type definitions for our library builds, both for TypeScript
 // and potentially Flow, using something like https://github.com/joarwilk/flowgen.
 
-module.exports = (env, argv) => {
+const browserConfig = (env, argv) => {
   return {
     entry: {
       /* eslint-disable camelcase */
@@ -24,7 +24,6 @@ module.exports = (env, argv) => {
         name: "zaplib",
         type: "umd",
       },
-      clean: true,
     },
     module: {
       rules: [
@@ -51,3 +50,49 @@ module.exports = (env, argv) => {
     },
   };
 };
+
+const nodeJsConfig = (env, argv) => {
+  return {
+    target: "node",
+    entry: {
+      /* eslint-disable camelcase */
+      // provides a set of polyfills for running in Node.js,
+      // see zaplib.com/docs/basic_tooling.html#jest for more details
+      zaplib_nodejs_polyfill: "./zaplib_nodejs_polyfill.ts",
+      /* eslint-enable camelcase */
+    },
+    output: {
+      path: path.resolve(__dirname, "dist"),
+      filename: "[name].js",
+      library: {
+        name: "zaplib",
+        type: "umd",
+      },
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: "ts-loader",
+          exclude: /node_modules/,
+        },
+        {
+          test: /\.css$/i,
+          use: ["style-loader", "css-loader"],
+        },
+      ],
+    },
+    resolve: {
+      extensions: [".tsx", ".ts", ".js"],
+    },
+    devtool:
+      argv.mode == "production" ? "source-map" : "eval-cheap-module-source-map",
+    optimization: {
+      // We shouldn't output non-entry chunks, but if we do, then this
+      // helps in debugging.
+      chunkIds: "named",
+    },
+  };
+};
+
+module.exports = [browserConfig, nodeJsConfig];

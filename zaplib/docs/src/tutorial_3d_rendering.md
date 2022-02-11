@@ -132,7 +132,7 @@ To call this function from our JavaScript, let's add the Zaplib dependency to `i
 Then, modify `loadSTLIntoGeometry` to replace our JavaScript parsing code.
 ```js
 {{#include ../../examples/tutorial_3d_rendering/step2/index.js:4}}
-    await zaplib.initialize({ filename: '/target/wasm32-unknown-unknown/debug/tutorial_3d_rendering.wasm' });
+    await zaplib.initialize({ wasmModule: '/target/wasm32-unknown-unknown/debug/tutorial_3d_rendering.wasm' });
 {{#include ../../examples/tutorial_3d_rendering/step2/index.js:6:13}}
 ```
 A few key changes:
@@ -182,7 +182,7 @@ main_app!(App);
 
 Now we just need to connect the rendering with javascript page. To do so, remove our ThreeJS render, commenting out the entirety of `index.js` and replacing it with:
 ```js
-zaplib.initialize({ filename: '/target/wasm32-unknown-unknown/debug/tutorial_3d_rendering.wasm', defaultStyles: true });
+zaplib.initialize({ wasmModule: '/target/wasm32-unknown-unknown/debug/tutorial_3d_rendering.wasm', defaultStyles: true });
 ```
 Note the addition of `defaultStyles`, which will style our full-screen canvas correctly and add a loading indicator.
 

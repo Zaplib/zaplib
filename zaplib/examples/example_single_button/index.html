@@ -18,7 +18,7 @@ You may not use this file except in compliance with the License.
         <script type="text/javascript" src="/zaplib/web/dist/zaplib_runtime.js"></script>
         <script type="text/javascript">
             const env = new URL(window.document.location).searchParams.has("release") ? "release" : "debug";
-            zaplib.initialize({ filename: `target/wasm32-unknown-unknown/${env}/example_single_button.wasm`, defaultStyles: true });
+            zaplib.initialize({ wasmModule: `target/wasm32-unknown-unknown/${env}/example_single_button.wasm`, defaultStyles: true });
         </script>
     </head>
 </html>

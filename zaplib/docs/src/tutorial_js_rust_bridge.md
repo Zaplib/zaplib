@@ -127,7 +127,7 @@ Our existing code is modified to be:
 ```js
 // index.js
 zaplib.initialize({
-    filename: `path/to/target/wasm32-unknown-unknown/debug/tutorial_js_rust_bridge.wasm`,
+    wasmModule: `path/to/target/wasm32-unknown-unknown/debug/tutorial_js_rust_bridge.wasm`,
     defaultStyles: true
 }).then(() => {
   zaplib.callRust('sum');

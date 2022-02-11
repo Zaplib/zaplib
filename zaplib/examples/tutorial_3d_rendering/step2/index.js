@@ -2,7 +2,7 @@ import * as THREE from 'https://cdn.skypack.dev/three@v0.135.0';
 import { OrbitControls } from 'https://cdn.skypack.dev/three@v0.135.0/examples/jsm/controls/OrbitControls'
 
 const loadSTLIntoGeometry = async (assetUrl) => {
-    await zaplib.initialize({ filename: '/target/wasm32-unknown-unknown/debug/tutorial_3d_rendering_step2.wasm' });
+    await zaplib.initialize({ wasmModule: '/target/wasm32-unknown-unknown/debug/tutorial_3d_rendering_step2.wasm' });
 
     const [vertices, normals] = await zaplib.callRust("parse_stl");
     const geometry = new THREE.BufferGeometry();
