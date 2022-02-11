@@ -20,11 +20,14 @@
 			"unresolved-macro-call",
 			"macro-error"
 		],
+		"eslint.format.enable": true,
+		"files.insertFinalNewline": true,
 	},
 	"extensions": {
 		"recommendations": [
 			"matklad.rust-analyzer",
-			"vadimcn.vscode-lldb"
+			"vadimcn.vscode-lldb",
+			"dbaeumer.vscode-eslint"
 		]
 	},
 }
