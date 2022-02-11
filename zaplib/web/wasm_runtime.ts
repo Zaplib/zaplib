@@ -73,6 +73,14 @@ declare global {
   }
 }
 
+type CanvasData = {
+  // Set to undefined if there's no canvas to render to. Set to OffscreenCanvas
+  // if the browser supports that. Otherwise we use the WebGLRenderer on this thread.
+  renderingMethod: OffscreenCanvas | WebGLRenderer | undefined;
+  getSizingData: () => SizingData;
+  onScreenResize: () => void;
+};
+
 const jsFunctions: Record<string, CallJsCallback> = {};
 
 /// Users must call this function to register functions as runnable from
@@ -269,6 +277,172 @@ export const callRustInSameThreadSync: CallRustInSameThreadSync = (
   );
 };
 
+function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
+  canvas.className = "zaplib_canvas";
+
+  document.addEventListener("contextmenu", (event) => {
+    if (
+      event.target instanceof Element &&
+      !document.getElementById("zaplib_js_root")?.contains(event.target)
+    ) {
+      event.preventDefault();
+    }
+  });
+
+  document.addEventListener("mousedown", (event) => {
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.CanvasMouseDown, makeRpcMouseEvent(event));
+  });
+  window.addEventListener("mouseup", (event) => {
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.WindowMouseUp, makeRpcMouseEvent(event));
+  });
+  window.addEventListener("mousemove", (event) => {
+    document.body.scrollTop = 0;
+    document.body.scrollLeft = 0;
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.WindowMouseMove, makeRpcMouseEvent(event));
+  });
+  window.addEventListener("mouseout", (event) => {
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.WindowMouseOut, makeRpcMouseEvent(event));
+  });
+
+  document.addEventListener(
+    "touchstart",
+    (event: TouchEvent) => {
+      event.preventDefault();
+      if (wasmInitialized())
+        rpc.send(WorkerEvent.WindowTouchStart, makeRpcTouchEvent(event));
+    },
+    { passive: false }
+  );
+  window.addEventListener(
+    "touchmove",
+    (event: TouchEvent) => {
+      event.preventDefault();
+      if (wasmInitialized())
+        rpc.send(WorkerEvent.WindowTouchMove, makeRpcTouchEvent(event));
+    },
+    { passive: false }
+  );
+  const touchEndCancelLeave = (event: TouchEvent) => {
+    event.preventDefault();
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.WindowTouchEndCancelLeave, makeRpcTouchEvent(event));
+  };
+  window.addEventListener("touchend", touchEndCancelLeave);
+  window.addEventListener("touchcancel", touchEndCancelLeave);
+
+  document.addEventListener("wheel", (event) => {
+    if (wasmInitialized())
+      rpc.send(WorkerEvent.CanvasWheel, makeRpcWheelEvent(event));
+  });
+  window.addEventListener("focus", () => {
+    if (wasmInitialized()) rpc.send(WorkerEvent.WindowFocus);
+  });
+  window.addEventListener("blur", () => {
+    if (wasmInitialized()) rpc.send(WorkerEvent.WindowBlur);
+  });
+
+  const isMobileSafari = self.navigator.platform.match(/iPhone|iPad/i);
+  const isAndroid = self.navigator.userAgent.match(/Android/i);
+
+  if (!isMobileSafari && !isAndroid) {
+    // mobile keyboards are unusable on a UI like this
+    const { showTextIME } = makeTextarea((taEvent: TextareaEvent) => {
+      if (wasmInitialized()) rpc.send(taEvent.type, taEvent);
+    });
+    rpc.receive(WorkerEvent.ShowTextIME, showTextIME);
+  }
+
+  const getSizingData = () => {
+    const canFullscreen = !!(
+      document.fullscreenEnabled ||
+      document.webkitFullscreenEnabled ||
+      document.mozFullscreenEnabled
+    );
+    const isFullscreen = !!(
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullscreenElement
+    );
+    return {
+      width: canvas.offsetWidth,
+      height: canvas.offsetHeight,
+      dpiFactor: window.devicePixelRatio,
+      canFullscreen,
+      isFullscreen,
+    };
+  };
+
+  let webglRenderer: WebGLRenderer;
+
+  const onScreenResize = () => {
+    // TODO(JP): Some day bring this back?
+    // if (is_add_to_homescreen_safari) { // extremely ugly. but whatever.
+    //     if (window.orientation == 90 || window.orientation == -90) {
+    //         h = screen.width;
+    //         w = screen.height - 90;
+    //     }
+    //     else {
+    //         w = screen.width;
+    //         h = screen.height - 80;
+    //     }
+    // }
+
+    const sizingData = getSizingData();
+    if (webglRenderer) {
+      webglRenderer.resize(sizingData);
+    }
+    if (wasmInitialized()) rpc.send(WorkerEvent.ScreenResize, sizingData);
+  };
+  window.addEventListener("resize", () => onScreenResize());
+  window.addEventListener("orientationchange", () => onScreenResize());
+
+  let dpiFactor = window.devicePixelRatio;
+  const mqString = "(resolution: " + window.devicePixelRatio + "dppx)";
+  const mq = matchMedia(mqString);
+  if (mq && mq.addEventListener) {
+    mq.addEventListener("change", () => onScreenResize());
+  } else {
+    // poll for it. yes. its terrible
+    self.setInterval(() => {
+      if (window.devicePixelRatio != dpiFactor) {
+        dpiFactor = window.devicePixelRatio;
+        onScreenResize();
+      }
+    }, 1000);
+  }
+
+  // If the browser supports OffscreenCanvas, then we'll use that. Otherwise, we render on
+  // the browser's main thread using WebGLRenderer.
+  let renderingMethod: OffscreenCanvas | WebGLRenderer;
+  try {
+    renderingMethod = canvas.transferControlToOffscreen();
+  } catch (_) {
+    webglRenderer = new WebGLRenderer(
+      canvas,
+      wasmMemory,
+      getSizingData(),
+      () => {
+        rpc.send(WorkerEvent.ShowIncompatibleBrowserNotification);
+      }
+    );
+    rpc.receive(WorkerEvent.RunWebGL, (zerdeParserPtr) => {
+      webglRenderer.processMessages(zerdeParserPtr);
+      return new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          resolve(undefined);
+        });
+      });
+    });
+    renderingMethod = webglRenderer;
+  }
+
+  return { renderingMethod, onScreenResize, getSizingData };
+}
+
 let alreadyCalledInitialize = false;
 export const initialize: Initialize = (initParams) => {
   if (alreadyCalledInitialize) {
@@ -302,19 +476,10 @@ export const initialize: Initialize = (initParams) => {
     const fileHandles: FileHandle[] = [];
 
     const loader = () => {
-      const isMobileSafari = self.navigator.platform.match(/iPhone|iPad/i);
-      const isAndroid = self.navigator.userAgent.match(/Android/i);
-
       if (initParams.defaultStyles) {
         addDefaultStyles();
         addLoadingIndicator();
       }
-
-      // One of these variables should get set, depending on if
-      // the browser supports OffscreenCanvas or not. Or neither,
-      // if we're not rendering at all. But they should not both get set!
-      let offscreenCanvas: OffscreenCanvas;
-      let webglRenderer: WebGLRenderer;
 
       // Some browsers (e.g. Safari 15.2) require SharedArrayBuffers to be initialized
       // on the browser's main thread; so that's why this has to happen here.
@@ -479,20 +644,23 @@ export const initialize: Initialize = (initParams) => {
         fn(transformParamsFromRust(params));
       });
 
-      let getSizingData: () => SizingData = () => {
-        // Dummy sizing data if we're not rendering.
-        // TODO(JP): We should make it so we're not even sending SizingData
-        // at all if we're not rendering.
-        return {
-          width: 0,
-          height: 0,
-          dpiFactor: 1,
-          canFullscreen: false,
-          isFullscreen: false,
-        };
-      };
-      let onScreenResize: () => void = () => {
-        // Dummy function for if we're note rendering.
+      let canvasData: CanvasData = {
+        getSizingData: () => {
+          // Dummy sizing data if we're not rendering.
+          // TODO(JP): We should make it so we're not even sending SizingData
+          // at all if we're not rendering.
+          return {
+            width: 0,
+            height: 0,
+            dpiFactor: 1,
+            canFullscreen: false,
+            isFullscreen: false,
+          };
+        },
+        onScreenResize: () => {
+          // Dummy function for if we're note rendering.
+        },
+        renderingMethod: undefined,
       };
 
       let canvas: HTMLCanvasElement | undefined = initParams.canvas;
@@ -501,167 +669,7 @@ export const initialize: Initialize = (initParams) => {
         document.body.appendChild(canvas);
       }
       if (canvas) {
-        canvas.className = "zaplib_canvas";
-
-        document.addEventListener("contextmenu", (event) => {
-          if (
-            event.target instanceof Element &&
-            !document.getElementById("zaplib_js_root")?.contains(event.target)
-          ) {
-            event.preventDefault();
-          }
-        });
-
-        document.addEventListener("mousedown", (event) => {
-          if (wasmInitialized())
-            rpc.send(WorkerEvent.CanvasMouseDown, makeRpcMouseEvent(event));
-        });
-        window.addEventListener("mouseup", (event) => {
-          if (wasmInitialized())
-            rpc.send(WorkerEvent.WindowMouseUp, makeRpcMouseEvent(event));
-        });
-        window.addEventListener("mousemove", (event) => {
-          document.body.scrollTop = 0;
-          document.body.scrollLeft = 0;
-          if (wasmInitialized())
-            rpc.send(WorkerEvent.WindowMouseMove, makeRpcMouseEvent(event));
-        });
-        window.addEventListener("mouseout", (event) => {
-          if (wasmInitialized())
-            rpc.send(WorkerEvent.WindowMouseOut, makeRpcMouseEvent(event));
-        });
-
-        document.addEventListener(
-          "touchstart",
-          (event: TouchEvent) => {
-            event.preventDefault();
-            if (wasmInitialized())
-              rpc.send(WorkerEvent.WindowTouchStart, makeRpcTouchEvent(event));
-          },
-          { passive: false }
-        );
-        window.addEventListener(
-          "touchmove",
-          (event: TouchEvent) => {
-            event.preventDefault();
-            if (wasmInitialized())
-              rpc.send(WorkerEvent.WindowTouchMove, makeRpcTouchEvent(event));
-          },
-          { passive: false }
-        );
-        const touchEndCancelLeave = (event: TouchEvent) => {
-          event.preventDefault();
-          if (wasmInitialized())
-            rpc.send(
-              WorkerEvent.WindowTouchEndCancelLeave,
-              makeRpcTouchEvent(event)
-            );
-        };
-        window.addEventListener("touchend", touchEndCancelLeave);
-        window.addEventListener("touchcancel", touchEndCancelLeave);
-
-        document.addEventListener("wheel", (event) => {
-          if (wasmInitialized())
-            rpc.send(WorkerEvent.CanvasWheel, makeRpcWheelEvent(event));
-        });
-        window.addEventListener("focus", () => {
-          if (wasmInitialized()) rpc.send(WorkerEvent.WindowFocus);
-        });
-        window.addEventListener("blur", () => {
-          if (wasmInitialized()) rpc.send(WorkerEvent.WindowBlur);
-        });
-
-        if (!isMobileSafari && !isAndroid) {
-          // mobile keyboards are unusable on a UI like this
-          const { showTextIME } = makeTextarea((taEvent: TextareaEvent) => {
-            if (wasmInitialized()) rpc.send(taEvent.type, taEvent);
-          });
-          rpc.receive(WorkerEvent.ShowTextIME, showTextIME);
-        }
-
-        // Trick to make Typescript get the type refinement right (since inside here
-        // we're in `if (canvas)`, but that doesn't seem to transfer to the closure below).
-        const canvasNotUndefined = canvas;
-
-        getSizingData = () => {
-          const canFullscreen = !!(
-            document.fullscreenEnabled ||
-            document.webkitFullscreenEnabled ||
-            document.mozFullscreenEnabled
-          );
-          const isFullscreen = !!(
-            document.fullscreenElement ||
-            document.webkitFullscreenElement ||
-            document.mozFullscreenElement
-          );
-          return {
-            width: canvasNotUndefined.offsetWidth,
-            height: canvasNotUndefined.offsetHeight,
-            dpiFactor: window.devicePixelRatio,
-            canFullscreen,
-            isFullscreen,
-          };
-        };
-
-        onScreenResize = () => {
-          // TODO(JP): Some day bring this back?
-          // if (is_add_to_homescreen_safari) { // extremely ugly. but whatever.
-          //     if (window.orientation == 90 || window.orientation == -90) {
-          //         h = screen.width;
-          //         w = screen.height - 90;
-          //     }
-          //     else {
-          //         w = screen.width;
-          //         h = screen.height - 80;
-          //     }
-          // }
-
-          const sizingData = getSizingData();
-          if (webglRenderer) {
-            webglRenderer.resize(sizingData);
-          }
-          if (wasmInitialized()) rpc.send(WorkerEvent.ScreenResize, sizingData);
-        };
-        window.addEventListener("resize", () => onScreenResize());
-        window.addEventListener("orientationchange", () => onScreenResize());
-
-        let dpiFactor = window.devicePixelRatio;
-        const mqString = "(resolution: " + window.devicePixelRatio + "dppx)";
-        const mq = matchMedia(mqString);
-        if (mq && mq.addEventListener) {
-          mq.addEventListener("change", () => onScreenResize());
-        } else {
-          // poll for it. yes. its terrible
-          self.setInterval(() => {
-            if (window.devicePixelRatio != dpiFactor) {
-              dpiFactor = window.devicePixelRatio;
-              onScreenResize();
-            }
-          }, 1000);
-        }
-
-        // If the browser supports OffscreenCanvas, then we'll use that. Otherwise, we render on
-        // the browser's main thread using WebGLRenderer.
-        try {
-          offscreenCanvas = canvas.transferControlToOffscreen();
-        } catch (_) {
-          webglRenderer = new WebGLRenderer(
-            canvas,
-            wasmMemory,
-            getSizingData(),
-            () => {
-              rpc.send(WorkerEvent.ShowIncompatibleBrowserNotification);
-            }
-          );
-          rpc.receive(WorkerEvent.RunWebGL, (zerdeParserPtr) => {
-            webglRenderer.processMessages(zerdeParserPtr);
-            return new Promise((resolve) => {
-              requestAnimationFrame(() => {
-                resolve(undefined);
-              });
-            });
-          });
-        }
+        canvasData = initializeCanvas(canvas);
       }
 
       wasmModulePromise.then((wasmModule) => {
@@ -719,13 +727,18 @@ export const initialize: Initialize = (initParams) => {
         };
         rpc.receive(WorkerEvent.ThreadSpawn, threadSpawn);
 
+        const offscreenCanvas =
+          canvasData.renderingMethod instanceof OffscreenCanvas
+            ? canvasData.renderingMethod
+            : undefined;
+
         rpc
           .send(
             WorkerEvent.Init,
             {
               wasmModule,
               offscreenCanvas,
-              sizingData: getSizingData(),
+              sizingData: canvasData.getSizingData(),
               baseUri,
               memory: wasmMemory,
               taskWorkerSab,
@@ -735,7 +748,7 @@ export const initialize: Initialize = (initParams) => {
           )
           .then(() => {
             Atomics.store(wasmOnline, 0, 1);
-            onScreenResize();
+            canvasData.onScreenResize();
             resolve();
           });
       });

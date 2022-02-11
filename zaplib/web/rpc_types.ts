@@ -121,7 +121,7 @@ export type WasmWorkerRpc = {
     [WorkerEvent.Init]: [
       {
         wasmModule: WebAssembly.Module;
-        offscreenCanvas: OffscreenCanvas;
+        offscreenCanvas: OffscreenCanvas | undefined;
         sizingData: SizingData;
         baseUri: string;
         memory: WebAssembly.Memory;
