@@ -465,11 +465,15 @@ export const initialize: Initialize = (initParams) => {
       initParams.baseUri ??
       window.location.protocol + "//" + window.location.host + "/";
 
-    const wasmPath = new URL(initParams.filename, baseUri).href;
-
-    // Safari (as of version 15.2) needs the WebAssembly Module to be compiled on the browser's
-    // main thread. This also allows us to start compiling while still waiting for the DOM to load.
-    const wasmModulePromise = WebAssembly.compileStreaming(fetch(wasmPath));
+    let wasmModulePromise: Promise<WebAssembly.Module>;
+    if (typeof initParams.wasmModule == "string") {
+      const wasmPath = new URL(initParams.wasmModule, baseUri).href;
+      // Safari (as of version 15.2) needs the WebAssembly Module to be compiled on the browser's
+      // main thread. This also allows us to start compiling while still waiting for the DOM to load.
+      wasmModulePromise = WebAssembly.compileStreaming(fetch(wasmPath));
+    } else {
+      wasmModulePromise = initParams.wasmModule;
+    }
 
     // TODO(JP): These file handles are only sent to a worker when it starts running;
     // it currently can't receive any file handles added after that.
@@ -728,10 +732,10 @@ export const initialize: Initialize = (initParams) => {
         rpc.receive(WorkerEvent.ThreadSpawn, threadSpawn);
 
         const offscreenCanvas =
+          self.OffscreenCanvas &&
           canvasData.renderingMethod instanceof OffscreenCanvas
             ? canvasData.renderingMethod
             : undefined;
-
         rpc
           .send(
             WorkerEvent.Init,

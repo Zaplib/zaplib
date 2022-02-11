@@ -46,7 +46,7 @@ const env = new URL(window.document.location.toString()).searchParams.has(
 
 zaplib
   .initialize({
-    filename: `target/wasm32-unknown-unknown/${env}/test_suite.wasm`,
+    wasmModule: `target/wasm32-unknown-unknown/${env}/test_suite.wasm`,
     defaultStyles: true,
   })
   .then(async () => {

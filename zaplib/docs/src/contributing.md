@@ -14,7 +14,7 @@ There are 2 types of tests available. The browser test suite is more extensive, 
 ## Updating the documentation
 
 * Build the website and watch for changes: `zaplib/scripts/watch_website_dev.sh` 
-* Run local server on port 4848: `website_dev/server.py` 
+* Run local server on port 4848: `website_dev/server.sh` 
 * Documentation sources are located at `zaplib/docs/src`
 
 

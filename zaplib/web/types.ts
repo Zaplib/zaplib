@@ -1,5 +1,5 @@
 export type Initialize = (initParams: {
-  filename: string;
+  wasmModule: string | Promise<WebAssembly.Module>;
   canvas?: HTMLCanvasElement;
   baseUri?: string;
   defaultStyles?: boolean;

@@ -14,7 +14,7 @@ This initializes the library. A couple of things happen:
 
 | Parameter (Typescript)                      | Description |
 |---------------------------------------------|---------|
-| `initParams.filename: string` | Path to the `.wasm` file. During development, typically something like `/target/wasm32-unknown-unknown/debug/my_package_name.wasm`. |
+| `initParams.wasmModule: string | Promise<WebAssembly.Module>` | Path to the `.wasm` file or a Promise for compiled wasm module. During development, typically something like `/target/wasm32-unknown-unknown/debug/my_package_name.wasm`. |
 | `initParams.defaultStyles?: boolean` | Whether to inject some default styles, including a loading indicator and a canvas. Useful for examples / getting started. |
 | `initParams.canvas?: HTMLCanvasElement` | A `<canvas>` element that must span the whole page. If not given, then rendering isn't possible. `defaultStyles: true` will automatically create this and add it to `<body>`. See also the [Canvas page](./rendering_api_canvas.md). |
 
@@ -26,7 +26,7 @@ This initializes the library. A couple of things happen:
 
 **Caveats**
 * Can only be called on the browser's main thread; in a worker use `zaplib.initializeWorker()`.
-* `filename` is ignored in CEF.
+* `wasmModule` is ignored in CEF.
 
 ## zaplib.callRust
 

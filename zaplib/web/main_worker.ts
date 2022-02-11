@@ -36,7 +36,7 @@ import {
 const rpc = new Rpc<Worker<WasmWorkerRpc>>(self);
 
 const isFirefox =
-  self.navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+  self.navigator?.userAgent.toLowerCase().indexOf("firefox") > -1;
 // var is_add_to_homescreen_safari = is_mobile_safari && navigator.standalone;
 //var is_oculus_browser = navigator.userAgent.indexOf('OculusBrowser') > -1;
 
