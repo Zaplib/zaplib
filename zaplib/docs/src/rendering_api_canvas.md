@@ -8,6 +8,11 @@ On the web, we need a `<canvas>` element somewhere to draw on. Currently, this e
 
 You can specify the canvas in a few ways:
 1. Use `zaplib.initialize({ defaultStyles: true })`, which automatically adds a canvas to the body of the page.
-2. Pass it in using `zaplib.initialize({ canvas })`. In this case some styles will automatically be applied to the canvas (through the `zaplib_canvas` CSS class), but you can override these yourself.
+2. Pass it in using `zaplib.initialize({ canvas })`. In this case some styles will automatically be applied to the canvas (through the `zaplib_canvas` CSS class), but you can override these yourself. For example:
+```js
+const canvas = document.createElement("canvas");
+document.body.appendChild(canvas);
+zaplib.initialize({ canvas });
+```
 
-Interoperation with existing DOM elements is still limited, but it is possible to add `id="zaplib_js_root"` to the root element that contains your other DOM elements in order to prevent Zaplib from handling events that are already captured by your application.
+Interoperation with existing DOM elements is still limited, but it is possible to add `id="zaplib_js_root"` to the root element that contains your other DOM elements in order to prevent Zaplib from handling events that are already captured by your JS code.
