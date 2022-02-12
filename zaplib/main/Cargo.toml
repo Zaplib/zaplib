@@ -22,6 +22,9 @@ zaplib_vector = { path = "./vector", version = "0.0.3" }
 zaplib_shader_compiler = { path = "./shader_compiler", version = "0.0.3" }
 zaplib_cef = { path = "./cef", version = "0.0.3", optional = true }
 
+[build-dependencies]
+vergen = { version = "6", default-features = false, features = ["git"] }
+
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 ureq = { version = "2.1.1", default-features = false }
 rand = "0.8.4"

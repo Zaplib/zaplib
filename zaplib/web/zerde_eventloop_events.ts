@@ -11,6 +11,7 @@ import {
   ZapArray,
   ZapParamType,
 } from "./types";
+import { gitSha } from "./type_of_runtime";
 import { ZerdeBuilder } from "./zerde";
 import { zerdeKeyboardHandlers } from "./zerde_keyboard_handlers";
 
@@ -82,6 +83,11 @@ export class ZerdeEventloopEvents {
     this._zerdeBuilder.sendF32(info.dpiFactor);
     this._zerdeBuilder.sendU32(info.xrCanPresent ? 1 : 0);
     this._zerdeBuilder.sendU32(info.canFullscreen ? 1 : 0);
+    if (process.env.NODE_ENV === "production") {
+      this._zerdeBuilder.sendString(gitSha);
+    } else {
+      this._zerdeBuilder.sendString("development");
+    }
   }
 
   resize(info: {
