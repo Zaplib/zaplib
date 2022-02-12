@@ -2,6 +2,7 @@
 - [Introduction](./introduction.md)
 - [Getting Started](./getting_started.md)
 - [Basic Tooling](./basic_tooling.md)
+- [Integrating with existing webapps](./existing_webapp.md)
 
 # Basic APIs
 - [Tutorial: Hello World Console](./tutorial_hello_world_console.md)
