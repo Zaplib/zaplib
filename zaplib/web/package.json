@@ -29,7 +29,6 @@
         "worker-loader": "^3.0.8"
     },
     "scripts": {
-        "prepack": "yarn run build",
         "build": "webpack --mode production",
         "watch": "webpack --watch --mode development",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx"

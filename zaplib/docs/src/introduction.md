@@ -12,7 +12,7 @@ The idea is to start with your existing web-based codebase, and incrementally mo
 
 Over time, you could port your entire codebase over to Rust, or you might keep JavaScript and Rust code side-by-side.
 
-At this point Zaplib should be considered in an "alpha" state. It still has quite a few issues, but it's rapidly improving. If you want to use this library in production, please [contact us](/).
+At this point Zaplib should be considered in an "alpha" state. It still has quite a few issues, but it's rapidly improving. If you want to use this library in production, please say hi in our [Slack](/slack.html), so we can work with you on the integration.
 
 ## Structure
 
@@ -36,7 +36,7 @@ There is also a highly experimental feature where we embed a [Chromium](https://
 
 ## Development
 
-Zaplib is open source, with the code hosted on <a href="https://github.com/Zaplib/zaplib">Github</a>. Communication happens on <a href="/slack.html">Slack</a>.
+Zaplib is open source, with the code hosted on [Github](https://github.com/Zaplib/zaplib). Communication happens on [Slack](/slack.html).
 
 The open source core team consists of:
 
