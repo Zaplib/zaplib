@@ -17,6 +17,7 @@ for i in 0..3 {
 When running this (either natively or in WebAssembly), you will see something like:
 
 ```
+$ cargo run -p tutorial_hello_world_console
 zaplib/examples/tutorial_hello_world_console/src/main.rs:22 - Hello, world! 2
 zaplib/examples/tutorial_hello_world_console/src/main.rs:22 - Hello, world! 0
 zaplib/examples/tutorial_hello_world_console/src/main.rs:22 - Hello, world! 1
