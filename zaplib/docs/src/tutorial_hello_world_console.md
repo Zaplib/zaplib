@@ -35,10 +35,10 @@ Now let's add an `index.html`:
 {{#include ../../examples/tutorial_hello_world_console/index.html}}
 ```
 
-Compile to WebAssembly: `zaplib/scripts/build_wasm.sh -p tutorial_hello_world_console`
+Compile to WebAssembly: `./zaplib/scripts/build_website_dev.sh -p tutorial_hello_world_console` (or whatever you named your folder)
 
 Be sure to run the server, as described in [Getting Started](./getting_started.md).
 
-Navigate to [http://localhost:5000/zaplib/examples/tutorial_hello_world_console](http://localhost:5000/zaplib/examples/tutorial_hello_world_console), open the browser console, and again, see how it has printed "Hello, world!".
+Navigate to [http://localhost:3000/zaplib/examples/tutorial_hello_world_console](http://localhost:3000/zaplib/examples/tutorial_hello_world_console), open the browser console, and again, see how it has printed "Hello, world!".
 
 Congratulations, you've written your first Zaplib program! 😄
