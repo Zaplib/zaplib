@@ -54,7 +54,7 @@ universal_thread::spawn(|| {
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
     log!("Contents of Cargo.toml: {contents}");
-}
+});
 ```
 
 Since we're using a standard API interface, this code will work with any library that accepts a [`std::io::Read`](https://doc.rust-lang.org/std/io/trait.Read.html) object, as opposed to WebAssembly libraries that expose more exotic asynchronous APIs.
