@@ -138,7 +138,7 @@ zaplib.initialize({
 <!-- index.html -->
 <html>
     <head>
-        <script type="text/javascript" src="path/to/zaplib_runtime.js"></script>
+        <script type="text/javascript" src="/zaplib/web/dist/zaplib_runtime.js"></script>
         <script type="text/javascript" src="./index.js"></script>
     </head>
     <body>
@@ -146,6 +146,7 @@ zaplib.initialize({
     </body>
 </html>
 ```
+
 ### What's new?
 - `zaplib.initialize`, with a path to the `.wasm` file. This assumes our web server is at the same port that served this HTML.
 - `zaplib.callRust`, where the first parameter specifies a `name` of associated logic in Rust.
