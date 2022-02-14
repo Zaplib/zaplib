@@ -101,7 +101,7 @@ This is our package manifest, needed when structuring any Rust application. For 
 ### Compiling
 Compile this into a WebAssembly binary by calling:
 ```
-./build_wasm.sh -p tutorial_js_rust_bridge
+zaplib/scripts/build_website_dev.sh -p tutorial_js_rust_bridge
 ```
 <!--- TODO(Paras): Not sure what the path will be for this script. -->
 
