@@ -3,6 +3,8 @@
 
 const path = require("path");
 
+const FilterWarningsPlugin = require("webpack-filter-warnings-plugin");
+
 // TODO(Paras): Export type definitions for our library builds, both for TypeScript
 // and potentially Flow, using something like https://github.com/joarwilk/flowgen.
 
@@ -92,6 +94,14 @@ const nodeJsConfig = (env, argv) => {
       // helps in debugging.
       chunkIds: "named",
     },
+    plugins: [
+      new FilterWarningsPlugin({
+        // Suppress warnings coming from ./vendor/web-worker/node.js as this is expected
+        // We are dynamically importing worker scripts
+        exclude:
+          /Critical dependency: the request of a dependency is an expression/,
+      }),
+    ],
   };
 };
 
