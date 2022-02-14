@@ -1,6 +1,6 @@
 # Rendering 3D Meshes
 
-This guides will walk through the rendering API provided by Zaplib. We'll go through a few steps:
+This guide will walk through the rendering API provided by Zaplib. We'll go through a few steps:
 
 1. Start with a JavaScript application, which extracts a geometry [from an STL file](https://en.wikipedia.org/wiki/File:Utah_teapot_(solid).stl) and renders it using ThreeJS and GLSL shaders.
 2. Move our STL loading logic into Zaplib and communicate results using Web Workers.
