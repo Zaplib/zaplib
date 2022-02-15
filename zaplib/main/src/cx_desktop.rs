@@ -100,12 +100,6 @@ impl CxDesktopVsWasmCommon for Cx {
     /// This never gets called if cef is not enabled, but we need it to pass compilation.
     #[cfg(not(feature = "cef"))]
     fn return_to_js(&mut self, _callback_id: u32, _params: Vec<ZapParam>) {}
-
-    /// See [`CxDesktopVsWasmCommon::on_call_rust_in_same_thread_sync`] for documentation.
-    #[cfg(feature = "cef")]
-    fn on_call_rust_in_same_thread_sync(&mut self, func: CallRustInSameThreadSyncFn) {
-        self.cef_browser.on_call_rust_in_same_thread_sync(func);
-    }
 }
 
 impl Cx {
@@ -132,5 +126,11 @@ impl Cx {
         self.call_signals();
 
         vsync
+    }
+
+    /// See [`Cx::on_call_rust_in_same_thread_sync`] for documentation.
+    #[cfg(feature = "cef")]
+    pub(crate) fn on_call_rust_in_same_thread_sync_internal(&mut self, func: CallRustInSameThreadSyncFn) {
+        self.cef_browser.on_call_rust_in_same_thread_sync(func);
     }
 }

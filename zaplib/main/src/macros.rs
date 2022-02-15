@@ -13,6 +13,7 @@ macro_rules! main_app {
             let mut cx = Cx::new(std::any::TypeId::of::<$app>());
             let mut app = $app::new(&mut cx);
             let mut cxafterdraw = CxAfterDraw::new(&mut cx);
+            cx.set_finished_app_new();
             cx.event_loop(|cx, mut event| {
                 match event {
                     Event::System(e) => {
@@ -62,6 +63,7 @@ macro_rules! main_app {
             let mut cx = Box::new(Cx::new(std::any::TypeId::of::<$app>()));
             let app = Box::new($app::new(&mut cx));
             let cxafterdraw = Box::new(CxAfterDraw::new(&mut cx));
+            cx.set_finished_app_new();
             Box::into_raw(Box::new((Box::into_raw(app), Box::into_raw(cx), Box::into_raw(cxafterdraw)))) as u64
         }
 

@@ -2,23 +2,25 @@
 
 Here is an overview of all the Basic APIs, and their support in various contexts. Missing features are annotated with their ticket id.
 
-| API                                         | Rust main thread | Rust child thread | JS WebWorker |
-| ------------------------------------------- | :---------------: | :---------------: | :--------------: |
-| Logging (`log!`)                            |       ✅          |        ✅          |       ✅        |
-| Spawning threads (`universal_thread`)       |       ✅          |        ✅          |     [#72][2]    |
-| Current time (`UniversalInstant`)           |       ✅          |        ✅          |       ✅        |
-| Reading local files (`UniversalFile`)       |       ✅          |        ✅          |     [#72][2]    |
-| Writing local files                         |    [#73][3]       |     [#73][3]       |     [#73][3]    |
-| HTTP requests (`UniversalFile`/`universal_http_stream`) |     ✅        |      ✅        |     ✅      |
-| Random (`universal_rand`)                   |       ✅          |        ✅          |       ✅        |
-| Websockets (`cx.websocket_send`)            |       ✅          |        [#71][1]     |    [#71][1]    |
-| Timers (`cx.start_timer`)                   |       ✅          |        [#71][1]     |    [#71][1]    |
-| Posting signals (`Cx::post_signal`)         |       ✅          |        ✅          |     [#72][2]    |
-| Profiling (`cx.profile_start`)              |       ✅          |        [#71][1]     |    [#71][1]    |
+| API                                         | Rust main thread  | Rust child thread  | JS main thread   | JS WebWorker     |
+| ------------------------------------------- | :---------------: | :---------------:  | :--------------: | :--------------: |
+| Logging (`log!`)                            |       ✅          |        ✅          |        ✅         |       ✅        |
+| Spawning threads (`universal_thread`)       |       ✅          |        ✅          |     [#72][2]      |     [#72][2]    |
+| Current time (`UniversalInstant`)           |       ✅          |        ✅          |        ✅         |       ✅        |
+| Reading local files (`UniversalFile`)       |       ✅          |        ✅          | [#72][2] [#66][4] |     [#72][2]    |
+| Writing local files                         |    [#73][3]       |     [#73][3]       | [#73][3] [#66][4] |     [#73][3]    |
+| HTTP requests (`UniversalFile`/`universal_http_stream`) |     ✅        |      ✅    |      [#66][4]     |     ✅      |
+| Random (`universal_rand`)                   |       ✅          |        ✅          |        ✅         |       ✅        |
+| Websockets (`cx.websocket_send`)            |       ✅          |        [#71][1]    |     [#71][1]     |    [#71][1]    |
+| Timers (`cx.start_timer`)                   |       ✅          |        [#71][1]    |     [#71][1]     |    [#71][1]    |
+| Posting signals (`Cx::post_signal`)         |       ✅          |        ✅          |     [#72][2]      |     [#72][2]    |
+| Profiling (`cx.profile_start`)              |       ✅          |        [#71][1]    |     [#71][1]     |    [#71][1]    |
+| Blocking Rust threading primitives ([`Mutex`](https://doc.rust-lang.org/std/sync/struct.Mutex.html)) | ✅ | ✅ | [#66][4] | ✅
 
 [1]: https://github.com/Zaplib/zaplib/issues/71
 [2]: https://github.com/Zaplib/zaplib/issues/72
 [3]: https://github.com/Zaplib/zaplib/issues/73
+[4]: https://github.com/Zaplib/zaplib/issues/66
 
 ## Universal APIs
 

@@ -127,6 +127,8 @@ export type WasmWorkerRpc = {
         baseUri: string;
         memory: WebAssembly.Memory;
         taskWorkerSab: SharedArrayBuffer;
+        tlsAndStackData: TlsAndStackData;
+        appPtr: BigInt;
         wasmOnline: Uint8Array;
       },
       void

@@ -3,8 +3,8 @@ import {
   Rpc,
   getWasmEnv,
   makeThreadLocalStorageAndStackDataOnExistingThread,
-  initThreadLocalStorageMainWorker,
   createErrorCheckers,
+  initThreadLocalStorageAndStackOtherWorkers,
 } from "common";
 import {
   TextareaEventKeyDown,
@@ -103,6 +103,7 @@ export class WasmApp {
     baseUri,
     fileHandles,
     taskWorkerSab,
+    appPtr,
   }: {
     offscreenCanvas: OffscreenCanvas | undefined;
     wasmModule: WebAssembly.Module;
@@ -112,12 +113,14 @@ export class WasmApp {
     baseUri: string;
     fileHandles: FileHandle[];
     taskWorkerSab: SharedArrayBuffer;
+    appPtr: BigInt;
   }) {
     this.module = wasmModule;
     this.exports = wasmExports;
     this.memory = memory;
     this.baseUri = baseUri;
     this.sizingData = sizingData;
+    this.appPtr = appPtr;
 
     this.timers = [];
     this.hasRequestedAnimationFrame = false;
@@ -158,8 +161,6 @@ export class WasmApp {
     // this.run_async_webxr_check();
     this.bindMouseAndTouch();
     this.bindKeyboard();
-
-    this.appPtr = this.exports.createWasmApp();
 
     rpc.receive(WorkerEvent.WindowFocus, () => {
       this.zerdeEventloopEvents.windowFocus(true);
@@ -969,6 +970,8 @@ rpc.receive(
     baseUri,
     memory,
     taskWorkerSab,
+    tlsAndStackData,
+    appPtr,
     wasmOnline: _wasmOnline,
   }) => {
     wasmOnline = _wasmOnline;
@@ -1004,7 +1007,10 @@ rpc.receive(
 
       WebAssembly.instantiate(wasmModule, { env }).then((instance: any) => {
         const wasmExports = instance.exports as WasmExports;
-        initThreadLocalStorageMainWorker(wasmExports);
+        initThreadLocalStorageAndStackOtherWorkers(
+          wasmExports,
+          tlsAndStackData
+        );
         wasmapp = new WasmApp({
           offscreenCanvas,
           wasmModule,
@@ -1014,6 +1020,7 @@ rpc.receive(
           baseUri,
           fileHandles,
           taskWorkerSab,
+          appPtr,
         });
         wasmapp.init();
         resolve();

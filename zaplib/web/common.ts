@@ -452,6 +452,11 @@ export const getWasmEnv = ({
       throw new RustPanic(parseString(parseInt(charsPtr), parseInt(len)));
     },
     readUserFileRange: (userFileId, bufPtr, bufLen, fileOffset) => {
+      if (self.window) {
+        throw new Error(
+          "File reading is not supported on the browser's main thread"
+        );
+      }
       const file = fileHandles[userFileId];
       const start = Number(fileOffset);
       const end = start + Number(bufLen);
@@ -488,6 +493,12 @@ export const getWasmEnv = ({
       sendEventFromAnyThread(eventPtr);
     },
     readUrlSync: (urlPtr, urlLen, bufPtrOut, bufLenOut) => {
+      if (self.window) {
+        // Main browser thread doesn't support synchronous+arraybuffer XMLHttpRequest.
+        // TODO(JP): Use task worker for this instead.
+        throw new Error("Not yet implemented");
+      }
+
       const url = parseString(urlPtr, urlLen);
       const request = new XMLHttpRequest();
       request.responseType = "arraybuffer";
