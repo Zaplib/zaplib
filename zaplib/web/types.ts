@@ -3,6 +3,7 @@ export type Initialize = (initParams: {
   canvas?: HTMLCanvasElement;
   baseUri?: string;
   defaultStyles?: boolean;
+  onRenderingPanic?: (error: Error) => void;
 }) => Promise<void>;
 
 export type UniformType =

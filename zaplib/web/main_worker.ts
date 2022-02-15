@@ -709,7 +709,16 @@ export class WasmApp {
         return;
       }
       this.zerdeEventloopEvents.animationFrame();
-      this.doWasmIo();
+      try {
+        this.doWasmIo();
+      } catch (e) {
+        if (e instanceof Error && e.name === "RustPanic") {
+          Atomics.store(wasmOnline, 0, 0);
+          rpc.send(WorkerEvent.Panic, e);
+        } else {
+          throw e;
+        }
+      }
     });
   }
 
@@ -809,8 +818,10 @@ export class WasmApp {
       } catch (e) {
         if (e instanceof Error && e.name === "RustPanic") {
           Atomics.store(wasmOnline, 0, 0);
+          rpc.send(WorkerEvent.Panic, e);
+        } else {
+          throw e;
         }
-        throw e;
       }
     });
   }

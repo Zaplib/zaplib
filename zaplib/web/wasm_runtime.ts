@@ -676,6 +676,17 @@ export const initialize: Initialize = (initParams) => {
         canvasData = initializeCanvas(canvas);
       }
 
+      rpc.receive(WorkerEvent.Panic, (e) => {
+        if (initParams.onRenderingPanic) {
+          initParams.onRenderingPanic(e);
+        } else {
+          console.warn(
+            "Specify `onRenderingPanic` to catch errors from rendering. See https://zaplib.com/docs/bridge_api_basics.html#zaplibinitialize."
+          );
+          throw e;
+        }
+      });
+
       wasmModulePromise.then((wasmModule) => {
         // Threads need to be spawned on the browser's main thread, otherwise Safari (as of version 15.2)
         // throws errors.
