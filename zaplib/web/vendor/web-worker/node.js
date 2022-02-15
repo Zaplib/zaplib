@@ -92,6 +92,11 @@ function mainThread() {
    */
   class Worker extends EventTarget {
     constructor(url, options) {
+      // Webpack relies on Worker constructor to throw an error when passing undefined url
+      // This polyfill must match this behavior.
+      if (url === undefined) {
+        throw new Error("Creating worker with undefined url");
+      }
       super();
       const { name, type } = options || {};
       url += "";

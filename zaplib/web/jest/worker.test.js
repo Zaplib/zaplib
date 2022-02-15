@@ -30,3 +30,9 @@ test("initializes zaplib and calls rust", async () => {
   const [result] = await zaplib.callRust("total_sum", [data]);
   expect(result).toBe("36");
 });
+
+test("creates work with undefined url", () => {
+  expect( () => {
+    const worker = new Worker(undefined);
+  }).toThrow("Creating worker with undefined url");
+});
