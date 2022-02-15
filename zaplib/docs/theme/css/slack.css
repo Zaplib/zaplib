@@ -1,0 +1,15 @@
+#slack-button {
+  width: 30px;
+  margin-top: 4px;
+  filter: grayscale(100%);
+  transition: all 0.5s ease;
+
+}
+#slack-button:hover {
+  filter: grayscale(0%);
+}
+
+.right-buttons {
+  display: flex; 
+  align-items:center;
+}
