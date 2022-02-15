@@ -5,9 +5,9 @@ Now that you're able to [run some examples](./getting_started.md), lets set up y
 ## Editor: VSCode
 
 * We currently recommend using [VSCode](https://code.visualstudio.com/). In the future we'll add guides for other editors/IDEs.
-* After installing VSCode, open up `workspace.code-workspace` in the root of the repo. VSCode will prompt you to install our recommended extensions.
+* After installing VSCode, open up `zaplib.code-workspace` in the root of the repo. VSCode will prompt you to install our recommended extensions.
 * We recommend NOT installing the official Rust extension since it conflicts with [`matklad.rust-analyzer`](https://marketplace.visualstudio.com/items?itemName=matklad.rust-analyzer). If you already have it installed, it's best to disable it.
-* Feel free to copy the settings from `workspace.code-workspace` to your own projects!
+* Feel free to copy the settings from `zaplib.code-workspace` to your own projects!
 
 If you go to the "Run and Debug" tab in VSCode, you should see a bunch of preconfigured run profiles at the top of the screen (from [CodeLLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)).
 
