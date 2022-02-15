@@ -6,3 +6,7 @@ export const jsRuntime = "cefCallRust" in self ? "cef" : "wasm";
 // Whether or not we're in a WebWorker.
 // From https://stackoverflow.com/a/23619712
 export const inWorker = typeof importScripts === "function";
+
+// Injected using webpack.DefinePlugin.
+declare const __GIT_SHA__: string;
+export const gitSha = __GIT_SHA__;

@@ -94,6 +94,16 @@ impl Cx {
                         xr_can_present: zerde_parser.parse_u32() > 0,
                         can_fullscreen: zerde_parser.parse_u32() > 0,
                     };
+
+                    let js_git_sha = zerde_parser.parse_string();
+                    // If a JS dev build was used; ignore this check.
+                    if js_git_sha != "development" {
+                        let rust_git_sha = env!("VERGEN_GIT_SHA");
+                        if js_git_sha != rust_git_sha {
+                            panic!("JS git sha ({js_git_sha}) doesn't match Rust git sha ({rust_git_sha})");
+                        }
+                    }
+
                     self.default_dpi_factor = self.platform.window_geom.dpi_factor;
                     assert!(self.default_dpi_factor > 0.0);
 
