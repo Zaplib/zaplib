@@ -40,17 +40,13 @@ Zaplib is open source, with the code hosted on [Github](https://github.com/Zapli
 
 The open source core team consists of:
 
-<table style="margin: 0">
-    <tr style="vertical-align: top">
-        <td><a href="https://github.com/janpaul123"><img style="width: 150px; max-width: 150px" src="./img/jp.jpg"><br>JP Posma (Zaplib)</a></td>
-        <td><a href="https://github.com/stevekrouse"><img style="width: 150px; max-width: 150px" src="./img/steve.jpg"><br>Steve Krouse (Zaplib)</a></td>
-        <td><a href="https://github.com/disambiguator"><img style="width: 150px; max-width: 150px" src="./img/paras.jpg"><br>Paras Sanghavi (Cruise)</a></td>
-    </tr>
-    <tr style="vertical-align: top">
-        <td><a href="https://github.com/hhsaez"><img style="width: 150px; max-width: 150px" src="./img/hernan.png"><br>Hernan Saez (Cruise)</a></td>
-        <td><a href="https://github.com/pankdm"><img style="width: 150px; max-width: 150px" src="./img/dmitry.jpg"><br>Dmitry Panin (Cruise)</a></td>
-    </tr>
-</table>
+<div style="margin: 0; display: flex; flex-wrap: wrap; vertical-align: top">
+        <div style="max-width: 150px; padding: 3px 20px; border: 1px var(--table-border-color) solid;"><a href="https://github.com/janpaul123"><img style="width: 150px; max-width: 150px" src="./img/jp.jpg"><br>JP Posma (Zaplib)</a></div>
+        <div style="max-width: 150px; padding: 3px 20px; border: 1px var(--table-border-color) solid;"><a href="https://github.com/stevekrouse"><img style="width: 150px; max-width: 150px" src="./img/steve.jpg"><br>Steve Krouse (Zaplib)</a></div>
+        <div style="max-width: 150px; padding: 3px 20px; border: 1px var(--table-border-color) solid;"><a href="https://github.com/disambiguator"><img style="width: 150px; max-width: 150px" src="./img/paras.jpg"><br>Paras Sanghavi (Cruise)</a></div>
+        <div style="max-width: 150px; padding: 3px 20px; border: 1px var(--table-border-color) solid;"><a href="https://github.com/hhsaez"><img style="width: 150px; max-width: 150px" src="./img/hernan.png"><br>Hernan Saez (Cruise)</a></div>
+        <div style="max-width: 150px; padding: 3px 20px; border: 1px var(--table-border-color) solid;"><a href="https://github.com/pankdm"><img style="width: 150px; max-width: 150px" src="./img/dmitry.jpg"><br>Dmitry Panin (Cruise)</a></div>
+</div>
 
 Also a big shoutout to the <a href="https://github.com/makepad/makepad">Makepad</a> folks, whose open source framework we originally forked and with whom we've had a fruitful collaboration ever since.
 
