@@ -677,7 +677,14 @@ export const initialize: Initialize = (initParams) => {
       }
 
       rpc.receive(WorkerEvent.Panic, (e) => {
-        if (initParams.onRenderingPanic) initParams.onRenderingPanic(e);
+        if (initParams.onRenderingPanic) {
+          initParams.onRenderingPanic(e);
+        } else {
+          console.warn(
+            "Specify `onRenderingPanic` to catch errors from rendering. See https://zaplib.com/docs/bridge_api_basics.html#zaplibinitialize."
+          );
+          throw e;
+        }
       });
 
       wasmModulePromise.then((wasmModule) => {
