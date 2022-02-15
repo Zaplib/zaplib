@@ -120,7 +120,7 @@ We then integrate this to `call_rust`:
 
 To build, run:
 ```bash
-./scripts/build_wasm.sh -p tutorial_3d_rendering
+cargo zaplib build -p tutorial_3d_rendering
 ```
 
 ### Calling from JS

@@ -101,7 +101,7 @@ This is our package manifest, needed when structuring any Rust application. For 
 ### Compiling
 Compile this into a WebAssembly binary by calling:
 ```
-./build_wasm.sh -p tutorial_js_rust_bridge
+cargo zaplib build -p tutorial_js_rust_bridge
 ```
 <!--- TODO(Paras): Not sure what the path will be for this script. -->
 
@@ -138,7 +138,8 @@ zaplib.initialize({
 <!-- index.html -->
 <html>
     <head>
-        <script type="text/javascript" src="path/to/zaplib_runtime.js"></script>
+        <!-- Update to match your path to zaplib_runtime.js -->
+        <script type="text/javascript" src="/zaplib/web/dist/zaplib_runtime.js"></script>
         <script type="text/javascript" src="./index.js"></script>
     </head>
     <body>
