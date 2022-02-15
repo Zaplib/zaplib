@@ -676,6 +676,10 @@ export const initialize: Initialize = (initParams) => {
         canvasData = initializeCanvas(canvas);
       }
 
+      rpc.receive(WorkerEvent.Panic, (e) => {
+        if (initParams.onPanic) initParams.onPanic(e);
+      });
+
       wasmModulePromise.then((wasmModule) => {
         // Threads need to be spawned on the browser's main thread, otherwise Safari (as of version 15.2)
         // throws errors.

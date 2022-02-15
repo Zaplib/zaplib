@@ -79,6 +79,7 @@ export enum WorkerEvent {
   WindowTouchStart = "WorkerEvent.WindowTouchStart",
   WindowTouchMove = "WorkerEvent.WindowTouchMove",
   WindowTouchEndCancelLeave = "WorkerEvent.WindowTouchEndCancelLeave",
+  Panic = "WorkerEvent.Panic",
 }
 export type WasmWorkerRpc = {
   send: {
@@ -156,6 +157,7 @@ export type WasmWorkerRpc = {
       },
       void
     ];
+    [WorkerEvent.Panic]: [Error, void];
   };
 };
 
