@@ -3,7 +3,7 @@ mod install_deps;
 #[cfg(not(target_arch = "wasm32"))]
 use install_deps::*;
 
-use std::process::Command;
+use std::process::{exit, Command};
 
 use clap::{App, AppSettings, Arg};
 
@@ -114,7 +114,14 @@ fn build(opts: BuildOpts) {
         flags.join(" ")
     };
 
-    let out = Command::new("cargo").env("RUSTFLAGS", &rust_flags).args(args).output().expect("Failed to execute command");
-    println!("{}", std::str::from_utf8(&out.stdout).ok().unwrap());
-    println!("{}", std::str::from_utf8(&out.stderr).ok().unwrap());
+    let string_args = args.join(" ");
+    println!("Running RUSTFLAGS='{rust_flags}' cargo {string_args}");
+    let exit_status = Command::new("cargo")
+        .env("RUSTFLAGS", &rust_flags)
+        .args(args)
+        .spawn()
+        .expect("Failed to execute command")
+        .wait()
+        .unwrap();
+    exit(exit_status.code().unwrap_or(1));
 }
