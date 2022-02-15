@@ -205,7 +205,12 @@ impl Area {
                 let sh = &cx.shaders[draw_call.shader_id];
 
                 let total_instance_slots = sh.mapping.instance_props.total_slots;
-                assert_eq!(total_instance_slots * std::mem::size_of::<f32>(), std::mem::size_of::<T>());
+                let shader_bytes = total_instance_slots * std::mem::size_of::<f32>();
+                let struct_bytes = std::mem::size_of::<T>();
+                assert_eq!(
+                    shader_bytes, struct_bytes,
+                    "Mismatch between shader instance slots ({shader_bytes} bytes) and instance struct ({struct_bytes} bytes)"
+                );
 
                 // TODO(JP): Move to cast.rs?
                 unsafe {
@@ -254,7 +259,12 @@ impl Area {
                 let sh = &cx.shaders[draw_call.shader_id];
 
                 let total_instance_slots = sh.mapping.instance_props.total_slots;
-                assert_eq!(total_instance_slots * std::mem::size_of::<f32>(), std::mem::size_of::<T>());
+                let shader_bytes = total_instance_slots * std::mem::size_of::<f32>();
+                let struct_bytes = std::mem::size_of::<T>();
+                assert_eq!(
+                    shader_bytes, struct_bytes,
+                    "Mismatch between shader instance slots ({shader_bytes} bytes) and instance struct ({struct_bytes} bytes)"
+                );
 
                 // If we have no instances, bail early so we don't mark the entire draw call as dirty.
                 if inst.instance_count == 0 {
@@ -316,7 +326,12 @@ impl Area {
                 let cxview = &mut cx.views[inst.view_id];
                 let draw_call = &mut cxview.draw_calls[inst.draw_call_id];
 
-                assert_eq!(draw_call.user_uniforms.len() * std::mem::size_of::<f32>(), std::mem::size_of::<T>());
+                let shader_bytes = draw_call.user_uniforms.len() * std::mem::size_of::<f32>();
+                let struct_bytes = std::mem::size_of::<T>();
+                assert_eq!(
+                    shader_bytes, struct_bytes,
+                    "Mismatch between shader uniform slots ({shader_bytes} bytes) and instance struct ({struct_bytes} bytes)"
+                );
 
                 cx.passes[cxview.pass_id].paint_dirty = true;
                 draw_call.uniforms_dirty = true;
