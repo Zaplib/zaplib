@@ -79,16 +79,18 @@ impl View {
         // check if we have a pass id parent
         let pass_id = *cx.pass_stack.last().expect("No pass found when begin_view");
 
-        if self.view_id.is_none() {
+        let view_id = if let Some(view_id) = self.view_id {
+            view_id
+        } else {
             // we need a draw_list_id
-            self.view_id = Some(cx.views.len());
+            let view_id = cx.views.len();
+            self.view_id = Some(view_id);
             cx.views.push(CxView::default());
-            let cxview = &mut cx.views[self.view_id.unwrap()];
+            let cxview = &mut cx.views[view_id];
             cxview.redraw_id = cx.redraw_id;
             cxview.pass_id = pass_id;
-        }
-
-        let view_id = self.view_id.unwrap();
+            view_id
+        };
 
         let (override_layout, is_root_for_pass) = if cx.passes[pass_id].main_view_id.is_none() {
             // we are the first view on a window
@@ -103,11 +105,7 @@ impl View {
         let cxpass = &mut cx.passes[pass_id];
         // find the parent draw list id
         let parent_view_id = if self.is_overlay {
-            if cxpass.main_view_id.is_none() {
-                panic!("Cannot make overlay inside window without root view")
-            };
-
-            cxpass.main_view_id.unwrap()
+            cxpass.main_view_id.expect("Cannot make overlay inside window without root view")
         } else if is_root_for_pass {
             view_id
         } else if let Some(last_view_id) = cx.view_stack.last() {
@@ -198,7 +196,7 @@ impl View {
     pub fn end_view(&mut self, cx: &mut Cx) -> Area {
         assert!(cx.shader_group_instance_offsets.is_empty(), "Can't use end_view inside a shader group");
 
-        let view_id = self.view_id.unwrap();
+        let view_id = self.view_id.expect("Not inside a View::begin_view currently");
 
         if cx.debug_flags.enable_layout_debugger && View::is_main_view(view_id, cx) {
             self.debugger.draw(cx);
@@ -268,7 +266,7 @@ impl Cx {
 
         let sh = &self.shaders[shader_id];
 
-        let current_view_id = *self.view_stack.last().unwrap();
+        let current_view_id = *self.view_stack.last().expect("Not inside a View::begin_view currently");
         let cxview = &mut self.views[current_view_id];
         let draw_call_id = cxview.draw_calls_len;
 
@@ -355,9 +353,19 @@ impl Cx {
             return Area::Empty;
         }
         let shader_id = self.get_shader_id(shader);
-        let total_instance_slots = self.shaders[shader_id].mapping.instance_props.total_slots;
-        assert_eq!(total_instance_slots * std::mem::size_of::<f32>(), std::mem::size_of::<T>());
+        let cxshader = &self.shaders[shader_id];
+
+        let total_instance_slots = cxshader.mapping.instance_props.total_slots;
+        let shader_bytes_instance = total_instance_slots * std::mem::size_of::<f32>();
+        let struct_bytes_instance = std::mem::size_of::<T>();
+        assert_eq!(
+            shader_bytes_instance, struct_bytes_instance,
+            "Mismatch between shader instance slots ({shader_bytes_instance} bytes) and instance struct \
+             ({struct_bytes_instance} bytes)"
+        );
+
         let dc = self.create_draw_call(shader_id, props);
+
         let ia = InstanceRangeArea {
             view_id: dc.view_id,
             draw_call_id: dc.draw_call_id,
@@ -368,6 +376,7 @@ impl Cx {
         dc.instances.extend_from_slice(data.as_f32_slice());
         let area = Area::InstanceRange(ia);
         self.add_to_box_align_list(area);
+
         area
     }
 
@@ -453,7 +462,7 @@ impl Cx {
         );
 
         let shader_group_size = shaders_ordered.len();
-        let current_view_id = *self.view_stack.last().unwrap();
+        let current_view_id = *self.view_stack.last().expect("Not inside a View::begin_view currently");
         let cxview = &self.views[current_view_id];
 
         // We have to hold the following invariant: if shader_group_instance_offsets is not empty, then the last

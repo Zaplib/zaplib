@@ -79,7 +79,6 @@ pub(crate) struct CxShaderMapping {
     /// Special structure for reading/editing instance properties.
     pub(crate) instance_props: InstanceProps,
     /// Special structure for reading/editing geometry properties.
-    #[cfg(any(target_arch = "wasm32", target_os = "linux", target_os = "windows"))]
     pub(crate) geometry_props: InstanceProps,
     /// Raw definition of all textures.
     pub(crate) textures: Vec<PropDef>,
@@ -152,7 +151,6 @@ impl CxShaderMapping {
             rect_instance_props: RectInstanceProps::construct(&instances),
             user_uniform_props: UniformProps::construct(&user_uniforms),
             instance_props: InstanceProps::construct(&instances),
-            #[cfg(any(target_arch = "wasm32", target_os = "linux", target_os = "windows"))]
             geometry_props: InstanceProps::construct(&geometries),
             textures,
             #[cfg(target_os = "windows")]

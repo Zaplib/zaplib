@@ -35,7 +35,7 @@ Now let's add an `index.html`:
 {{#include ../../examples/tutorial_hello_world_console/index.html}}
 ```
 
-Compile to WebAssembly: `zaplib/scripts/build_wasm.sh -p tutorial_hello_world_console`
+Compile to WebAssembly: `cargo zaplib build -p tutorial_hello_world_console`
 
 Be sure to run the server, as described in [Getting Started](./getting_started.md).
 

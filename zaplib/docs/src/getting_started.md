@@ -25,13 +25,14 @@ Of course, Zaplib is primarily a framework for WebAssembly, so let's run these e
 * In a separate terminal window, run a basic server: `zaplib/scripts/server.py` (Note that this still requires Python 2).
 * In another separate terminal window, start yarn to build the Zaplib javascript files:
   * `cd zaplib/web && yarn && yarn watch`
-* Build one of the examples using the Zaplib Cargo tool, e.g.:
-  * `cargo zaplib build -p example_single_button`
+* Build all the examples using the Zaplib Cargo tool:
+  * `cargo zaplib build --workspace`
+  * (To just build a single example, use `cargo zaplib build -p example_single_button`)
 * Navigate your browser to:
   * [`http://localhost:3000/zaplib/examples/example_single_button`](http://localhost:3000/zaplib/examples/example_single_button)
-* Again, for a more performant build, add the `--release` flag, e.g.:
-  * `cargo zaplib build -p example_single_button --release`
-* With a release build, add a `?release` flag to the URL:
+* Again, for a more performant version, add the `--release` flag, e.g.:
+  * `cargo zaplib build --workspace --release`
+* To run the release build, add a `?release` flag to the URL:
   * [`http://localhost:3000/zaplib/examples/example_single_button/?release`](http://localhost:3000/zaplib/examples/example_single_button/?release)
 
 Feel free to check out the `examples` directory for more examples to play with!

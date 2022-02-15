@@ -12,6 +12,7 @@ use crate::*;
 pub struct Geometry {
     vertex_attributes: Box<dyn AsF32Slice>,
     triangle_indices: Vec<[u32; 3]>,
+    vertex_number_of_bytes: usize,
 }
 impl Geometry {
     /// Instantiates a new [`Geometry`].
@@ -25,7 +26,11 @@ impl Geometry {
     /// `triangle_indices` - the indices of vertex attributes by which to render each triangle.
     /// A triangle has 3 vertices, hence we group indices in sets of 3.
     pub fn new<T: 'static + Sized>(vertex_attributes: Vec<T>, triangle_indices: Vec<[u32; 3]>) -> Self {
-        Self { vertex_attributes: Box::new(vertex_attributes), triangle_indices }
+        Self {
+            vertex_attributes: Box::new(vertex_attributes),
+            triangle_indices,
+            vertex_number_of_bytes: core::mem::size_of::<T>(),
+        }
     }
 
     pub(crate) fn vertices_f32_slice(&self) -> &[f32] {
@@ -38,7 +43,7 @@ impl Geometry {
 }
 impl Default for Geometry {
     fn default() -> Self {
-        Self { vertex_attributes: Box::new(Vec::<f32>::new()), triangle_indices: Default::default() }
+        Self { vertex_attributes: Box::new(Vec::<f32>::new()), triangle_indices: Default::default(), vertex_number_of_bytes: 0 }
     }
 }
 
@@ -74,18 +79,29 @@ impl GpuGeometry {
         Self { gpu_geometry_id, usage_count: Rc::clone(&gpu_geometry.usage_count) }
     }
 
-    pub(crate) fn get_id(cx: &mut Cx, view_id: usize, draw_call_id: usize) -> usize {
-        let cxview = &mut cx.views[view_id];
-        let draw_call = &mut cxview.draw_calls[draw_call_id];
+    pub(crate) fn get_id(cx: &Cx, view_id: usize, draw_call_id: usize) -> usize {
+        let cxview = &cx.views[view_id];
+        let draw_call = &cxview.draw_calls[draw_call_id];
         let sh = &cx.shaders[draw_call.shader_id];
 
-        if let Some(gpu_geometry) = &draw_call.props.gpu_geometry {
+        let gpu_geometry_id = if let Some(gpu_geometry) = &draw_call.props.gpu_geometry {
             gpu_geometry.gpu_geometry_id
         } else if let Some(gpu_geometry) = &sh.gpu_geometry {
             gpu_geometry.gpu_geometry_id
         } else {
             panic!("Missing geometry");
-        }
+        };
+
+        let shader_bytes_geom = sh.mapping.geometry_props.total_slots * std::mem::size_of::<f32>();
+        let vertex_number_of_bytes = cx.gpu_geometries[gpu_geometry_id].geometry.vertex_number_of_bytes;
+        let sh_name = &sh.name;
+        assert_eq!(
+            shader_bytes_geom, vertex_number_of_bytes,
+            "Mismatch between shader instance slots ({shader_bytes_geom} bytes) and vertex struct ({vertex_number_of_bytes} \
+             bytes) in shader {sh_name}"
+        );
+
+        gpu_geometry_id
     }
 }
 

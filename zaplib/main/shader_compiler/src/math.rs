@@ -85,10 +85,16 @@ impl Vec2 {
         Vec2 { x, y: x }
     }
 
+    pub fn dot(&self, other: Vec2) -> f32 {
+        self.x * other.x + self.y * other.y
+    }
+
     pub fn distance(&self, other: &Vec2) -> f32 {
-        let dx = self.x - other.x;
-        let dy = self.y - other.y;
-        (dx * dx + dy * dy).sqrt()
+        (*other - *self).length()
+    }
+
+    pub fn length(self) -> f32 {
+        self.dot(self).sqrt()
     }
 
     pub fn min(&self, other: &Vec2) -> Vec2 {
@@ -113,6 +119,15 @@ impl Vec2 {
 
     pub fn as_mut_array(&mut self) -> &mut [f32; 2] {
         unsafe { &mut *(self as *mut _ as *mut [f32; 2]) }
+    }
+
+    pub fn normalize(&self) -> Vec2 {
+        let sz = self.x * self.x + self.y * self.y;
+        if sz > 0.0 {
+            let sr = 1.0 / sz.sqrt();
+            return Vec2 { x: self.x * sr, y: self.y * sr };
+        }
+        Vec2::default()
     }
 }
 
