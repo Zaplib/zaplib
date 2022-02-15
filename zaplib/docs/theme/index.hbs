@@ -101,6 +101,10 @@
             html.classList.add("sidebar-" + sidebar);
         </script>
 
+        {{!-- TEMPLATE EDIT START --}}
+        {{!-- moved the header template up to be a banner --}}
+        {{> header}}
+        {{!-- TEMPLATE EDIT END --}}
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
                 {{#toc}}{{/toc}}
@@ -109,10 +113,7 @@
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
-
             <div class="page">
-                {{> header}}
-                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -137,16 +138,13 @@
 
                     <h1 class="menu-title">{{ book_title }}</h1>
                     
-                    {{!-- TEMPLATE EDIT START --}}
+                    
                     <div class="right-buttons"">
-              
-
+                        {{!-- TEMPLATE EDIT START --}}
                         <a href="/slack.html" target="_blank">
                           <img id="slack-button" src="./img/Slack_Mark_Web.png" />
                         </a>
-
                         {{!-- TEMPLATE EDIT END --}}
-
                         {{#if print_enable}}
                         <a href="{{ path_to_root }}print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>

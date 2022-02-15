@@ -1,0 +1,39 @@
+#slack-button {
+  width: 30px;
+  margin-top: 4px;
+  filter: grayscale(100%);
+  transition: all 0.5s ease;
+
+}
+#slack-button:hover {
+  filter: grayscale(0%);
+}
+
+.right-buttons {
+  display: flex; 
+  align-items:center;
+}
+
+.sidebar {
+  top: 34px;
+}
+
+.page-wrapper {
+  padding-top: 60px;
+}
+
+.banner > a {
+  color: inherit;
+}
+
+.banner {
+  height: 30px;
+  text-align: center;
+  padding-top: 4px;
+  top: 0px;
+  width: 100%;
+  background: rgb(14,36,0);
+background: linear-gradient(90deg, rgba(14,36,0,1) 0%, rgba(1,107,161,1) 0%, rgba(48,199,198,1) 87%);
+  color: rgb(245, 245, 245);
+  z-index: 999999;
+}

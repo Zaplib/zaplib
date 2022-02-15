@@ -8,7 +8,7 @@ title = "Zaplib docs"
 [output.html]
 git-repository-url="https://github.com/Zaplib/zaplib"
 edit-url-template = "https://github.com/Zaplib/zaplib/edit/main/zaplib/docs/{path}"
-additional-css = ["theme/css/slack.css"]
+additional-css = ["theme/css/custom.css"]
 
 [output.html.print]
 enable = false
