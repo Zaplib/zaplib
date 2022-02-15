@@ -92,6 +92,11 @@ function mainThread() {
    */
   class Worker extends EventTarget {
     constructor(url, options) {
+      // Webpack relies on Worker constructor to throw an error when passing undefined url
+      // This polyfill must match this behavior.
+      if (url === undefined) {
+        throw new Error("Creating worker with undefined url");
+      }
       super();
       const { name, type } = options || {};
       url += "";
@@ -195,7 +200,9 @@ function workerThread() {
   const isDataUrl = /^data:/.test(mod);
 
   if (type === "module") {
-    import(mod)
+    // Using eval trick here to prevent webpack warnings:
+    // "Critical dependency: the request of a dependency is an expression"
+    eval('import')(mod)
       .catch((err) => {
         if (isDataUrl && err.message === "Not supported") {
           console.warn(
@@ -212,7 +219,9 @@ function workerThread() {
       if (/^data:/.test(mod)) {
         evaluateDataUrl(mod, name);
       } else {
-        require(mod);
+        // Using eval trick here to prevent webpack warnings:
+        // "Critical dependency: the request of a dependency is an expression"
+        eval('require')(mod);
       }
     } catch (err) {
       console.error(err);
