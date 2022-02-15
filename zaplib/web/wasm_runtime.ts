@@ -677,7 +677,7 @@ export const initialize: Initialize = (initParams) => {
       }
 
       rpc.receive(WorkerEvent.Panic, (e) => {
-        if (initParams.onPanic) initParams.onPanic(e);
+        if (initParams.onRenderingPanic) initParams.onRenderingPanic(e);
       });
 
       wasmModulePromise.then((wasmModule) => {

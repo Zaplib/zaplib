@@ -44,14 +44,14 @@ const env = new URL(window.document.location.toString()).searchParams.has(
   ? "release"
   : "debug";
 
-let onPanicCalled = false;
+let onRenderingPanicCalled = false;
 
 zaplib
   .initialize({
     wasmModule: `target/wasm32-unknown-unknown/${env}/test_suite.wasm`,
     defaultStyles: true,
-    onPanic: () => {
-      onPanicCalled = true;
+    onRenderingPanic: () => {
+      onRenderingPanicCalled = true;
     },
   })
   .then(async () => {
@@ -413,7 +413,7 @@ zaplib
                 // TODO(Paras): Since event handling happens in a setTimeout, we have
                 // to do this check some time after `callRust`. For now, use a 10ms delay.
                 setTimeout(async () => {
-                  expect(onPanicCalled, true);
+                  expect(onRenderingPanicCalled, true);
                   await checkWasmOffline();
                 }, 10);
               },
@@ -423,7 +423,7 @@ zaplib
               // TODO(Paras): Since event handling happens in a setTimeout, we have
               // to do this check some time after `callRust`. For now, use a 10ms delay.
               setTimeout(async () => {
-                expect(onPanicCalled, true);
+                expect(onRenderingPanicCalled, true);
                 await checkWasmOffline();
               }, 10);
             },
