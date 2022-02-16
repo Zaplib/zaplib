@@ -3,6 +3,8 @@ use std::sync::Arc;
 use zaplib::*;
 use zaplib_components::*;
 
+const PANIC_STATUS: StatusId = location_hash!();
+
 pub struct TestSuiteApp {
     window: Window,
     pass: Pass,
@@ -11,6 +13,8 @@ pub struct TestSuiteApp {
     worker_button: Button,
     dump_button: Button,
     buffers: Vec<Arc<Vec<u8>>>,
+    signal: Signal,
+    panic_draw: bool,
 }
 
 impl TestSuiteApp {
@@ -31,14 +35,25 @@ impl TestSuiteApp {
             send_button: Button::default(),
             worker_button: Button::default(),
             dump_button: Button::default(),
+            signal: cx.new_signal(),
             buffers,
+            panic_draw: false,
         }
     }
 
     pub fn handle(&mut self, cx: &mut Cx, event: &mut Event) {
         match event {
-            Event::Signal(_) => {
-                log!("received signal!");
+            Event::Signal(sig) => {
+                if let Some(statusses) = sig.signals.get(&self.signal) {
+                    for status in statusses {
+                        if *status == PANIC_STATUS {
+                            panic!("Panic signal");
+                        }
+                    }
+                } else {
+                    // call_rust_in_same_thread_sync send_signal uses a fake signal ID
+                    log!("received signal!");
+                }
             }
             _ => {}
         }
@@ -67,7 +82,7 @@ impl TestSuiteApp {
         }
     }
 
-    fn on_call_rust(&mut self, _cx: &mut Cx, name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
+    fn on_call_rust(&mut self, cx: &mut Cx, name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
         match name.as_str() {
             "array_multiply_u8" => {
                 let value: u8 = serde_json::from_str(params[0].as_str()).unwrap();
@@ -108,6 +123,15 @@ impl TestSuiteApp {
             "panic" => {
                 panic!("I am panicking!");
             }
+            "panic_signal" => {
+                Cx::post_signal(self.signal, PANIC_STATUS);
+                vec![]
+            }
+            "panic_draw" => {
+                self.panic_draw = true;
+                cx.request_draw();
+                vec![]
+            }
             unknown_name => {
                 panic!("Unknown function name: {}", unknown_name)
             }
@@ -115,6 +139,10 @@ impl TestSuiteApp {
     }
 
     pub fn draw(&mut self, cx: &mut Cx) {
+        if self.panic_draw {
+            panic!("Panic draw");
+        }
+
         self.window.begin_window(cx);
         self.pass.begin_pass(cx, Vec4::all(0.));
 
