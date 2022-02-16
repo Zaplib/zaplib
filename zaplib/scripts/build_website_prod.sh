@@ -27,4 +27,4 @@ cp website_dev/zaplib/web/dist/* website/zaplib/web/dist/
 mkdir -p website/zaplib/examples/example_bigedit/src/
 cp website_dev/zaplib/examples/example_bigedit/src/treeworld.rs website/zaplib/examples/example_bigedit/src/treeworld.rs
 
-echo 'Website generated for publishing! Host using `zaplib serve website/ --port 4848` or publish `website/`'
+echo 'Website generated for publishing! Host using `cargo zaplib serve website/ --port 4848` or publish `website/`'

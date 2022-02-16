@@ -22,7 +22,7 @@ For a more performant build, add the `--release` flag, e.g.:
 
 Of course, Zaplib is primarily a framework for WebAssembly, so let's run these examples in a browser:
 * Download the latest version of a modern browser, like [Chrome](https://www.google.com/chrome/).
-* In a separate terminal window, run a basic server: `zaplib serve`.
+* In a separate terminal window, run a basic server: `cargo zaplib serve`.
 * In another separate terminal window, start yarn to build the Zaplib javascript files:
   * `cd zaplib/web && yarn && yarn watch`
 * Build all the examples using the Zaplib Cargo tool:
