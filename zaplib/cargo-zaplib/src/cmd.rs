@@ -1,7 +1,3 @@
-use log::info;
-
-use std::process::{exit, Command};
-
 use clap::{App, AppSettings, Arg};
 
 pub(crate) fn cmd() {
@@ -52,7 +48,7 @@ pub(crate) fn cmd() {
         .get_matches();
 
     if let Some(cmd) = matches.subcommand_matches("build") {
-        build(BuildOpts {
+        crate::build::build(crate::build::BuildOpts {
             release: cmd.is_present("release"),
             use_simd128: cmd.is_present("simd128"),
             all_targets: cmd.is_present("all-targets"),
@@ -73,66 +69,4 @@ pub(crate) fn cmd() {
     if let Some(cmd) = matches.subcommand_matches("serve") {
         crate::serve::serve(cmd.value_of_t_or_exit("path"), cmd.value_of_t_or_exit("port"), cmd.is_present("ssl"));
     }
-}
-
-#[derive(Default, Debug)]
-struct BuildOpts {
-    release: bool,
-    use_simd128: bool,
-    all_targets: bool,
-    workspace: bool,
-    package: String,
-    features: String,
-}
-
-fn build(opts: BuildOpts) {
-    info!("    Running cargo build");
-
-    let mut args = vec!["+nightly-2022-01-18", "build", "--target=wasm32-unknown-unknown", "-Zbuild-std=std,panic_abort"];
-
-    if opts.release {
-        args.push("--release");
-    }
-
-    if opts.workspace {
-        args.push("--workspace");
-    }
-
-    if opts.all_targets {
-        args.push("--all-targets");
-    }
-
-    if !opts.package.is_empty() {
-        args.push("-p");
-        args.push(&opts.package);
-    }
-
-    if !opts.features.is_empty() {
-        args.push("--features");
-        args.push(&opts.features);
-    }
-
-    let rust_flags = {
-        let mut flags = vec![];
-        if opts.use_simd128 {
-            flags.push("-C target-feature=+atomics,+bulk-memory,+mutable-globals,+simd128");
-        } else {
-            flags.push("-C target-feature=+atomics,+bulk-memory,+mutable-globals");
-        }
-        flags.push("-C link-arg=--max-memory=4294967296");
-        flags.push("-C link-arg=--export=__stack_pointer");
-
-        flags.join(" ")
-    };
-
-    let string_args = args.join(" ");
-    info!("Running RUSTFLAGS='{rust_flags}' cargo {string_args}");
-    let exit_status = Command::new("cargo")
-        .env("RUSTFLAGS", &rust_flags)
-        .args(args)
-        .spawn()
-        .expect("Failed to execute command")
-        .wait()
-        .unwrap();
-    exit(exit_status.code().unwrap_or(1));
 }
