@@ -2,7 +2,7 @@
 
 import { getZapParamType } from "./common";
 import { BufferData, MutableBufferData, ZapArray, ZapParamType } from "./types";
-import { inTest } from "./test_helpers";
+import { inTest } from "./test_suite/test_helpers";
 
 // TODO(Paras) - Make sure we monkeypatch on web workers as well
 export class ZapBuffer extends SharedArrayBuffer {

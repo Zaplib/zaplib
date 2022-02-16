@@ -1,6 +1,6 @@
-import { CallRust, ZapArray } from "./types";
-import { jsRuntime } from "./type_of_runtime";
-import { allocatedArcs, allocatedVecs, ZapBuffer } from "./zap_buffer";
+import { CallRust, ZapArray } from "../types";
+import { jsRuntime } from "../type_of_runtime";
+import { allocatedArcs, allocatedVecs, ZapBuffer } from "../zap_buffer";
 
 export const expect = <T>(actual: T, expected: T): void => {
   if (expected === actual) {

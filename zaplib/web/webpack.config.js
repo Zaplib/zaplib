@@ -58,7 +58,7 @@ const browserConfig = (env, argv) => {
       /* eslint-disable camelcase */
       zaplib_runtime: "./zaplib_runtime.ts",
       zaplib_worker_runtime: "./zaplib_worker_runtime.ts",
-      test_suite: "./test_suite.ts",
+      test_suite: "./test_suite/test_suite.ts",
       // for testing with Jest
       test_jest: "./jest/test_jest.ts",
       /* eslint-enable camelcase */

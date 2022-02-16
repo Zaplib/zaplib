@@ -33,5 +33,5 @@ members = [
     "zaplib/examples/tutorial_3d_rendering/step3",
     "zaplib/examples/tutorial_ui_components",
     "zaplib/examples/tutorial_ui_layout",
-    "zaplib/test_suite",
+    "zaplib/web/test_suite",
 ]
