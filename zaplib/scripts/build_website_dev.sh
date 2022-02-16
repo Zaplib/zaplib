@@ -46,4 +46,4 @@ popd
 mkdir -p website_dev/zaplib/web/dist/
 cp -R zaplib/web/dist/* website_dev/zaplib/web/dist/
 
-echo 'Website generated for development! Open using `website_dev/server.sh`'
+echo 'Website generated for development! Host using `zaplib serve website_dev/ --port 4848`'

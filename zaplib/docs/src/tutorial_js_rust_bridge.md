@@ -118,7 +118,7 @@ Access-Control-Allow-Origin: *
  ```
 <!--- TODO(Paras): More restrictive CORS requirements probably exist. -->
 
-If you already have the server running per instructions in [Getting Started](./getting_started.md), then great, you can keep using that! If you're interested in a more minimal server example, check out `zaplib/examples/tutorial_js_rust_bridge/server.py`.
+If you already have the server running per instructions in [Getting Started](./getting_started.md), then great, you can keep using that (`cargo zaplib serve`)! If you're interested in a more minimal server example, check out `zaplib/examples/tutorial_js_rust_bridge/server.py`.
 
 ## Connecting to web
 Now that we have our backend ready, let's write our new JavaScript.
