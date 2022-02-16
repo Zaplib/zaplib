@@ -13,9 +13,13 @@ There are 2 types of tests available. The browser test suite is more extensive, 
 
 ## Updating the documentation
 
-* Build the website and watch for changes: `zaplib/scripts/watch_website_dev.sh` 
-* Run local server on port 4848: `website_dev/server.sh` 
-* Documentation sources are located at `zaplib/docs/src`
+The documentation files are located at `zaplib/docs/src`. To server the docs locally:
 
+1. Build the website and watch for changes: `zaplib/scripts/watch_website_dev.sh` 
+2. Run local server on port 4848: `website_dev/server.sh` 
 
+To update the prod website:
 
+1. Run: `zaplib/scripts/build_website_prod.sh`
+2. Clone zaplib-site locally: `git clone https://github.com/janpaul123/zaplib-site.git`
+3. Copy the built website files file to zaplib-site: `cp -r website/* ../zaplib-site/`

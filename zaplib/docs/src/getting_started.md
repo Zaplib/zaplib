@@ -1,12 +1,13 @@
 # Getting Started
 
 First let's install some dependencies:
-* [Install Rust](https://www.rust-lang.org/tools/install)
-* Clone the repo: `git clone https://github.com/Zaplib/zaplib.git`
-* Navigate to the repo: `cd zaplib`
-* Install the Cargo extension for Zaplib `cargo install cargo-zaplib`
-* Run the dependency installation using Zaplib Cargo tool `cargo zaplib install-deps`
+1. [Install Rust](https://www.rust-lang.org/tools/install)
+2. Clone the repo: `git clone https://github.com/Zaplib/zaplib.git`
+3. Navigate to the repo: `cd zaplib`
+4. Install the Cargo extension for Zaplib `cargo install cargo-zaplib`
+5. Run the dependency installation using Zaplib Cargo tool `cargo zaplib install-deps`
   * If you're going to do local development of Zaplib, be sue to add the `--devel` flag which installs some more dependencies, like [CEF](https://github.com/chromiumembedded) binaries.
+6. Install yarn: `npm install --global yarn`
 
 Now you're ready to run a simple example natively. Here are some fun ones to play with:
 * `cargo run -p example_single_button`
