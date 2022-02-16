@@ -8,7 +8,10 @@ use openssl::{
 };
 use rcgen::generate_simple_self_signed;
 
-use std::thread;
+pub(crate) fn serve(path: String, port: u16, ssl: bool) {
+    let server_future = server_thread(path, port, ssl);
+    rt::System::new().block_on(server_future)
+}
 
 async fn server_thread(path: String, port: u16, ssl: bool) {
     info!("Static server of '{path}' starting on port {port}");
@@ -49,12 +52,4 @@ async fn server_thread(path: String, port: u16, ssl: bool) {
     let protocol = if ssl { "https" } else { "http" };
     info!("Serving on {}://localhost:{}", protocol, port);
     server.await.unwrap();
-}
-
-pub(crate) fn serve(path: String, port: u16, ssl: bool) {
-    let server_thread = thread::spawn(move || {
-        let server_future = server_thread(path, port, ssl);
-        rt::System::new().block_on(server_future)
-    });
-    server_thread.join().unwrap();
 }
