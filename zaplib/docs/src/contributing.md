@@ -8,7 +8,7 @@ There are 2 types of tests available. The browser test suite is more extensive, 
   * Build the test suite: `cargo zaplib build -p test_suite`
   * Have local server running: `zaplib/scripts/server.py`
   * Navigate to `http://localhost:3000/zaplib/web/test_suite/` and click `Run All Tests`
-  * Test CEF by running `cargo run -p test_suite` and clicking `Run All Tests` (Mac OS X Intel only, and first install CEF using `cargo zaplib install-deps --devel`).
+  * Test CEF by running `cargo run -p test_suite` and clicking `Run All Tests` (macOS Intel only, and first install CEF using `cargo zaplib install-deps --devel`).
 * Running jest tests
   * `cd zaplib/web && yarn run jest`
 

@@ -9,12 +9,11 @@ publish = false
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 zaplib = { path="../../main" }
-zaplib_components = { path="../../components" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 zaplib = { path="../../main", features=["cef"] }
-zaplib_components = { path="../../components" }
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+zaplib_components = { path="../../components" }
