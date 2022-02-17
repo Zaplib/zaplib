@@ -1,12 +1,37 @@
 # Getting Started
 
-First let's install some dependencies:
-* [Install Rust](https://www.rust-lang.org/tools/install)
-* Clone the repo: `git clone https://github.com/Zaplib/zaplib.git`
-* Navigate to the repo: `cd zaplib`
-* Install the Cargo extension for Zaplib `cargo install cargo-zaplib`
-* Run the dependency installation using Zaplib Cargo tool `cargo zaplib install-deps`
-  * If you're going to do local development of Zaplib, be sue to add the `--devel` flag which installs some more dependencies, like [CEF](https://github.com/chromiumembedded) binaries.
+## Installation
+
+1. [Install Rust](https://www.rust-lang.org/tools/install)
+2. Clone Zaplib:
+
+```
+git clone https://github.com/Zaplib/zaplib.git
+```
+
+3. Navigate to the repo, install the Cargo extension for Zaplib, and the dependencies:
+
+```
+cd zaplib
+cargo install cargo-zaplib
+cargo zaplib install-deps
+```
+
+If you're going to do local development of Zaplib, be sue to add the `--devel` flag which installs some more dependencies, like [CEF](https://github.com/chromiumembedded) binaries.
+
+```
+cd zaplib
+cargo install cargo-zaplib
+cargo zaplib install-deps --devel
+```
+
+4. Install yarn: 
+
+```
+npm install --global yarn
+```
+
+## Examples
 
 Now you're ready to run a simple example natively. Here are some fun ones to play with:
 * `cargo run -p example_single_button`
@@ -15,32 +40,67 @@ Now you're ready to run a simple example natively. Here are some fun ones to pla
 * `cargo run -p example_lightning` (heavy; best to do a release build; see below)
 * `cargo run -p example_bigedit` (heavy; best to do a release build; see below)
 
-**Warning:** On Mac we currently have a memory leak bug, so some examples might crash after a while. Windows doens't work at all currently. Linux hasn't been tested very well recently. WebAssembly (below) should generally work well though. Early alpha software.. stay tuned!
-
-For a more performant build, add the `--release` flag, e.g.:
-* `cargo run -p example_single_button --release`
-
-Of course, Zaplib is primarily a framework for WebAssembly, so let's run these examples in a browser:
-* Download the latest version of a modern browser, like [Chrome](https://www.google.com/chrome/).
-* In a separate terminal window, run a basic server: `cargo zaplib serve`.
-* In another separate terminal window, start yarn to build the Zaplib javascript files:
-  * `cd zaplib/web && yarn && yarn watch`
-* Build all the examples using the Zaplib Cargo tool:
-  * `cargo zaplib build --workspace`
-  * (To just build a single example, use `cargo zaplib build -p example_single_button`)
-* Navigate your browser to:
-  * [`http://localhost:3000/zaplib/examples/example_single_button`](http://localhost:3000/zaplib/examples/example_single_button)
-* Again, for a more performant version, add the `--release` flag, e.g.:
-  * `cargo zaplib build --workspace --release`
-* To run the release build, add a `?release` flag to the URL:
-  * [`http://localhost:3000/zaplib/examples/example_single_button/?release`](http://localhost:3000/zaplib/examples/example_single_button/?release)
-
 Feel free to check out the `examples` directory for more examples to play with!
 
-To view automatically generated API documentation, run:
-* `zaplib/scripts/build_rustdoc.sh`
+**Warning:** On Mac we currently have a memory leak bug, so some examples might crash after a while. Windows doens't work at all currently. Linux hasn't been tested very well recently. WebAssembly (below) should generally work well though. Early alpha software.. stay tuned!
 
-If you're wondering what to do next, here are some options:
+## Release Build
+
+For a more performant build, add the `--release` flag, e.g.:
+
+```
+cargo run -p example_single_button --release
+```
+
+##  WebAssembly Build
+
+Of course, Zaplib is a WebAssembly framework, so let's run these in a browser:
+
+1. Download the latest version of a modern browser, like [Chrome](https://www.google.com/chrome/).
+2. In a separate terminal window, run a basic server:
+
+```
+cargo zaplib serve
+```
+
+3. In another separate terminal window, start yarn to build the Zaplib javascript files:
+
+```
+cd zaplib/web && yarn && yarn watch
+```
+
+4. Build all the examples using the Zaplib Cargo tool:
+   
+```
+cargo zaplib build --workspace
+```
+
+To just build a single example, use 
+
+```
+cargo zaplib build -p example_single_button
+```
+
+5. Navigate your browser to: [`http://localhost:3000/zaplib/examples/example_single_button`](http://localhost:3000/zaplib/examples/example_single_button)
+
+6. For a more performant version, add the `--release` flag:
+
+```
+cargo zaplib build --workspace --release
+```
+
+7. Then naviate to: [`http://localhost:3000/zaplib/examples/example_single_button/?release`](http://localhost:3000/zaplib/examples/example_single_button/?release)
+
+## Generate Docs
+
+To view automatically generated API documentation, run:
+
+```
+zaplib/scripts/build_rustdoc.sh
+```
+
+## Next Steps
+
 * Set up your [tooling](./basic_tooling.md).
 * Dive into some tutorials.
-* Look at the code for one of the examples (`example_single_button` is a great simple one to start with) and try to modify it.
+* Look at the code for one of the examples ([`example_single_button`](https://github.com/Zaplib/zaplib/blob/main/zaplib/examples/example_single_button/src/single_button.rs) is a great simple one to start with) and try to modify it.

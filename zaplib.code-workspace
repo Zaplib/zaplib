@@ -22,6 +22,9 @@
 		],
 		"eslint.format.enable": true,
 		"files.insertFinalNewline": true,
+		"cSpell.words": [
+			"Zaplib"
+		],
 	},
 	"extensions": {
 		"recommendations": [

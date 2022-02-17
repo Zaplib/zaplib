@@ -36,4 +36,5 @@
 background: linear-gradient(90deg, rgba(14,36,0,1) 0%, rgba(1,107,161,1) 0%, rgba(48,199,198,1) 87%);
   color: rgb(245, 245, 245);
   z-index: 999999;
+  position: relative;
 }
