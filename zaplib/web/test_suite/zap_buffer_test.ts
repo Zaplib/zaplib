@@ -1,6 +1,6 @@
-import { ZapParamType } from "./types";
-import { ZapBuffer, classesToExtend, containsZapBuffer } from "./zap_buffer";
-import { expect, expectThrow } from "./test_helpers";
+import { ZapParamType } from "types";
+import { ZapBuffer, classesToExtend, containsZapBuffer } from "zap_buffer";
+import { expect, expectThrow } from "test_suite/test_helpers";
 
 declare global {
   interface Window {

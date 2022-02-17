@@ -1,10 +1,10 @@
-import { RpcMouseEvent, RpcTouchEvent, RpcWheelEvent } from "./make_rpc_event";
+import { RpcMouseEvent, RpcTouchEvent, RpcWheelEvent } from "make_rpc_event";
 import {
   TextareaEvent,
   TextareaEventKeyDown,
   TextareaEventKeyUp,
   TextareaEventTextInput,
-} from "./make_textarea";
+} from "make_textarea";
 import {
   FileHandle,
   MutableBufferData,
@@ -13,7 +13,7 @@ import {
   SizingData,
   TlsAndStackData,
   ZapArray,
-} from "./types";
+} from "types";
 
 // Helpers to provide specific typing for Rpcs.
 // RpcSpec is a generic Rpc descriptor where we can send and receive events.

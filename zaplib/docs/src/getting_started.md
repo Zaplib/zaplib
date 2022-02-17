@@ -57,10 +57,10 @@ cargo run -p example_single_button --release
 Of course, Zaplib is a WebAssembly framework, so let's run these in a browser:
 
 1. Download the latest version of a modern browser, like [Chrome](https://www.google.com/chrome/).
-2. In a separate terminal window, run a basic server. (Our script requires Python 2):
+2. In a separate terminal window, run a basic server:
 
 ```
-zaplib/scripts/server.py
+cargo zaplib serve
 ```
 
 3. In another separate terminal window, start yarn to build the Zaplib javascript files:

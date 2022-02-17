@@ -1,7 +1,7 @@
 // This file should only be imported by WebWorkers
 /// <reference lib="WebWorker" />
 
-import { RpcSpec } from "./rpc_types";
+import { RpcSpec } from "rpc_types";
 import {
   FileHandle,
   MutableBufferData,
@@ -11,9 +11,9 @@ import {
   WasmExports,
   ZapArray,
   ZapParamType,
-} from "./types";
-import { getCachedZapBuffer, getZapBufferWasm } from "./zap_buffer";
-import { ZerdeBuilder } from "./zerde";
+} from "types";
+import { getCachedZapBuffer, getZapBufferWasm } from "zap_buffer";
+import { ZerdeBuilder } from "zerde";
 
 ////////////////////////////////////////////////////////////////
 // RPC

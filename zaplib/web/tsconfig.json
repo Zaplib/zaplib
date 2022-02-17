@@ -8,7 +8,8 @@
             "ESNext.WeakRef"
         ],
         "target": "es6",
-        "strict": true
+        "strict": true,
+        "baseUrl": ".",
     },
     "sourceMap": true,
     "allowJs": true,

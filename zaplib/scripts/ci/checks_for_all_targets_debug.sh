@@ -14,6 +14,7 @@ cargo check --all-targets --workspace --target x86_64-unknown-linux-gnu --exclud
 cargo check --all-targets --workspace --target wasm32-unknown-unknown
 # `--no-default-features` is to disable TLS since it breaks cross-compilation
 # `--exclude zaplib_cef(_sys)` and `test_suite` since we currently don't support cross-compiling with CEF.
-cargo check --all-targets --workspace --target x86_64-apple-darwin --no-default-features --exclude zaplib_cef --exclude zaplib_cef_sys --exclude test_suite --exclude tutorial_js_rust_bridge
-cargo check --all-targets --workspace --target x86_64-pc-windows-msvc --no-default-features --exclude zaplib_cef --exclude zaplib_cef_sys --exclude test_suite --exclude tutorial_js_rust_bridge
-cargo check --all-targets --workspace --target x86_64-pc-windows-gnu --no-default-features --exclude zaplib_cef --exclude zaplib_cef_sys --exclude test_suite --exclude tutorial_js_rust_bridge
+# `--exclude cargo-zaplib` because of an openssl dependency that doesn't support cross-compiling.
+cargo check --all-targets --workspace --target x86_64-apple-darwin --no-default-features --exclude zaplib_cef --exclude zaplib_cef_sys --exclude test_suite --exclude tutorial_js_rust_bridge --exclude cargo-zaplib
+cargo check --all-targets --workspace --target x86_64-pc-windows-msvc --no-default-features --exclude zaplib_cef --exclude zaplib_cef_sys --exclude test_suite --exclude tutorial_js_rust_bridge --exclude cargo-zaplib
+cargo check --all-targets --workspace --target x86_64-pc-windows-gnu --no-default-features --exclude zaplib_cef --exclude zaplib_cef_sys --exclude test_suite --exclude tutorial_js_rust_bridge --exclude cargo-zaplib

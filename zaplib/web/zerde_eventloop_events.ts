@@ -1,19 +1,19 @@
-import { createWasmBuffer, getZapParamType, makeZerdeBuilder } from "./common";
-import { Pointer, PointerScroll, WasmApp } from "./main_worker";
+import { createWasmBuffer, getZapParamType, makeZerdeBuilder } from "common";
+import { Pointer, PointerScroll, WasmApp } from "main_worker";
 import {
   TextareaEventKeyDown,
   TextareaEventKeyUp,
   TextareaEventTextInput,
-} from "./make_textarea";
+} from "make_textarea";
 import {
   FileHandle,
   PostMessageTypedArray,
   ZapArray,
   ZapParamType,
-} from "./types";
-import { gitSha } from "./type_of_runtime";
-import { ZerdeBuilder } from "./zerde";
-import { zerdeKeyboardHandlers } from "./zerde_keyboard_handlers";
+} from "types";
+import { gitSha } from "type_of_runtime";
+import { ZerdeBuilder } from "zerde";
+import { zerdeKeyboardHandlers } from "zerde_keyboard_handlers";
 
 // These constants must be kept in sync with the ones in main/src/cx_wasm32.rs
 const MSG_TYPE_END = 0;

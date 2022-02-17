@@ -27,7 +27,7 @@ impl TestSuiteApp {
             window: Window {
                 create_inner_size: Some(vec2(1000., 700.)),
                 #[cfg(not(target_arch = "wasm32"))]
-                create_cef_url: Some("http://localhost:3000/zaplib/test_suite/index.html".to_string()),
+                create_cef_url: Some("http://localhost:3000/zaplib/web/test_suite/index.html".to_string()),
                 ..Window::default()
             },
             pass: Pass::default(),

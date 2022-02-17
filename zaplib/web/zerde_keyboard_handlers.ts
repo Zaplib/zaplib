@@ -2,8 +2,8 @@ import {
   TextareaEventKeyDown,
   TextareaEventKeyUp,
   TextareaEventTextInput,
-} from "./make_textarea";
-import { ZerdeBuilder } from "./zerde";
+} from "make_textarea";
+import { ZerdeBuilder } from "zerde";
 
 export function packKeyModifier(e: {
   shiftKey: boolean;

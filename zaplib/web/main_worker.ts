@@ -1,16 +1,16 @@
-import { cursorMap } from "./cursor_map";
+import { cursorMap } from "cursor_map";
 import {
   Rpc,
   getWasmEnv,
   makeThreadLocalStorageAndStackDataOnExistingThread,
   initThreadLocalStorageMainWorker,
   createErrorCheckers,
-} from "./common";
+} from "common";
 import {
   TextareaEventKeyDown,
   TextareaEventKeyUp,
   TextareaEventTextInput,
-} from "./make_textarea";
+} from "make_textarea";
 import {
   FileHandle,
   WasmExports,
@@ -18,12 +18,12 @@ import {
   ZapArray,
   MutableBufferData,
   RustZapParam,
-} from "./types";
-import { ZerdeParser } from "./zerde";
-import { ZerdeEventloopEvents } from "./zerde_eventloop_events";
-import { packKeyModifier } from "./zerde_keyboard_handlers";
-import { WebGLRenderer } from "./webgl_renderer";
-import { RpcMouseEvent, RpcTouchEvent, RpcWheelEvent } from "./make_rpc_event";
+} from "types";
+import { ZerdeParser } from "zerde";
+import { ZerdeEventloopEvents } from "zerde_eventloop_events";
+import { packKeyModifier } from "zerde_keyboard_handlers";
+import { WebGLRenderer } from "webgl_renderer";
+import { RpcMouseEvent, RpcTouchEvent, RpcWheelEvent } from "make_rpc_event";
 import {
   Worker,
   WasmWorkerRpc,
@@ -31,7 +31,7 @@ import {
   WorkerCallRustParams,
   WorkerEvent,
   MainWorkerChannelEvent,
-} from "./rpc_types";
+} from "rpc_types";
 
 const rpc = new Rpc<Worker<WasmWorkerRpc>>(self);
 
