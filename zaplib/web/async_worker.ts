@@ -3,14 +3,14 @@ import {
   getWasmEnv,
   initThreadLocalStorageAndStackOtherWorkers,
   makeThreadLocalStorageAndStackDataOnExistingThread,
-} from "./common";
+} from "common";
 import {
   AsyncWorkerRpc,
   Worker,
   AsyncWorkerEvent,
   MainWorkerChannelEvent,
-} from "./rpc_types";
-import { WasmExports } from "./types";
+} from "rpc_types";
+import { WasmExports } from "types";
 
 const rpc = new Rpc<Worker<AsyncWorkerRpc>>(self);
 

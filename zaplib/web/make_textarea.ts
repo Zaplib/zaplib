@@ -1,5 +1,5 @@
-import { RpcKeyboardEvent, makeRpcKeyboardEvent } from "./make_rpc_event";
-import { WorkerEvent } from "./rpc_types";
+import { RpcKeyboardEvent, makeRpcKeyboardEvent } from "make_rpc_event";
+import { WorkerEvent } from "rpc_types";
 
 export type TextareaEventKeyDown = {
   type: WorkerEvent.KeyDown;

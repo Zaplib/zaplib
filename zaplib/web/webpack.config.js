@@ -34,6 +34,7 @@ const common = (env, argv) => {
       ],
     },
     resolve: {
+      modules: [path.resolve(__dirname, "."), "node_modules"],
       extensions: [".tsx", ".ts", ".js"],
     },
     devtool:

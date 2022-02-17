@@ -1,8 +1,8 @@
 // Wrapper around SharedArrayBuffer to encapsulate ownership of particular segments of it
 
-import { getZapParamType } from "./common";
-import { BufferData, MutableBufferData, ZapArray, ZapParamType } from "./types";
-import { inTest } from "./test_suite/test_helpers";
+import { getZapParamType } from "common";
+import { BufferData, MutableBufferData, ZapArray, ZapParamType } from "types";
+import { inTest } from "test_suite/test_helpers";
 
 // TODO(Paras) - Make sure we monkeypatch on web workers as well
 export class ZapBuffer extends SharedArrayBuffer {
