@@ -5,9 +5,9 @@ import {
   mutexLock,
   mutexUnlock,
   assertNotNull,
-} from "./common";
-import { Worker, TaskWorkerRpc, TaskWorkerEvent } from "./rpc_types";
-import { ZerdeParser } from "./zerde";
+} from "common";
+import { Worker, TaskWorkerRpc, TaskWorkerEvent } from "rpc_types";
+import { ZerdeParser } from "zerde";
 
 /// <reference lib="WebWorker" />
 

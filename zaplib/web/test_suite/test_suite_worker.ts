@@ -1,11 +1,11 @@
 /// <reference lib="WebWorker" />
 
-import * as zaplib from "./zaplib_worker_runtime";
-import { expect, expectThrow, expectThrowAsync } from "./test_helpers";
-import { Rpc } from "./common";
-import { TestSuiteWorkerSpec } from "./test_suite";
-import { Worker } from "./rpc_types";
-import { inWorker } from "./type_of_runtime";
+import * as zaplib from "zaplib_worker_runtime";
+import { expect, expectThrow, expectThrowAsync } from "test_suite/test_helpers";
+import { Rpc } from "common";
+import { TestSuiteWorkerSpec } from "test_suite/test_suite";
+import { Worker } from "rpc_types";
+import { inWorker } from "type_of_runtime";
 
 const rpc = new Rpc<Worker<TestSuiteWorkerSpec>>(self);
 

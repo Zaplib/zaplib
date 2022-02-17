@@ -1,6 +1,6 @@
-import { cursorMap } from "./cursor_map";
-import { copyArrayToRustBuffer, getZapParamType } from "./common";
-import { makeTextarea, TextareaEvent } from "./make_textarea";
+import { cursorMap } from "cursor_map";
+import { copyArrayToRustBuffer, getZapParamType } from "common";
+import { makeTextarea, TextareaEvent } from "make_textarea";
 import {
   CallRust,
   CallJsCallback,
@@ -10,7 +10,7 @@ import {
   CreateBuffer,
   ZapParamType,
   Initialize,
-} from "./types";
+} from "types";
 import {
   getCachedZapBuffer,
   overwriteTypedArraysWithZapArrays,
@@ -18,11 +18,11 @@ import {
   checkValidZapArray,
   getZapBufferCef,
   ZapBuffer,
-} from "./zap_buffer";
-import { ZerdeBuilder } from "./zerde";
-import { zerdeKeyboardHandlers } from "./zerde_keyboard_handlers";
-import { WorkerEvent } from "./rpc_types";
-import { addDefaultStyles } from "./default_styles";
+} from "zap_buffer";
+import { ZerdeBuilder } from "zerde";
+import { zerdeKeyboardHandlers } from "zerde_keyboard_handlers";
+import { WorkerEvent } from "rpc_types";
+import { addDefaultStyles } from "default_styles";
 
 type CefParams = (string | [ArrayBuffer, ZapParamType])[];
 type CefBufferData = [ArrayBuffer, number | undefined, ZapParamType];

@@ -1,4 +1,4 @@
-import { assertNotNull } from "./common";
+import { assertNotNull } from "common";
 
 export function addLoadingIndicator(): void {
   const style = document.createElement("style");

@@ -1,11 +1,11 @@
 // Import workers inline, so you can just include a single file "wasm_runtime.js"
 // without having to worry about having to serve multiple chunks.
 // @ts-ignore
-import MainWorker from "worker-loader?inline=no-fallback!./main_worker";
+import MainWorker from "worker-loader?inline=no-fallback!main_worker";
 // @ts-ignore
-import AsyncWorker from "worker-loader?inline=no-fallback!./async_worker";
+import AsyncWorker from "worker-loader?inline=no-fallback!async_worker";
 // @ts-ignore
-import TaskWorker from "worker-loader?inline=no-fallback!./task_worker";
+import TaskWorker from "worker-loader?inline=no-fallback!task_worker";
 
 import {
   getZapBufferWasm,
@@ -14,15 +14,15 @@ import {
   unregisterMutableBuffer,
   ZapBuffer,
   checkValidZapArray,
-} from "./zap_buffer";
+} from "zap_buffer";
 import {
   createErrorCheckers,
   getZapParamType,
   initTaskWorkerSab,
   Rpc,
   transformParamsFromRustImpl,
-} from "./common";
-import { makeTextarea, TextareaEvent } from "./make_textarea";
+} from "common";
+import { makeTextarea, TextareaEvent } from "make_textarea";
 import {
   CallRust,
   CallJsCallback,
@@ -36,26 +36,23 @@ import {
   MutableBufferData,
   RustZapParam,
   Initialize,
-} from "./types";
-import { WebGLRenderer } from "./webgl_renderer";
+} from "types";
+import { WebGLRenderer } from "webgl_renderer";
 import {
   makeRpcMouseEvent,
   makeRpcTouchEvent,
   makeRpcWheelEvent,
-} from "./make_rpc_event";
+} from "make_rpc_event";
 import {
   AsyncWorkerRpc,
   WasmWorkerRpc,
   WorkerEvent,
   TaskWorkerEvent,
   AsyncWorkerEvent,
-} from "./rpc_types";
-import {
-  addLoadingIndicator,
-  removeLoadingIndicator,
-} from "./loading_indicator";
-import { addDefaultStyles } from "./default_styles";
-import { inWorker } from "./type_of_runtime";
+} from "rpc_types";
+import { addLoadingIndicator, removeLoadingIndicator } from "loading_indicator";
+import { addDefaultStyles } from "default_styles";
+import { inWorker } from "type_of_runtime";
 
 declare global {
   interface Document {

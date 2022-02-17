@@ -3,5 +3,5 @@
 
 // Worker poylfil to use Webworkers
 // @ts-ignore
-import Worker from "./vendor/web-worker/node";
+import Worker from "vendor/web-worker/node";
 self.Worker = Worker;

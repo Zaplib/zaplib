@@ -2,7 +2,7 @@
 //
 // Keep in sync with zerde.rs, and see there for more information.
 
-import { RustZapParam, ZapParamType } from "./types";
+import { RustZapParam, ZapParamType } from "types";
 
 type GrowCallback = (
   _buffer: ArrayBuffer,

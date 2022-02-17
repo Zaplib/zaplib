@@ -18,8 +18,8 @@ import {
   makeZerdeBuilder,
   Rpc,
   transformParamsFromRustImpl,
-} from "./common";
-import { MainWorkerChannelEvent, WebWorkerRpc } from "./rpc_types";
+} from "common";
+import { MainWorkerChannelEvent, WebWorkerRpc } from "rpc_types";
 import {
   CallRust,
   CallRustInSameThreadSync,
@@ -30,8 +30,8 @@ import {
   RustZapParam,
   MutableBufferData,
   CreateBufferWorkerSync,
-} from "./types";
-import { inWorker } from "./type_of_runtime";
+} from "types";
+import { inWorker } from "type_of_runtime";
 import {
   getZapBufferWasm,
   isZapBuffer,
@@ -39,8 +39,8 @@ import {
   unregisterMutableBuffer,
   ZapBuffer,
   checkValidZapArray,
-} from "./zap_buffer";
-import { ZerdeParser } from "./zerde";
+} from "zap_buffer";
+import { ZerdeParser } from "zerde";
 
 let rpc: Rpc<WebWorkerRpc>;
 let wasmExports: WasmExports;

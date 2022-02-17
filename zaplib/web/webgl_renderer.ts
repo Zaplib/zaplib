@@ -1,12 +1,12 @@
-import { assertNotNull } from "./common";
+import { assertNotNull } from "common";
 import {
   ShaderAttributes,
   SizingData,
   Texture,
   Uniform,
   UniformType,
-} from "./types";
-import { ZerdeParser } from "./zerde";
+} from "types";
+import { ZerdeParser } from "zerde";
 
 type UniformLocation = {
   name: string;

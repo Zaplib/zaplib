@@ -8,14 +8,12 @@ publish = false
 # Note that you can also use zaplib-specific features directly, e.g. `zaplib/cef-debug`.
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-zaplib = { path="../main" }
-zaplib_components = { path="../components" }
+zaplib = { path="../../main" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-zaplib = { path="../main", features=["cef"] }
-zaplib_components = { path="../components" }
-
+zaplib = { path="../../main", features=["cef"] }
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+zaplib_components = { path="../../components" }
