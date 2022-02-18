@@ -14,6 +14,13 @@ import {
 } from "test_suite/test_helpers";
 import { inWorker } from "type_of_runtime";
 
+declare global {
+  interface Window {
+    // Exposed for zaplib_ci.
+    runAllTests3x: () => Promise<void>;
+  }
+}
+
 const expectDeallocationOrUnregister = (buffer: ZapArray) =>
   _expectDeallocationOrUnregister(zaplib.callRust, buffer);
 
@@ -433,15 +440,17 @@ zaplib
     const makeButtons = () => {
       const jsRoot = assertNotNull(document.getElementById("root"));
 
-      const runAllButton = document.createElement("button");
-      runAllButton.innerText = "Run All Tests 3x";
-      runAllButton.onclick = async () => {
+      window.runAllTests3x = async () => {
         setInTest(true);
         for (let i = 0; i < 3; i++) {
           for (const [testName, test] of Object.entries(tests)) {
             console.log(`Running test: ${testName}`);
             await test();
             console.log(`✅ Success`);
+            const button = document.getElementById(testName);
+            if (button) {
+              button.innerText += "✅";
+            }
           }
         }
         console.log(
@@ -449,6 +458,9 @@ zaplib
         );
         setInTest(false);
       };
+      const runAllButton = document.createElement("button");
+      runAllButton.innerText = "Run All Tests 3x";
+      runAllButton.onclick = window.runAllTests3x;
       const buttonDiv = document.createElement("div");
       buttonDiv.append(runAllButton);
       jsRoot.append(buttonDiv);
@@ -456,11 +468,13 @@ zaplib
       for (const [name, test] of Object.entries(tests)) {
         const button = document.createElement("button");
         button.innerText = name;
+        button.id = name;
         button.onclick = async () => {
           setInTest(true);
           console.log(`Running test: ${name}`);
           await test();
           console.log(`✅ Success`);
+          button.innerText += "✅";
           setInTest(false);
         };
 
@@ -480,6 +494,7 @@ zaplib
           console.log(`Running test: ${name}`);
           await test();
           console.log(`✅ Success`);
+          button.innerText += "✅";
           setInTest(false);
         };
 

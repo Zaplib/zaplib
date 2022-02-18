@@ -73,3 +73,13 @@ RUN set -ex \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
   # smoke test
   && yarn --version
+
+# Browserstack; from https://github.com/mtsmfm/BrowserStackLocal/blob/3edea504384a2f49c11a60d823f0eddbc5b15cb9/Dockerfile#L3
+RUN apt-get update && \
+  apt-get upgrade -y && \
+  apt-get install -y wget unzip && \
+  wget https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip && \
+  unzip BrowserStackLocal-linux-x64.zip && \
+  chmod +x BrowserStackLocal && \
+  rm BrowserStackLocal-linux-x64.zip && \
+  mv BrowserStackLocal /usr/local/bin
