@@ -8,7 +8,7 @@ use actix_files::Files;
 use actix_web::{dev::ServerHandle, middleware, rt, App as ActixApp, HttpServer};
 use clap::{Arg, Command};
 use log::{error, info};
-use thirtyfour::{prelude::*, Capabilities};
+use thirtyfour::{Capabilities, DesiredCapabilities, WebDriver};
 
 pub(crate) fn cmd() {
     // Use "info" logging level by default.
@@ -33,7 +33,9 @@ pub(crate) fn cmd() {
         )
         .get_matches();
 
-    let local_port = 1122; // Arbitrary port that we don't use elsewhere.
+    // Arbitrary port that we don't use elsewhere.
+    // We start a server so the browser can access our files.
+    let local_port = 1122;
 
     let (tx, rx) = mpsc::channel();
     let server_thread = thread::spawn(move || {
@@ -81,8 +83,8 @@ async fn test_suite_all_tests_3x(webdriver_url: String, local_port: u16, browser
             if is_browserstack {
                 driver
                     .execute_script(
-                        "browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": \
-                         {\"status\":\"passed\",\"reason\": \"\"}}",
+                        r#"browserstack_executor: {"action": "setSessionStatus", "arguments":
+                          {"status":"passed","reason": ""}}"#,
                     )
                     .await
                     .unwrap();
@@ -94,8 +96,8 @@ async fn test_suite_all_tests_3x(webdriver_url: String, local_port: u16, browser
                 error!("Tests failed: {str}");
                 driver
                     .execute_script(
-                        "browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": \
-                         {\"status\":\"failed\",\"reason\": \"\"}}",
+                        r#"browserstack_executor: {"action": "setSessionStatus", "arguments":
+                          {"status":"failed","reason": ""}}"#,
                     )
                     .await
                     .unwrap();
