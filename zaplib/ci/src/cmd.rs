@@ -65,6 +65,7 @@ async fn test_suite_all_tests_3x(webdriver_url: String, local_port: u16, browser
     info!("Connected to WebDriver...");
     driver.get(format!("http://localhost:{}/zaplib/web/test_suite", local_port)).await.unwrap();
     info!("Running tests...");
+    info!("For console output see the browser/Browserstack directly. See https://github.com/stevepryde/thirtyfour/issues/87");
     let script = r#"
         const done = arguments[0];
         const interval = setInterval(() => {
