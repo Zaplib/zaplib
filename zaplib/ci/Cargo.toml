@@ -1,0 +1,14 @@
+[package]
+name = "zaplib_ci"
+version = "0.0.1"
+edition = "2021"
+publish = false
+description = "Zaplib tools used in CI."
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+clap = "3.0.13"
+actix-web = { version = "4.0.0-rc.3" }
+log = "0.4.14"
+env_logger = "0.9.0"
+actix-files = "0.6.0-beta.16"
+thirtyfour = "0.28.1"

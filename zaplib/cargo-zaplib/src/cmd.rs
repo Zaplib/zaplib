@@ -1,18 +1,18 @@
-use clap::{App, AppSettings, Arg};
+use clap::{Arg, Command};
 
 pub(crate) fn cmd() {
     // Use "info" logging level by default.
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    let matches = App::new("Zaplib Command Line Tool")
-        .setting(AppSettings::ArgRequiredElseHelp)
+    let matches = Command::new("Zaplib Command Line Tool")
+        .arg_required_else_help(true)
         .about(env!["CARGO_PKG_DESCRIPTION"])
         .version(env!("CARGO_PKG_VERSION"))
         // When running as a cargo command, the second argument is the name of the program
         // and we want to ignore it when displaying help
         .arg(Arg::new("crate-version").hide(true))
         .subcommand(
-            App::new("install-deps")
+            Command::new("install-deps")
                 .arg(
                     Arg::new("devel")
                         .short('D')
@@ -23,7 +23,7 @@ pub(crate) fn cmd() {
                 .arg(Arg::new("ci").long("ci").takes_value(false).help("Install dependencies for CI")),
         )
         .subcommand(
-            App::new("build")
+            Command::new("build")
                 .arg(
                     Arg::new("release")
                         .short('R')
@@ -38,7 +38,7 @@ pub(crate) fn cmd() {
                 .arg(Arg::new("simd128").long("simd128").takes_value(false).help("Use 128-bit SIMD instruction set for WASM")),
         )
         .subcommand(
-            App::new("serve")
+            Command::new("serve")
                 .arg(Arg::new("path").takes_value(true).default_value(".").help("Path to files"))
                 .arg(Arg::new("port").long("port").takes_value(true).default_value("3000").help("TCP port to use"))
                 .arg(

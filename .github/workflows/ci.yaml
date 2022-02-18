@@ -4,7 +4,7 @@ jobs:
   build_web_ci:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:0bbef21ebbbdcdd42c46e85118bcddb2a9b668eb9cb027d46f96989b97117baf
+      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@master
@@ -14,52 +14,53 @@ jobs:
       - run: zaplib/scripts/ci/build_web_ci.sh
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          BROWSERSTACK_KEY: ${{ secrets.BROWSERSTACK_KEY }}
   checks_for_all_targets_debug:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:0bbef21ebbbdcdd42c46e85118bcddb2a9b668eb9cb027d46f96989b97117baf
+      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
     steps:
       - uses: actions/checkout@v2
       - run: zaplib/scripts/ci/checks_for_all_targets_debug.sh
   checks_for_all_targets_release:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:0bbef21ebbbdcdd42c46e85118bcddb2a9b668eb9cb027d46f96989b97117baf
+      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
     steps:
       - uses: actions/checkout@v2
       - run: zaplib/scripts/ci/checks_for_all_targets_release.sh
   debug_builds:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:0bbef21ebbbdcdd42c46e85118bcddb2a9b668eb9cb027d46f96989b97117baf
+      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
     steps:
       - uses: actions/checkout@v2
       - run: zaplib/scripts/ci/debug_builds.sh
   lint:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:0bbef21ebbbdcdd42c46e85118bcddb2a9b668eb9cb027d46f96989b97117baf
+      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
     steps:
       - uses: actions/checkout@v2
       - run: zaplib/scripts/ci/lint.sh
   release_builds:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:0bbef21ebbbdcdd42c46e85118bcddb2a9b668eb9cb027d46f96989b97117baf
+      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
     steps:
       - uses: actions/checkout@v2
       - run: zaplib/scripts/ci/release_builds.sh
   rust_nightly_build:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:0bbef21ebbbdcdd42c46e85118bcddb2a9b668eb9cb027d46f96989b97117baf
+      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
     steps:
       - uses: actions/checkout@v2
       - run: zaplib/scripts/ci/rust_nightly_build.sh
   tests:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:0bbef21ebbbdcdd42c46e85118bcddb2a9b668eb9cb027d46f96989b97117baf
+      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
     steps:
       - uses: actions/checkout@v2
       - run: zaplib/scripts/ci/tests.sh

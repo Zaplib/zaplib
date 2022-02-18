@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "zaplib/cargo-zaplib",
+    "zaplib/ci",
     "zaplib/examples/example_bigedit",
     "zaplib/examples/example_bigedit/http",
     "zaplib/examples/example_bigedit/hub",
