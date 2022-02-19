@@ -187,7 +187,11 @@ export function overwriteTypedArraysWithZapArrays(): void {
     }
   }
   patchPostMessage(self);
-  patchPostMessage(self.Worker);
+
+  // In Safari nested workers are not defined.
+  if (self.Worker) {
+    patchPostMessage(self.Worker);
+  }
 
   // Skipping this in nodejs case as web-worker polyfill doesn't provide MessagePort
   if (self.MessagePort) {
