@@ -39,7 +39,7 @@ async fn server_thread(path: String, port: u16, ssl: bool) {
 
     if ssl {
         info!("Generating self-signed certificates");
-        let cert = generate_simple_self_signed(vec!["localhost".to_string()]).unwrap();
+        let cert = generate_simple_self_signed(vec!["bs-local.com".to_string()]).unwrap();
         let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
         builder.set_private_key(&PKey::private_key_from_pem(cert.serialize_private_key_pem().as_bytes()).unwrap()).unwrap();
         builder.set_certificate(&X509::from_pem(cert.serialize_pem().unwrap().as_bytes()).unwrap()).unwrap();
