@@ -17,7 +17,7 @@ pushd zaplib/web
     npm version 0.0.0-$(git rev-parse --short HEAD)
     npm publish --tag canary
 
-    # Dev build (overriding prod build above), so we get better source maps.
+    # Dev build (overriding prod build above), so we get better stack traces.
     yarn run build-dev
 
     # JS Tests
