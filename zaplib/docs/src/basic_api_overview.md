@@ -1,5 +1,25 @@
 # API Overview
 
+Here is an overview of all the Basic APIs, and their support in various contexts. Missing features are annotated with their ticket id.
+
+| API                                         | Rust main thread | Rust child thread | JS WebWorker |
+| ------------------------------------------- | :---------------: | :---------------: | :--------------: |
+| Logging (`log!`)                            |       ✅          |        ✅          |       ✅        |
+| Spawning threads (`universal_thread`)       |       ✅          |        ✅          |     [#72][2]    |
+| Current time (`UniversalInstant`)           |       ✅          |        ✅          |       ✅        |
+| Reading local files (`UniversalFile`)       |       ✅          |        ✅          |     [#72][2]    |
+| Writing local files                         |    [#73][3]       |     [#73][3]       |     [#73][3]    |
+| HTTP requests (`UniversalFile`/`universal_http_stream`) |     ✅        |      ✅        |     ✅      |
+| Random (`universal_rand`)                   |       ✅          |        ✅          |       ✅        |
+| Websockets (`cx.websocket_send`)            |       ✅          |        [#71][1]     |    [#71][1]    |
+| Timers (`cx.start_timer`)                   |       ✅          |        [#71][1]     |    [#71][1]    |
+| Posting signals (`Cx::post_signal`)         |       ✅          |        ✅          |     [#72][2]    |
+| Profiling (`cx.profile_start`)              |       ✅          |        [#71][1]     |    [#71][1]    |
+
+[1]: https://github.com/Zaplib/zaplib/issues/71
+[2]: https://github.com/Zaplib/zaplib/issues/72
+[3]: https://github.com/Zaplib/zaplib/issues/73
+
 ## Universal APIs
 
 For the most part, you can use normal Rust APIs. However, some standard Rust APIs don't work with WebAssembly, so we've built our own cross-platform "universal" APIs.
