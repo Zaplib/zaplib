@@ -43,6 +43,13 @@ impl TestSuiteApp {
 
     pub fn handle(&mut self, cx: &mut Cx, event: &mut Event) {
         match event {
+            Event::Construct => {
+                // Send a dummy signal to make sure we don't crash when doing this in Event::Construct.
+                let signal = cx.new_signal();
+                Cx::post_signal(signal, location_hash!());
+                // Same for thread.
+                universal_thread::spawn(move || {});
+            }
             Event::Signal(sig) => {
                 if let Some(statusses) = sig.signals.get(&self.signal) {
                     for status in statusses {
