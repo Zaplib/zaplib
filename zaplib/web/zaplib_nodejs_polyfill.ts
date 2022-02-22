@@ -5,3 +5,7 @@
 // @ts-ignore
 import Worker from "vendor/web-worker/node";
 self.Worker = Worker;
+
+// eslint-disable-next-line
+const threads = require("worker_threads");
+self.MessageChannel = threads.MessageChannel;

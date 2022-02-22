@@ -250,13 +250,19 @@ export class WasmApp {
       bindMainWorkerPort(port);
     });
 
+    // create initial zerdeEventloopEvents
+    this.zerdeEventloopEvents = new ZerdeEventloopEvents(this);
+  }
+
+  // This is separate from the constructor, since this can cause calls
+  // to callbacks in `getWasmEnv`, which refer to `wasmapp`, so we need
+  // the constructor to have finished.
+  init(): void {
     Atomics.store(wasmOnline, 0, 1);
     this.exports = wrapWasmExports(this.exports);
 
     rpc.send(WorkerEvent.RemoveLoadingIndicators);
 
-    // create initial zerdeEventloopEvents
-    this.zerdeEventloopEvents = new ZerdeEventloopEvents(this);
     // initialize the application
     this.zerdeEventloopEvents.init({
       width: this.sizingData.width,
@@ -1009,6 +1015,7 @@ rpc.receive(
           fileHandles,
           taskWorkerSab,
         });
+        wasmapp.init();
         resolve();
       }, reject);
     });
