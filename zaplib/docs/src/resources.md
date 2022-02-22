@@ -6,13 +6,13 @@ We avoid many advanced Rust concepts (Traits, Generics, Macros, Async), so the c
 
 ## Ownership & Borrowing
 
-One major syntactic difference you'll notice is `& mut` type annotations in function parameters. It indicates a *mutable reference*. In JavaScript, all parameters are mutable references, so these semantics should feel familiar: all changes to mutable references are made on the original. 
+One major syntactic difference you'll notice is `&mut` type annotations in function parameters. It indicates a *mutable reference*. In JavaScript, all parameters are mutable references, so these semantics should feel familiar: all changes to mutable references are made on the original. 
 
 Unlike in JavaScript, Rust has an ownership model that allows it to:
 
 * not have a garbage collector
 * automatically allocate and free memory
-* guarantee that references are valid (no null pointers)
+* guarantee that references are valid (no null pointers, no 'use after free)
 * guarantee that all references are thread-safe
 
 In order to pull this off, Rust keeps careful track of which piece of your code has *ownership* of a particular value. 

@@ -1,3 +1,4 @@
+#![feature(custom_inner_attributes)]
 #![rustfmt::skip]
 
 //ANCHOR: main
@@ -12,7 +13,7 @@ impl App {
 
     fn handle(&mut self, _cx: &mut Cx, event: &mut Event) {  
         match event {                   
-            Event::Construct => {       // match on a Construct event (the first event)
+            Event::Construct => {       // match on the Construct event (the first event)
                 log!("Hello, world!");  
             }
             _ => {}                     // ignore all other events

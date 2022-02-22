@@ -6,7 +6,7 @@ The goal of Zaplib is to make it easy to build performance-intensive application
 
 Zaplib is designed to be **incrementally adoptable**. Start by porting over a single function you know is slow. Then port over an entire UI component, leaving the rest of your app alone. Over time, you could port your entire codebase over to Rust, or you might keep JavaScript and Rust code side-by-side.
 
-Zaplib is in alpha, but it's rapidly improving. If you want to use this library in production, please say hi in our [Slack](/slack.html), so we can work with you on the integration. Don't be shy - please reach out if you run into any issues at all :)
+Zaplib is in alpha, but it's rapidly improving. If you want to use this library in production, please say hi in our [Slack](/slack.html), so we can work with you on the integration. Don't be shy - please reach out if you run into any issues at all 😄
 
 ## Structure
 

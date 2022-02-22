@@ -1,4 +1,5 @@
 # Summary
+
 - [Introduction](./introduction.md)
 - [Getting Started](./getting_started.md)
 - [Developer Environment](./developer_environment.md)
@@ -6,7 +7,9 @@
 
 # Intro to Rust
 - [Resources](./resources.md)
+
 # Standard Library
+
 - [Introduction](./stdlib_introduction.md)
 - [Tutorial: Hello World Console](./tutorial_hello_world_console.md)
 - [Tutorial: Hello Thread, Hello File](./tutorial_hello_thread.md)
