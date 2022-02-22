@@ -130,6 +130,7 @@ macro_rules! register_call_rust {
         impl App {
             fn new(cx: &mut Cx) -> Self {
                 cx.on_call_rust(Self::on_call_rust);
+                cx.on_call_rust_in_same_thread_sync(Self::call_rust_in_same_thread_sync);
                 Self {}
             }
 
@@ -137,6 +138,10 @@ macro_rules! register_call_rust {
 
             fn on_call_rust(&mut self, cx: &mut Cx, name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
                 call_rust(name, params)
+            }
+
+            fn call_rust_in_same_thread_sync(name: &str, params: Vec<ZapParam>) -> Vec<ZapParam> {
+                call_rust(name.to_string(), params)
             }
 
             fn draw(&mut self, cx: &mut Cx) {}
