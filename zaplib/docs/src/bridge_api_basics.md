@@ -27,7 +27,7 @@ This initializes the library. A couple of things happen:
 
 **Caveats**
 * Can only be called on the browser's main thread; in a worker use `zaplib.initializeWorker()`.
-* `wasmModule` is ignored in CEF.
+* `wasmModule` is ignored in [CEF](./cef.md).
 
 ## zaplib.callRust
 
@@ -89,7 +89,7 @@ Note that when called on the browser's main thread, these calls are asynchronous
 
 ## zaplib.registerCallJsCallbacks & zaplib.unregisterCallJsCallbacks
 
-In order to call JS from Rust — e.g. in response to an event — you can register callbacks on the JS side, using `zaplib.registerCallJsCallbacks`. An example:
+In order to call from Rust to JS — e.g. in response to an event in Rust — you can register callbacks on the JS side, using `zaplib.registerCallJsCallbacks`. An example:
 
 ```js
 zaplib.registerCallJsCallbacks({

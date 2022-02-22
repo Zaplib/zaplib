@@ -1,30 +1,4 @@
-# Integrating with existing webapps
-
-Zaplib is still very experimental. Here are some things to keep in mind when integrating Zaplib in an existing application.
-1. We recommend saying hi in our [Slack](/slack.html), so we can work with you on the integration.
-2. Thoroughly read the docs, especially about the "JS-Rust bridge".
-3. There are some further notes below specific to integration.
-
-## Versioning
-
-We don't release proper versions yet. Instead, you should pick a git commit and pin to that. In your `Cargo.toml`:
-
-```toml
-[dependencies]
-zaplib = { git = "https://github.com/Zaplib/zaplib", rev="c015a1e" }
-```
-
-And in `package.json` (a version like this is pushed automatically to [npm](https://www.npmjs.com/) on every commit):
-
-```js
-"dependencies": {
-    "zaplib": "0.0.0-c015a1e"
-}
-```
-
-When upgrading, be sure to update both `Cargo.toml` and `package.json`, and be sure to follow along in [Slack](/slack.html) to learn about API changes.
-
-## Jest integration
+# Jest Integration
 
 Zaplib can run in the [Jest testing framework](https://jestjs.io/). Following [Tutorial: Integrating with JS](./tutorial_js_rust_bridge.md), let's assume we have a `sum` hook for `callRust` defined:
 

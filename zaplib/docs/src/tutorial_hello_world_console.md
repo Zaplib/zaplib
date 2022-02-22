@@ -2,24 +2,26 @@
 
 Let's write the most basic application: printing "Hello, world!" to the console.
 
-Either create a new folder in `zaplib/examples`, or follow along with the existing `tutorial_hello_world_console`.
-
-First, let's create our `Cargo.toml`:
+You can follow along with the existing `tutorial_hello_world_console`. First, we create our `Cargo.toml`:
 
 ```toml
 {{#include ../../examples/tutorial_hello_world_console/Cargo.toml}}
 ```
 
-Now, let's create `src/main.rs`:
+Now, we create `src/main.rs`:
 
 ```rust,noplayground
-{{#include ../../examples/tutorial_hello_world_console/src/main.rs}}
+{{#include ../../examples/tutorial_hello_world_console/src/main.rs:main}}
 ```
 
-Let's break it down a bit. The app must be a `struct` that implement three methods:
-* `new` — Returns an initialized struct and any initial state we add. For now, let's call the `default` implementation.
-* `handle` — An entrypoint into Zaplib's event handling system. We will go in depth on various event types in a different tutorial. For now, we'll put our `log!()` call in the the `Construct` event.
-* `draw` — Called when requesting a draw. This will control what gets shown on the application window, which we don't use yet.
+
+(For now, try to ignore the [`&mut` type annotations](./resources.html#ownership--borrowing).) 
+
+Let's break it down a bit. `App` is a `struct` that implements three methods:
+
+- `new` returns an initialized `App` `struct`.
+- `handle` is the entrypoint into Zaplib's event handling system. We will go in depth on various event types in a different tutorial. For now, we'll put our `log!()` call in the the `Construct` event.
+- `draw` is called when requesting a draw. This will control what gets shown on the application window, which we don't use yet.
 
 The call to `main_app!()` tells Zaplib to use the `App` struct for all its eventing and rendering.
 
@@ -29,16 +31,30 @@ Notice how this program currently never exits on its own. That behavior is simil
 
 ### WebAssembly
 
-Now let's add an `index.html`:
+1. Add an `index.html`:
 
 ```html
 {{#include ../../examples/tutorial_hello_world_console/index.html}}
 ```
 
-Compile to WebAssembly: `cargo zaplib build -p tutorial_hello_world_console`
+2. Compile to WebAssembly: 
 
-Be sure to run the server, as described in [Getting Started](./getting_started.md).
+```
+cargo zaplib build -p tutorial_hello_world_console
+```
 
-Navigate to [http://localhost:5000/zaplib/examples/tutorial_hello_world_console](http://localhost:5000/zaplib/examples/tutorial_hello_world_console), open the browser console, and again, see how it has printed "Hello, world!".
+3. Build the Zaplib runtime (normally imported as an npm package):
+
+```
+cd zaplib/web && yarn && yarn build
+```
+
+4. Run the server:
+
+```
+cargo zaplib serve
+```
+
+5. Navigate to [http://localhost:5000/zaplib/examples/tutorial_hello_world_console](http://localhost:5000/zaplib/examples/tutorial_hello_world_console), open the browser console, and see it printed "Hello, world!".
 
 Congratulations, you've written your first Zaplib program! 😄

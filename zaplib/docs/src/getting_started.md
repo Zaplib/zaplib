@@ -17,7 +17,7 @@ cargo install cargo-zaplib
 cargo zaplib install-deps
 ```
 
-If you're going to do local development of Zaplib, be sue to add the `--devel` flag which installs some more dependencies, like [CEF](https://github.com/chromiumembedded) binaries.
+If you're going to do local development of Zaplib, be sue to add the `--devel` flag which installs some more dependencies, like [CEF](./cef.md) binaries.
 
 ```
 cd zaplib
@@ -91,16 +91,8 @@ cargo zaplib build --workspace --release
 
 7. Then naviate to: [`http://localhost:3000/zaplib/examples/example_single_button/?release`](http://localhost:3000/zaplib/examples/example_single_button/?release)
 
-## Generate Docs
-
-To view automatically generated API documentation, run:
-
-```
-zaplib/scripts/build_rustdoc.sh
-```
-
 ## Next Steps
 
-* Set up your [tooling](./basic_tooling.md).
-* Dive into some tutorials.
-* Look at the code for one of the examples ([`example_single_button`](https://github.com/Zaplib/zaplib/blob/main/zaplib/examples/example_single_button/src/single_button.rs) is a great simple one to start with) and try to modify it.
+1. Set up your [developer environment](./developer_environment.html).
+2. Dive into some tutorials.
+3. Look at some example code. [`example_single_button`](https://github.com/Zaplib/zaplib/blob/main/zaplib/examples/example_single_button/src/single_button.rs) is a good place to start if you're coming from ReactJS.

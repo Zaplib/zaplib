@@ -8,7 +8,7 @@ There are 2 types of tests available. The browser test suite is more extensive, 
   * Build the test suite: `cargo zaplib build -p test_suite`
   * Have local server running: `cargo zaplib serve`
   * Navigate to `http://localhost:3000/zaplib/web/test_suite/` and click `Run All Tests`
-  * Test CEF by running `cargo run -p test_suite` and clicking `Run All Tests` (macOS Intel only, and first install CEF using `cargo zaplib install-deps --devel`).
+  * Test [CEF](./cef.md) by running `cargo run -p test_suite` and clicking `Run All Tests` (macOS Intel only, and first install [CEF](./cef.md) using `cargo zaplib install-deps --devel`).
   * Running these tests automatically (similar to CI):
     * `brew install --cask chromedriver`
     * `chromedriver`
