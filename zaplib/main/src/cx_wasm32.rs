@@ -897,12 +897,14 @@ extern "C" {
 
 pub(crate) const TASK_WORKER_INITIAL_RETURN_VALUE: i32 = -1;
 pub(crate) const TASK_WORKER_ERROR_RETURN_VALUE: i32 = -2;
+const TASK_WORKER_MESSAGE_TYPE_HTTP_STREAM_NEW: u32 = 1;
+const TASK_WORKER_MESSAGE_TYPE_HTTP_STREAM_READ: u32 = 2;
 
 /// Opens a new HTTP stream, blocks until there's a successful response, and returns a stream id.
 pub(crate) fn send_task_worker_message_http_stream_new(url: &str, method: &str, body: &[u8], headers: &[(&str, &str)]) -> i32 {
     let mut stream_id = TASK_WORKER_INITIAL_RETURN_VALUE;
     let mut zerde_builder = ZerdeBuilder::new();
-    zerde_builder.send_u32(1); // Message type.
+    zerde_builder.send_u32(TASK_WORKER_MESSAGE_TYPE_HTTP_STREAM_NEW);
     zerde_builder.send_u32(&mut stream_id as *mut i32 as u32);
     zerde_builder.send_string(url);
     zerde_builder.send_string(method);
@@ -927,7 +929,7 @@ pub(crate) fn send_task_worker_message_http_stream_new(url: &str, method: &str, 
 pub(crate) fn send_task_worker_message_http_stream_read(stream_id: i32, buf_ptr: *mut u8, buf_len: usize) -> i32 {
     let mut bytes_read = TASK_WORKER_INITIAL_RETURN_VALUE;
     let mut zerde_builder = ZerdeBuilder::new();
-    zerde_builder.send_u32(2); // Message type.
+    zerde_builder.send_u32(TASK_WORKER_MESSAGE_TYPE_HTTP_STREAM_READ);
     zerde_builder.send_u32(&mut bytes_read as *mut i32 as u32);
     zerde_builder.send_u32(stream_id as u32);
     zerde_builder.send_u32(buf_ptr as u32);

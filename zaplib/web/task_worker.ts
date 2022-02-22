@@ -66,6 +66,9 @@ type TaskWorkerMessage = {
 const _TASK_WORKER_INITIAL_RETURN_VALUE = -1;
 const TASK_WORKER_ERROR_RETURN_VALUE = -2;
 
+const TASK_WORKER_MESSAGE_TYPE_HTTP_STREAM_NEW = 1;
+const TASK_WORKER_MESSAGE_TYPE_HTTP_STREAM_READ = 2;
+
 const rpc = new Rpc<Worker<TaskWorkerRpc>>(self);
 rpc.receive(TaskWorkerEvent.Init, ({ taskWorkerSab, wasmMemory }) => {
   const taskWorkerSabi32 = new Int32Array(taskWorkerSab);
@@ -210,8 +213,7 @@ rpc.receive(TaskWorkerEvent.Init, ({ taskWorkerSab, wasmMemory }) => {
   function handleTwMessage(zerdeParser: ZerdeParser) {
     const messageType = zerdeParser.parseU32();
 
-    if (messageType == 1) {
-      // http_stream_new
+    if (messageType == TASK_WORKER_MESSAGE_TYPE_HTTP_STREAM_NEW) {
       const streamIdReturnValPtr = zerdeParser.parseU32();
       const url = zerdeParser.parseString();
       const method = zerdeParser.parseString();
@@ -263,7 +265,7 @@ rpc.receive(TaskWorkerEvent.Init, ({ taskWorkerSab, wasmMemory }) => {
             TASK_WORKER_ERROR_RETURN_VALUE
           );
         });
-    } else if (messageType == 2) {
+    } else if (messageType == TASK_WORKER_MESSAGE_TYPE_HTTP_STREAM_READ) {
       // http_stream_read
       const twMessage: TaskWorkerMessage = {
         bytesReadReturnValPtr: zerdeParser.parseU32(),
