@@ -1,3 +1,4 @@
+use crate::build_npm_package::build_npm_package;
 use actix_files::Files;
 use actix_web::{middleware, rt, App as ActixApp, HttpServer};
 use log::info;
@@ -7,7 +8,6 @@ use openssl::{
     x509::X509,
 };
 use rcgen::generate_simple_self_signed;
-use crate::build_npm_package::build_npm_package;
 
 pub(crate) fn serve(path: String, port: u16, ssl: bool) {
     let server_future = server_thread(path, port, ssl);
