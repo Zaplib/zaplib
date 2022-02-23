@@ -14,7 +14,10 @@ const common = (env, argv) => {
   return {
     output: {
       path: path.resolve(__dirname, "dist"),
-      filename: "[name].js",
+      filename:
+        argv.mode === "production"
+          ? "[name].production.js"
+          : "[name].development.js",
       library: {
         name: "zaplib",
         type: "umd",
