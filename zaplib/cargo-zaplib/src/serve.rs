@@ -7,6 +7,7 @@ use openssl::{
     x509::X509,
 };
 use rcgen::generate_simple_self_signed;
+use crate::build_npm_package::build_npm_package;
 
 pub(crate) fn serve(path: String, port: u16, ssl: bool) {
     let server_future = server_thread(path, port, ssl);
@@ -14,6 +15,8 @@ pub(crate) fn serve(path: String, port: u16, ssl: bool) {
 }
 
 async fn server_thread(path: String, port: u16, ssl: bool) {
+    build_npm_package(path.clone()).await;
+
     info!("Static server of '{path}' starting on port {port}");
     // srv is server controller type, `dev::Server`
     let mut http_server = HttpServer::new(move || {

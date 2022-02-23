@@ -1,60 +1,67 @@
 # Tutorial: Hello World Console
 
-Let's write the most basic application: printing "Hello, world!" to the console.
+Let's write the most basic application: printing "Hello, world!" to the console. You can follow along in [`zaplib/examples/tutorial_hello_world_console`](https://github.com/Zaplib/zaplib/tree/main/zaplib/examples/tutorial_hello_world_console).
 
-You can follow along with the existing `tutorial_hello_world_console`. First, we create our `Cargo.toml`:
+## 1. `Cargo.toml`
+
+The `Cargo.toml` file is where you configure your project much like you would in a `package.json`. This one simply imports Zaplib locally. If you use Zaplib outside of this repo, you'd need to [specify a version](./versioning.md).
 
 ```toml
 {{#include ../../examples/tutorial_hello_world_console/Cargo.toml}}
 ```
+## 2. `src/main.rs`
 
-Now, we create `src/main.rs`:
+The `src/main.rs` file is the entrypoint for your application.
 
 ```rust,noplayground
 {{#include ../../examples/tutorial_hello_world_console/src/main.rs:main}}
 ```
 
+Let's break it down a bit. (For now, try to ignore the [`&mut` type annotations](./resources.html#ownership--borrowing).) `App` is a `struct` that implements three methods:
 
-(For now, try to ignore the [`&mut` type annotations](./resources.html#ownership--borrowing).) 
-
-Let's break it down a bit. `App` is a `struct` that implements three methods:
-
-- `new` returns an initialized `App` `struct`.
-- `handle` is the entrypoint into Zaplib's event handling system. We will go in depth on various event types in a different tutorial. For now, we'll put our `log!()` call in the the `Construct` event.
-- `draw` is called when requesting a draw. This will control what gets shown on the application window, which we don't use yet.
+1. `new` returns an initialized `App` `struct`.
+2. `handle` is the entrypoint into Zaplib's event handling system. We will go in depth on various event types in a different tutorial. For now, we'll put our `log!()` call in the the `Construct` event.
+3. `draw` is called when requesting a draw. This will control what gets shown on the application window, which we don't use yet.
 
 The call to `main_app!()` tells Zaplib to use the `App` struct for all its eventing and rendering.
 
-This is already enough to run the native version: `cargo run -p tutorial_hello_world_console`. Hurray! It prints "Hello, world!".
+## 3. Run the app natively
+
+In your shell:
+
+```
+cargo run -p tutorial_hello_world_console
+```
+
+Hurray! It prints `Hello, world!` 🥳 
 
 Notice how this program currently never exits on its own. That behavior is similar to the web version, where the program doesn't exit until the browser window is closed. In our case here we don't have a native window yet, so terminate the program using CTRL+C.
 
-### WebAssembly
-
-1. Add an `index.html`:
-
-```html
-{{#include ../../examples/tutorial_hello_world_console/index.html}}
-```
-
-2. Compile to WebAssembly: 
+## 3. Compile to WebAssembly
 
 ```
 cargo zaplib build -p tutorial_hello_world_console
 ```
 
-3. Build the Zaplib runtime (normally imported as an npm package):
+## 4. `index.html`
 
-```
-cd zaplib/web && yarn && yarn build
+The ```index.html``` file simply imports the Zaplib runtime, and initializes it by pointing at the compiled WASM file for this example. If you use Zaplib outside of this repo, you'd likely use npm or yarn to install and import the Zaplib runtime.
+
+```html
+{{#include ../../examples/tutorial_hello_world_console/index.html}}
 ```
 
-4. Run the server:
+## 5. Run the server
+
+In your shell:
 
 ```
 cargo zaplib serve
 ```
+## 5. Open the app in Chrome
 
-5. Navigate to [http://localhost:5000/zaplib/examples/tutorial_hello_world_console](http://localhost:5000/zaplib/examples/tutorial_hello_world_console), open the browser console, and see it printed "Hello, world!".
+<a href="http://localhost:3000/zaplib/examples/tutorial_hello_world_console" target="_blank">http://localhost:3000/zaplib/examples/tutorial_hello_world_console</a>
+
+Open the browser console, and see how it has printed "Hello, world!".
 
 Congratulations, you've written your first Zaplib program! 😄

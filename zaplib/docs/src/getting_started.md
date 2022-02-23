@@ -46,19 +46,13 @@ Of course, Zaplib is a WebAssembly framework, so let's run these in **Chrome** (
 cargo zaplib build --workspace
 ```
 
-Or just a single example:
-
-```
-cargo zaplib build -p example_single_button
-```
-
-2. Run a basic server:
+2. Run a server:
 
 ```
 cargo zaplib serve
 ```
 
-3. Navigate your browser to: 
+3. Navigate Chrome to: 
 
 [`http://localhost:3000/zaplib/examples/example_single_button`](http://localhost:3000/zaplib/examples/example_single_button)
 

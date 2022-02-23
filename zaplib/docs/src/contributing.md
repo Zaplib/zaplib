@@ -30,3 +30,13 @@ To update the prod website:
 1. Run: `zaplib/scripts/build_website_prod.sh`
 2. Clone zaplib-site locally: `git clone https://github.com/janpaul123/zaplib-site.git`
 3. Copy the built website files file to zaplib-site: `cp -r website/* ../zaplib-site/`
+
+
+## Building the NPM Package
+
+1. Install Node & NPM & yarn
+2. Build the package:
+
+```
+cd zaplib/web && yarn && yarn watch
+```
