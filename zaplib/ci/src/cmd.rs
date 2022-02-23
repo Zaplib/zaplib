@@ -2,7 +2,7 @@
 //! * $ brew install --cask chromedriver
 //! * $ chromedriver
 
-use std::{error::Error, sync::mpsc, thread};
+use std::{env, error::Error, sync::mpsc, thread};
 
 use actix_files::Files;
 use actix_web::{dev::ServerHandle, middleware, rt, App as ActixApp, HttpServer};
@@ -148,7 +148,16 @@ async fn run_tests(webdriver_url: String, local_port: u16, browserstack_local_id
                 let mut capabilities = DesiredCapabilities::new(capabilities_json.clone());
                 capabilities.add("acceptSslCerts", true).unwrap();
                 capabilities.add_subkey("bstack:options", "projectName", "Zaplib").unwrap();
-                capabilities.add_subkey("bstack:options", "buildName", "test_suite").unwrap();
+                capabilities
+                    .add_subkey(
+                        "bstack:options",
+                        "buildName",
+                        env::var("GITHUB_REF").unwrap_or_else(|_| "(no git branch)".to_string())
+                            + " -- "
+                            + &env::var("GITHUB_SHA").unwrap_or_else(|_| "(no git sha)".to_string()),
+                    )
+                    .unwrap();
+                capabilities.add_subkey("bstack:options", "sessionName", &browser_name).unwrap();
                 capabilities.add_subkey("bstack:options", "local", "true").unwrap();
                 capabilities.add_subkey("bstack:options", "networkLogs", "true").unwrap();
                 capabilities.add_subkey("bstack:options", "seleniumVersion", "3.5.2").unwrap();
