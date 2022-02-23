@@ -12,6 +12,7 @@ import {
   ZapArray,
   ZapParamType,
 } from "types";
+import { inWorker } from "type_of_runtime";
 import { getCachedZapBuffer, getZapBufferWasm } from "zap_buffer";
 import { ZerdeBuilder } from "zerde";
 
@@ -452,7 +453,7 @@ export const getWasmEnv = ({
       throw new RustPanic(parseString(parseInt(charsPtr), parseInt(len)));
     },
     readUserFileRange: (userFileId, bufPtr, bufLen, fileOffset) => {
-      if (self.window) {
+      if (!inWorker) {
         throw new Error(
           "File reading is not supported on the browser's main thread"
         );
@@ -493,7 +494,7 @@ export const getWasmEnv = ({
       sendEventFromAnyThread(eventPtr);
     },
     readUrlSync: (urlPtr, urlLen, bufPtrOut, bufLenOut) => {
-      if (self.window) {
+      if (!inWorker) {
         // Main browser thread doesn't support synchronous+arraybuffer XMLHttpRequest.
         // TODO(JP): Use task worker for this instead.
         throw new Error("Not yet implemented");
