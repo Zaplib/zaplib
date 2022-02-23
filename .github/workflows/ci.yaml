@@ -7,7 +7,17 @@ jobs:
       image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Get full repo; necessary for `find_screenshots_compare_commit.sh`
       - uses: Swatinem/rust-cache@v1
+      - run: zaplib/scripts/ci/find_screenshots_compare_commit.sh
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: ci.yaml
+          commit: ${{ env.SCREENSHOT_COMPARE_COMMIT_HASH }}
+          name: screenshots
+          path: previous_screenshots/
+        continue-on-error: true
       - uses: actions/setup-node@master
         with:
           node-version: '16.x'
@@ -16,6 +26,18 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
           BROWSERSTACK_KEY: ${{ secrets.BROWSERSTACK_KEY }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: screenshots
+          path: screenshots_report/screenshots/
+      # TODO(JP): Include screenshots report in automated deployment;
+      # see https://github.com/Zaplib/zaplib/issues/22. Then also include
+      # automatic comment posted to Github, so someone can review the
+      # screenshots.
+      - uses: actions/upload-artifact@v2
+        with:
+          name: screenshots_report
+          path: screenshots_report/
   checks_for_all_targets_debug:
     runs-on: ubuntu-latest
     container:

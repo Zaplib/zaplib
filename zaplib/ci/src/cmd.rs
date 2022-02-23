@@ -2,7 +2,7 @@
 //! * $ brew install --cask chromedriver
 //! * $ chromedriver
 
-use std::{error::Error, sync::mpsc, thread};
+use std::{env, error::Error, fs, path::Path, sync::mpsc, thread};
 
 use actix_files::Files;
 use actix_web::{dev::ServerHandle, middleware, rt, App as ActixApp, HttpServer};
@@ -44,6 +44,9 @@ pub(crate) fn cmd() {
     // Arbitrary port that we don't use elsewhere.
     // We start a server so the browser can access our files.
     let local_port = 1122;
+
+    // Create a "screenshots" directory if it doesn't already exist.
+    fs::create_dir_all("screenshots").unwrap();
 
     let (tx, rx) = mpsc::channel();
     let server_thread = thread::spawn(move || {
@@ -148,7 +151,16 @@ async fn run_tests(webdriver_url: String, local_port: u16, browserstack_local_id
                 let mut capabilities = DesiredCapabilities::new(capabilities_json.clone());
                 capabilities.add("acceptSslCerts", true).unwrap();
                 capabilities.add_subkey("bstack:options", "projectName", "Zaplib").unwrap();
-                capabilities.add_subkey("bstack:options", "buildName", "test_suite").unwrap();
+                capabilities
+                    .add_subkey(
+                        "bstack:options",
+                        "buildName",
+                        env::var("GITHUB_REF").unwrap_or_else(|_| "(no git branch)".to_string())
+                            + " -- "
+                            + &env::var("GITHUB_SHA").unwrap_or_else(|_| "(no git sha)".to_string()),
+                    )
+                    .unwrap();
+                capabilities.add_subkey("bstack:options", "sessionName", &browser_name).unwrap();
                 capabilities.add_subkey("bstack:options", "local", "true").unwrap();
                 capabilities.add_subkey("bstack:options", "networkLogs", "true").unwrap();
                 capabilities.add_subkey("bstack:options", "seleniumVersion", "3.5.2").unwrap();
@@ -210,7 +222,9 @@ async fn test_suite_all_tests_3x(
             }
         }, 10);
     "#;
-    match driver.execute_async_script(script).await?.value().as_str().unwrap_or("--zaplib_ci: no string was returned--") {
+    let result = driver.execute_async_script(script).await?;
+    driver.screenshot(Path::new(&("screenshots/test_suite_all_tests_3x --".to_string() + browser_name + ".png"))).await?;
+    match result.value().as_str().unwrap_or("--zaplib_ci: no string was returned--") {
         "SUCCESS" => {
             info!("[{browser_name}] Tests passed!");
             if is_browserstack {
