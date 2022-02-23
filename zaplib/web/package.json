@@ -21,6 +21,7 @@
         "jest-environment-jsdom": "^27.5.1",
         "node-self": "^1.0.0-d",
         "prettier": "^2.4.1",
+        "reg-cli": "^0.17.4",
         "regenerator-runtime": "^0.13.9",
         "style-loader": "^3.3.1",
         "ts-loader": "^9.2.6",

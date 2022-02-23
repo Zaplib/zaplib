@@ -2,7 +2,7 @@
 //! * $ brew install --cask chromedriver
 //! * $ chromedriver
 
-use std::{env, error::Error, sync::mpsc, thread};
+use std::{env, error::Error, fs, path::Path, sync::mpsc, thread};
 
 use actix_files::Files;
 use actix_web::{dev::ServerHandle, middleware, rt, App as ActixApp, HttpServer};
@@ -44,6 +44,9 @@ pub(crate) fn cmd() {
     // Arbitrary port that we don't use elsewhere.
     // We start a server so the browser can access our files.
     let local_port = 1122;
+
+    // Create a "screenshots" directory if it doesn't already exist.
+    fs::create_dir_all("screenshots").unwrap();
 
     let (tx, rx) = mpsc::channel();
     let server_thread = thread::spawn(move || {
@@ -219,7 +222,9 @@ async fn test_suite_all_tests_3x(
             }
         }, 10);
     "#;
-    match driver.execute_async_script(script).await?.value().as_str().unwrap_or("--zaplib_ci: no string was returned--") {
+    let result = driver.execute_async_script(script).await?;
+    driver.screenshot(Path::new(&("screenshots/test_suite_all_tests_3x --".to_string() + browser_name + ".png"))).await?;
+    match result.value().as_str().unwrap_or("--zaplib_ci: no string was returned--") {
         "SUCCESS" => {
             info!("[{browser_name}] Tests passed!");
             if is_browserstack {
