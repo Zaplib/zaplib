@@ -16,14 +16,13 @@ import {
   checkValidZapArray,
 } from "zap_buffer";
 import {
+  callRustInSameThreadSyncImpl,
   createErrorCheckers,
-  createWasmBuffer,
   getWasmEnv,
   getZapParamType,
   initTaskWorkerSab,
   initThreadLocalStorageMainWorker,
   makeThreadLocalStorageAndStackDataOnExistingThread,
-  makeZerdeBuilder,
   Rpc,
   transformParamsFromRustImpl,
 } from "common";
@@ -42,7 +41,6 @@ import {
   RustZapParam,
   Initialize,
   WasmExports,
-  ZapParamType,
 } from "types";
 import { WebGLRenderer } from "webgl_renderer";
 import {
@@ -60,7 +58,6 @@ import {
 import { addLoadingIndicator, removeLoadingIndicator } from "loading_indicator";
 import { addDefaultStyles } from "default_styles";
 import { inWorker } from "type_of_runtime";
-import { ZerdeParser } from "zerde";
 
 declare global {
   interface Document {
@@ -222,60 +219,16 @@ export const callRust: CallRust = async (name, params = []) => {
 export const callRustInSameThreadSync: CallRustInSameThreadSync = (
   name,
   params = []
-) => {
-  checkWasm();
-
-  const zerdeBuilder = makeZerdeBuilder(wasmMemory, wasmExports);
-  zerdeBuilder.sendString(name);
-  zerdeBuilder.sendU32(params.length);
-  for (const param of params) {
-    if (typeof param === "string") {
-      zerdeBuilder.sendU32(ZapParamType.String);
-      zerdeBuilder.sendString(param);
-    } else {
-      if (param.buffer instanceof ZapBuffer) {
-        checkValidZapArray(param);
-        if (param.buffer.__zaplibBufferData.readonly) {
-          zerdeBuilder.sendU32(getZapParamType(param, true));
-
-          const arcPtr = param.buffer.__zaplibBufferData.arcPtr;
-
-          // ZapParam parsing code will construct an Arc without incrementing
-          // the count, so we do it here ahead of time.
-          wasmExports.incrementArc(BigInt(arcPtr));
-          zerdeBuilder.sendU32(arcPtr);
-        } else {
-          // TODO(Paras): User should not be able to access the buffer after
-          // passing it to Rust here
-          unregisterMutableBuffer(param.buffer);
-          zerdeBuilder.sendU32(getZapParamType(param, false));
-          zerdeBuilder.sendU32(param.buffer.__zaplibBufferData.bufferPtr);
-          zerdeBuilder.sendU32(param.buffer.__zaplibBufferData.bufferLen);
-          zerdeBuilder.sendU32(param.buffer.__zaplibBufferData.bufferCap);
-        }
-      } else {
-        console.warn(
-          "Consider passing Uint8Arrays backed by ZapBuffer to prevent copying data"
-        );
-
-        const vecLen = param.byteLength;
-        const vecPtr = createWasmBuffer(wasmMemory, wasmExports, param);
-        zerdeBuilder.sendU32(getZapParamType(param, false));
-        zerdeBuilder.sendU32(vecPtr);
-        zerdeBuilder.sendU32(vecLen);
-        zerdeBuilder.sendU32(vecLen);
-      }
-    }
-  }
-  const returnPtr = wasmExports.callRustInSameThreadSync(
+) =>
+  callRustInSameThreadSyncImpl({
+    name,
+    params,
+    checkWasm,
+    wasmMemory,
+    wasmExports,
     wasmAppPtr,
-    BigInt(zerdeBuilder.getData().byteOffset)
-  );
-
-  const zerdeParser = new ZerdeParser(wasmMemory, Number(returnPtr));
-  const returnParams = zerdeParser.parseZapParams();
-  return transformParamsFromRust(returnParams);
-};
+    transformParamsFromRust,
+  });
 
 export const createMutableBuffer: CreateBuffer = async (data) => {
   checkWasm();
