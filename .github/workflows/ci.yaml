@@ -7,6 +7,20 @@ jobs:
       image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
     steps:
       - uses: actions/checkout@v2
+      - uses: Swatinem/rust-cache@v1
+      - uses: actions/setup-node@master
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: zaplib/scripts/ci/build_web_ci.sh
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+  browser_tests:
+    runs-on: ubuntu-latest
+    container:
+      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+    steps:
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0 # Get full repo; necessary for `find_screenshots_compare_commit.sh`
       - uses: Swatinem/rust-cache@v1
@@ -22,9 +36,8 @@ jobs:
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
-      - run: zaplib/scripts/ci/build_web_ci.sh
+      - run: zaplib/scripts/ci/browser_tests.sh
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
           BROWSERSTACK_KEY: ${{ secrets.BROWSERSTACK_KEY }}
       - uses: actions/upload-artifact@v2
         with:
