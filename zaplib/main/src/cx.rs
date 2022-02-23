@@ -36,7 +36,7 @@ impl PlatformType {
     }
 }
 
-pub type CallRustInSameThreadSyncFn = fn(name: &str, params: Vec<ZapParam>) -> Vec<ZapParam>;
+pub type CallRustInSameThreadSyncFn = fn(name: String, params: Vec<ZapParam>) -> Vec<ZapParam>;
 
 /// The main "context" object which contains pretty much everything we need within the framework.
 pub struct Cx {

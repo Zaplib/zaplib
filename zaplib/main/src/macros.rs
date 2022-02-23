@@ -142,7 +142,7 @@ macro_rules! register_call_rust {
                 call_rust(name, params)
             }
 
-            fn call_rust_in_same_thread_sync(name: &str, params: Vec<ZapParam>) -> Vec<ZapParam> {
+            fn call_rust_in_same_thread_sync(name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
                 call_rust(name.to_string(), params)
             }
 
