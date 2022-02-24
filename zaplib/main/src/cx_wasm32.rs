@@ -99,9 +99,12 @@ impl Cx {
                     let js_git_sha = zerde_parser.parse_string();
                     // If a JS dev build was used; ignore this check.
                     if js_git_sha != "development" {
-                        let rust_git_sha = env!("VERGEN_GIT_SHA");
-                        if js_git_sha != rust_git_sha {
-                            panic!("JS git sha ({js_git_sha}) doesn't match Rust git sha ({rust_git_sha})");
+                        // If Rust build couldn't find .git directory (e.g. on Heroku); ignore this check.
+                        let rust_git_sha = option_env!("VERGEN_GIT_SHA");
+                        if let Some(rust_git_sha) = rust_git_sha {
+                            if js_git_sha != rust_git_sha {
+                                panic!("JS git sha ({js_git_sha}) doesn't match Rust git sha ({rust_git_sha})");
+                            }
                         }
                     }
 

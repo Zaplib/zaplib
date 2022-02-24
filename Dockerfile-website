@@ -1,0 +1,10 @@
+FROM janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+
+# Working dir is always the dir where this Dockerfile is located.
+# See https://devcenter.heroku.com/articles/build-docker-images-heroku-yml#known-issues-and-limitations
+COPY . .
+
+RUN zaplib/scripts/build_website_prod.sh
+
+RUN cargo build -p cargo-zaplib
+CMD cargo run -p cargo-zaplib -- serve website/ --port $PORT
