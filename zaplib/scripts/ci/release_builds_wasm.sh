@@ -8,5 +8,4 @@ cd "${0%/*}/../../.."
 zaplib/scripts/ci/common.sh
 
 export RUSTFLAGS="-D warnings"
-cargo build --release # builds a standard release build for the current operating system
 cargo run -p cargo-zaplib -- build --release # release build for wasm only

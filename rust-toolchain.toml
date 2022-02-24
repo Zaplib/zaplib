@@ -1,2 +1,5 @@
 [toolchain]
 channel = "nightly-2022-01-18"
+# For if we're ever moving away from nightly, note that it's important that we have
+# at least a nightly build running in CI, so we get notified about features that have stabilized, like
+# https://github.com/rust-lang/rust/issues/58179#issuecomment-867793443
