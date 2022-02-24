@@ -31,8 +31,8 @@
         "worker-loader": "^3.0.8"
     },
     "scripts": {
-        "build": "yarn build-copy && webpack --mode production && webpack --mode development",
         "build-copy": "mkdir -p dist && cp entrypoints/* dist/",
+        "build": "yarn build-copy && webpack --mode production && webpack --mode development",
         "watch": "yarn build-copy && webpack --watch --mode development",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
     }
