@@ -9,6 +9,7 @@ import * as zaplib from "zaplib_runtime";
 import {
   expect,
   expectDeallocationOrUnregister as _expectDeallocationOrUnregister,
+  expectThrow,
   expectThrowAsync,
   setInTest,
 } from "test_suite/test_helpers";
@@ -120,7 +121,7 @@ zaplib
               expect(subarray[0], 40);
               expect(subarray[1], 50);
             },
-            "Call Rust in same thread with zapbuffer": async () => {
+            "Call Rust in same thread with zapbuffer from worker": async () => {
               const result = await rpc.send(
                 "testCallRustInSameThreadSyncWithZapbuffer"
               );
@@ -140,59 +141,7 @@ zaplib
             ),
           }
         : {
-            "Call Rust (in same thread)": () => {
-              const buffer = new SharedArrayBuffer(8);
-              new Uint8Array(buffer).set([1, 2, 3, 4, 5, 6, 7, 8]);
-              const uint8Part = new Uint8Array(buffer, 2, 4);
-              const [result] = zaplib.callRustInSameThreadSync(
-                "array_multiply_u8",
-                [JSON.stringify(10), uint8Part]
-              );
-              expect(result.length, 4);
-              expect(result[0], 30);
-              expect(result[1], 40);
-              expect(result[2], 50);
-              expect(result[3], 60);
-            },
-            "Call Rust with Float32Array (in same thread)": async () => {
-              // Using a normal array
-              const input = new Float32Array([0.1, 0.9, 0.3]);
-              const result = zaplib.callRustInSameThreadSync(
-                "array_multiply_f32",
-                [JSON.stringify(10), input]
-              )[0] as Float32Array;
-              expect(result.length, 3);
-              expect(result[0], 1);
-              expect(result[1], 9);
-              expect(result[2], 3);
-
-              // Using a ZapArray
-              const input2 = await zaplib.createMutableBuffer(
-                new Float32Array([0.1, 0.9, 0.3])
-              );
-              const result2 = zaplib.callRustInSameThreadSync(
-                "array_multiply_f32",
-                [JSON.stringify(10), input2]
-              )[0] as Float32Array;
-              expect(result2.length, 3);
-              expect(result2[0], 1);
-              expect(result2[1], 9);
-              expect(result2[2], 3);
-
-              // Using a readonly ZapArray
-              const input3 = await zaplib.createReadOnlyBuffer(
-                new Float32Array([0.1, 0.9, 0.3])
-              );
-
-              const result3 = zaplib.callRustInSameThreadSync(
-                "array_multiply_f32_readonly",
-                [JSON.stringify(10), input3]
-              )[0] as Float32Array;
-              expect(result3.length, 3);
-              expect(result3[0], 1);
-              expect(result3[1], 9);
-              expect(result3[2], 3);
-            },
+            // CEF
           };
 
     const tests = {
@@ -352,6 +301,59 @@ zaplib
           expectDeallocationOrUnregister(result3),
         ]);
       },
+      "Call Rust (in same thread)": () => {
+        const buffer = new SharedArrayBuffer(8);
+        new Uint8Array(buffer).set([1, 2, 3, 4, 5, 6, 7, 8]);
+        const uint8Part = new Uint8Array(buffer, 2, 4);
+        const [result] = zaplib.callRustInSameThreadSync("array_multiply_u8", [
+          JSON.stringify(10),
+          uint8Part,
+        ]);
+        expect(result.length, 4);
+        expect(result[0], 30);
+        expect(result[1], 40);
+        expect(result[2], 50);
+        expect(result[3], 60);
+      },
+      "Call Rust with Float32Array (in same thread)": async () => {
+        // Using a normal array
+        const input = new Float32Array([0.1, 0.9, 0.3]);
+        const result = zaplib.callRustInSameThreadSync("array_multiply_f32", [
+          JSON.stringify(10),
+          input,
+        ])[0] as Float32Array;
+        expect(result.length, 3);
+        expect(result[0], 1);
+        expect(result[1], 9);
+        expect(result[2], 3);
+
+        // Using a ZapArray
+        const input2 = await zaplib.createMutableBuffer(
+          new Float32Array([0.1, 0.9, 0.3])
+        );
+        const result2 = zaplib.callRustInSameThreadSync("array_multiply_f32", [
+          JSON.stringify(10),
+          input2,
+        ])[0] as Float32Array;
+        expect(result2.length, 3);
+        expect(result2[0], 1);
+        expect(result2[1], 9);
+        expect(result2[2], 3);
+
+        // Using a readonly ZapArray
+        const input3 = await zaplib.createReadOnlyBuffer(
+          new Float32Array([0.1, 0.9, 0.3])
+        );
+
+        const result3 = zaplib.callRustInSameThreadSync(
+          "array_multiply_f32_readonly",
+          [JSON.stringify(10), input3]
+        )[0] as Float32Array;
+        expect(result3.length, 3);
+        expect(result3[0], 1);
+        expect(result3[1], 9);
+        expect(result3[2], 3);
+      },
       "Cast WrBuffers": async () => {
         const input = await zaplib.createMutableBuffer(new Float32Array([0.1]));
         const castArray = new Uint8Array(input.buffer);
@@ -387,13 +389,21 @@ zaplib
     };
 
     const checkWasmOffline = async () => {
-      const funcs = [
+      const asyncFuncs = [
         () => zaplib.callRust("call_rust_no_return"),
         () => zaplib.createMutableBuffer(new Uint8Array()),
         () => zaplib.createReadOnlyBuffer(new Uint8Array()),
       ];
-      for (const f of funcs) {
+      for (const f of asyncFuncs) {
         await expectThrowAsync(f, "Zaplib WebAssembly instance crashed");
+      }
+      const syncFuncs = [
+        () => {
+          zaplib.callRustInSameThreadSync("call_rust_no_return");
+        },
+      ];
+      for (const f of syncFuncs) {
+        expectThrow(f, "Zaplib WebAssembly instance crashed");
       }
 
       await rpc.send("runTest", "testErrorAfterPanic");

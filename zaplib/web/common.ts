@@ -10,10 +10,18 @@ import {
   WasmEnv,
   WasmExports,
   ZapArray,
+  ZapParam,
   ZapParamType,
 } from "types";
-import { getCachedZapBuffer, getZapBufferWasm } from "zap_buffer";
-import { ZerdeBuilder } from "zerde";
+import { inWorker } from "type_of_runtime";
+import {
+  checkValidZapArray,
+  getCachedZapBuffer,
+  getZapBufferWasm,
+  unregisterMutableBuffer,
+  ZapBuffer,
+} from "zap_buffer";
+import { ZerdeBuilder, ZerdeParser } from "zerde";
 
 ////////////////////////////////////////////////////////////////
 // RPC
@@ -452,6 +460,11 @@ export const getWasmEnv = ({
       throw new RustPanic(parseString(parseInt(charsPtr), parseInt(len)));
     },
     readUserFileRange: (userFileId, bufPtr, bufLen, fileOffset) => {
+      if (!inWorker) {
+        throw new Error(
+          "File reading is not supported on the browser's main thread"
+        );
+      }
       const file = fileHandles[userFileId];
       const start = Number(fileOffset);
       const end = start + Number(bufLen);
@@ -488,6 +501,12 @@ export const getWasmEnv = ({
       sendEventFromAnyThread(eventPtr);
     },
     readUrlSync: (urlPtr, urlLen, bufPtrOut, bufLenOut) => {
+      if (!inWorker) {
+        // Main browser thread doesn't support synchronous+arraybuffer XMLHttpRequest.
+        // TODO(JP): Use task worker for this instead.
+        throw new Error("Not yet implemented");
+      }
+
       const url = parseString(urlPtr, urlLen);
       const request = new XMLHttpRequest();
       request.responseType = "arraybuffer";
@@ -558,6 +577,78 @@ export function transformParamsFromRustImpl(
     }
   });
 }
+
+// TODO(JP): Some of this code is duplicated with callRust/call_js; see if we can reuse some.
+export const callRustInSameThreadSyncImpl: (options: {
+  name: string;
+  params: ZapParam[];
+  checkWasm: () => void;
+  wasmMemory: WebAssembly.Memory;
+  wasmExports: WasmExports;
+  wasmAppPtr: BigInt;
+  transformParamsFromRust: (params: RustZapParam[]) => (string | ZapArray)[];
+}) => ZapParam[] = ({
+  name,
+  params,
+  checkWasm,
+  wasmMemory,
+  wasmExports,
+  wasmAppPtr,
+  transformParamsFromRust,
+}) => {
+  checkWasm();
+
+  const zerdeBuilder = makeZerdeBuilder(wasmMemory, wasmExports);
+  zerdeBuilder.sendString(name);
+  zerdeBuilder.sendU32(params.length);
+  for (const param of params) {
+    if (typeof param === "string") {
+      zerdeBuilder.sendU32(ZapParamType.String);
+      zerdeBuilder.sendString(param);
+    } else {
+      if (param.buffer instanceof ZapBuffer) {
+        checkValidZapArray(param);
+        if (param.buffer.__zaplibBufferData.readonly) {
+          zerdeBuilder.sendU32(getZapParamType(param, true));
+
+          const arcPtr = param.buffer.__zaplibBufferData.arcPtr;
+
+          // ZapParam parsing code will construct an Arc without incrementing
+          // the count, so we do it here ahead of time.
+          wasmExports.incrementArc(BigInt(arcPtr));
+          zerdeBuilder.sendU32(arcPtr);
+        } else {
+          // TODO(Paras): User should not be able to access the buffer after
+          // passing it to Rust here
+          unregisterMutableBuffer(param.buffer);
+          zerdeBuilder.sendU32(getZapParamType(param, false));
+          zerdeBuilder.sendU32(param.buffer.__zaplibBufferData.bufferPtr);
+          zerdeBuilder.sendU32(param.buffer.__zaplibBufferData.bufferLen);
+          zerdeBuilder.sendU32(param.buffer.__zaplibBufferData.bufferCap);
+        }
+      } else {
+        console.warn(
+          "Consider passing Uint8Arrays backed by ZapBuffer to prevent copying data"
+        );
+
+        const vecLen = param.byteLength;
+        const vecPtr = createWasmBuffer(wasmMemory, wasmExports, param);
+        zerdeBuilder.sendU32(getZapParamType(param, false));
+        zerdeBuilder.sendU32(vecPtr);
+        zerdeBuilder.sendU32(vecLen);
+        zerdeBuilder.sendU32(vecLen);
+      }
+    }
+  }
+  const returnPtr = wasmExports.callRustInSameThreadSync(
+    wasmAppPtr,
+    BigInt(zerdeBuilder.getData().byteOffset)
+  );
+
+  const zerdeParser = new ZerdeParser(wasmMemory, Number(returnPtr));
+  const returnParams = zerdeParser.parseZapParams();
+  return transformParamsFromRust(returnParams);
+};
 
 export function assertNotNull<T>(
   value: T | null | undefined,

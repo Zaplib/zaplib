@@ -16,9 +16,13 @@ import {
   checkValidZapArray,
 } from "zap_buffer";
 import {
+  callRustInSameThreadSyncImpl,
   createErrorCheckers,
+  getWasmEnv,
   getZapParamType,
   initTaskWorkerSab,
+  initThreadLocalStorageMainWorker,
+  makeThreadLocalStorageAndStackDataOnExistingThread,
   Rpc,
   transformParamsFromRustImpl,
 } from "common";
@@ -36,6 +40,7 @@ import {
   MutableBufferData,
   RustZapParam,
   Initialize,
+  WasmExports,
 } from "types";
 import { WebGLRenderer } from "webgl_renderer";
 import {
@@ -112,7 +117,7 @@ export const unregisterCallJsCallbacks = (fnNames: string[]): void => {
 const wasmOnline = new Uint8Array(new SharedArrayBuffer(1));
 Atomics.store(wasmOnline, 0, 0);
 const wasmInitialized = () => Atomics.load(wasmOnline, 0) === 1;
-const { checkWasm } = createErrorCheckers(wasmInitialized);
+const { checkWasm, wrapWasmExports } = createErrorCheckers(wasmInitialized);
 
 // Wrap RPC so we can globally catch Rust panics
 let _rpc: Rpc<WasmWorkerRpc>;
@@ -137,6 +142,8 @@ export const newWorkerPort = (): MessagePort => {
 };
 
 let wasmMemory: WebAssembly.Memory;
+let wasmExports: WasmExports;
+let wasmAppPtr: BigInt;
 
 const destructor = (arcPtr: number) => {
   rpc.send(WorkerEvent.DecrementArc, arcPtr);
@@ -209,6 +216,20 @@ export const callRust: CallRust = async (name, params = []) => {
   );
 };
 
+export const callRustInSameThreadSync: CallRustInSameThreadSync = (
+  name,
+  params = []
+) =>
+  callRustInSameThreadSyncImpl({
+    name,
+    params,
+    checkWasm,
+    wasmMemory,
+    wasmExports,
+    wasmAppPtr,
+    transformParamsFromRust,
+  });
+
 export const createMutableBuffer: CreateBuffer = async (data) => {
   checkWasm();
 
@@ -262,15 +283,6 @@ export const deserializeZapArrayFromPostMessage = (
     zapBuffer,
     postMessageData.byteOffset,
     postMessageData.byteLength
-  );
-};
-
-export const callRustInSameThreadSync: CallRustInSameThreadSync = (
-  name,
-  _params = []
-) => {
-  throw new Error(
-    "`callRustInSameThreadSync` is currently not supported on the main thread in WASM"
   );
 };
 
@@ -455,7 +467,7 @@ export const initialize: Initialize = (initParams) => {
 
   overwriteTypedArraysWithZapArrays();
 
-  return new Promise<void>((resolve) => {
+  return new Promise<void>((resolve, reject) => {
     _rpc = new Rpc(new MainWorker());
 
     const baseUri =
@@ -739,29 +751,61 @@ export const initialize: Initialize = (initParams) => {
         };
         rpc.receive(WorkerEvent.ThreadSpawn, threadSpawn);
 
-        const offscreenCanvas =
-          self.OffscreenCanvas &&
-          canvasData.renderingMethod instanceof OffscreenCanvas
-            ? canvasData.renderingMethod
-            : undefined;
-        rpc
-          .send(
-            WorkerEvent.Init,
-            {
-              wasmModule,
-              offscreenCanvas,
-              sizingData: canvasData.getSizingData(),
-              baseUri,
-              memory: wasmMemory,
-              taskWorkerSab,
-              wasmOnline,
-            },
-            offscreenCanvas ? [offscreenCanvas] : []
-          )
-          .then(() => {
-            canvasData.onScreenResize();
-            resolve();
-          });
+        function getExports() {
+          return wasmExports;
+        }
+
+        const env = getWasmEnv({
+          getExports,
+          memory: wasmMemory,
+          taskWorkerSab,
+          fileHandles: [], // TODO(JP): implement at some point..
+          sendEventFromAnyThread: (_eventPtr: BigInt) => {
+            throw new Error("Not yet implemented");
+          },
+          threadSpawn: () => {
+            throw new Error("Not yet implemented");
+          },
+          baseUri,
+        });
+
+        WebAssembly.instantiate(wasmModule, { env }).then((instance: any) => {
+          const offscreenCanvas =
+            self.OffscreenCanvas &&
+            canvasData.renderingMethod instanceof OffscreenCanvas
+              ? canvasData.renderingMethod
+              : undefined;
+
+          wasmExports = instance.exports as WasmExports;
+          initThreadLocalStorageMainWorker(wasmExports);
+          const tlsAndStackData =
+            makeThreadLocalStorageAndStackDataOnExistingThread(wasmExports);
+          wasmAppPtr = wasmExports.createWasmApp();
+          // The calls above are safe when wasm isn't online yet, but after that let's
+          // wrap for safety.
+          wasmExports = wrapWasmExports(wasmExports);
+
+          rpc
+            .send(
+              WorkerEvent.Init,
+              {
+                wasmModule,
+                offscreenCanvas,
+                sizingData: canvasData.getSizingData(),
+                baseUri,
+                memory: wasmMemory,
+                taskWorkerSab,
+                tlsAndStackData,
+                appPtr: wasmAppPtr,
+                wasmOnline,
+              },
+              offscreenCanvas ? [offscreenCanvas] : []
+            )
+            .then(() => {
+              canvasData.onScreenResize();
+              resolve();
+            });
+        }, reject);
       });
     };
 

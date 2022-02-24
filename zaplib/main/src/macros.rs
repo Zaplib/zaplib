@@ -13,6 +13,7 @@ macro_rules! main_app {
             let mut cx = Cx::new(std::any::TypeId::of::<$app>());
             let mut app = $app::new(&mut cx);
             let mut cxafterdraw = CxAfterDraw::new(&mut cx);
+            cx.set_finished_app_new();
             cx.event_loop(|cx, mut event| {
                 match event {
                     Event::System(e) => {
@@ -62,6 +63,7 @@ macro_rules! main_app {
             let mut cx = Box::new(Cx::new(std::any::TypeId::of::<$app>()));
             let app = Box::new($app::new(&mut cx));
             let cxafterdraw = Box::new(CxAfterDraw::new(&mut cx));
+            cx.set_finished_app_new();
             Box::into_raw(Box::new((Box::into_raw(app), Box::into_raw(cx), Box::into_raw(cxafterdraw)))) as u64
         }
 
@@ -130,12 +132,17 @@ macro_rules! register_call_rust {
         impl App {
             fn new(cx: &mut Cx) -> Self {
                 cx.on_call_rust(Self::on_call_rust);
+                cx.on_call_rust_in_same_thread_sync(Self::call_rust_in_same_thread_sync);
                 Self {}
             }
 
             fn handle(&mut self, cx: &mut Cx, event: &mut Event) {}
 
             fn on_call_rust(&mut self, cx: &mut Cx, name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
+                call_rust(name, params)
+            }
+
+            fn call_rust_in_same_thread_sync(name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
                 call_rust(name, params)
             }
 

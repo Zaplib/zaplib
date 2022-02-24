@@ -36,8 +36,7 @@ impl PlatformType {
     }
 }
 
-#[cfg(any(feature = "cef", target_arch = "wasm32"))]
-pub type CallRustInSameThreadSyncFn = fn(name: &str, params: Vec<ZapParam>) -> Vec<ZapParam>;
+pub type CallRustInSameThreadSyncFn = fn(name: String, params: Vec<ZapParam>) -> Vec<ZapParam>;
 
 /// The main "context" object which contains pretty much everything we need within the framework.
 pub struct Cx {
@@ -224,6 +223,10 @@ pub struct Cx {
 
     /// Reference to the main_app type
     pub app_type_id: TypeId,
+
+    /// `false` when we're in the `new` function of the app. This means that we can do thread-unsafe
+    /// initialization, since we're still guaranteed that there are no other threads running.
+    pub(crate) finished_app_new: bool,
 }
 
 /// Flags that can be set that enable debug functionality. See [`Cx::debug_flags_mut`] for an example.
@@ -361,6 +364,7 @@ impl Cx {
 
             call_rust_fn: None,
             app_type_id,
+            finished_app_new: false,
         }
     }
 
@@ -879,6 +883,26 @@ impl Cx {
         }
         self.call_rust_fn = Some(Box::into_raw(Box::new(func)) as usize);
     }
+
+    /// Set the callback for `zaplib.callRustInSameThreadSync` calls.
+    ///
+    /// Can only be called in the `new` function of your app, since we do some thread-unsafe
+    /// operations in this, and during `new` there are no threads yet. We make the assertion
+    /// here for consistency, but it's primarily for `on_call_rust_in_same_thread_sync_internal`
+    /// in `cx_wasm32.rs`.
+    #[allow(unused_variables)] // `func` is unused when not matching the `cfg` below.
+    pub fn on_call_rust_in_same_thread_sync(&mut self, func: CallRustInSameThreadSyncFn) {
+        assert!(!self.finished_app_new, "Can only call cx.on_call_rust_in_same_thread_sync in `new`");
+
+        #[cfg(any(target_arch = "wasm32", feature = "cef"))]
+        self.on_call_rust_in_same_thread_sync_internal(func);
+    }
+
+    /// Mark that the `new` function of the main app has been called. Automatically called by the `main_app!` macro;
+    /// don't call this in user code.
+    pub fn set_finished_app_new(&mut self) {
+        self.finished_app_new = true;
+    }
 }
 
 /// A bunch of traits that are common between the native platforms and the WebAssembly platform. This trait makes sure
@@ -916,9 +940,6 @@ pub trait CxDesktopVsWasmCommon {
 
     /// Mechanism to communicate back returns values from call_rust functions.
     fn return_to_js(&mut self, callback_id: u32, params: Vec<ZapParam>);
-
-    #[cfg(any(target_arch = "wasm32", feature = "cef"))]
-    fn on_call_rust_in_same_thread_sync(&mut self, func: CallRustInSameThreadSyncFn);
 }
 
 /// A bunch of traits that are common between the different target platforms. This trait makes sure

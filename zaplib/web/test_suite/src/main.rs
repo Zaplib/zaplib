@@ -167,8 +167,8 @@ impl TestSuiteApp {
         self.window.end_window(cx);
     }
 
-    pub fn call_rust_in_same_thread_sync(name: &str, params: Vec<ZapParam>) -> Vec<ZapParam> {
-        match name {
+    pub fn call_rust_in_same_thread_sync(name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
+        match name.as_str() {
             "array_multiply_u8" => {
                 let value: u8 = serde_json::from_str(params[0].as_str()).unwrap();
                 let b = params[1].as_u8_slice();
