@@ -1,3 +1,4 @@
+use crate::build_npm_package::build_npm_package;
 use actix_files::Files;
 use actix_web::{middleware, rt, App as ActixApp, HttpServer};
 use log::info;
@@ -14,6 +15,8 @@ pub(crate) fn serve(path: String, port: u16, ssl: bool) {
 }
 
 async fn server_thread(path: String, port: u16, ssl: bool) {
+    build_npm_package(&path).await;
+
     info!("Static server of '{path}' starting on port {port}");
     // srv is server controller type, `dev::Server`
     let mut http_server = HttpServer::new(move || {

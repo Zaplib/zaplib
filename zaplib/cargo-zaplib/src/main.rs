@@ -1,6 +1,8 @@
 #[cfg(not(target_arch = "wasm32"))]
 mod build;
 #[cfg(not(target_arch = "wasm32"))]
+mod build_npm_package;
+#[cfg(not(target_arch = "wasm32"))]
 mod cmd;
 #[cfg(not(target_arch = "wasm32"))]
 mod install_deps;
