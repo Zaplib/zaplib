@@ -12,7 +12,7 @@ cargo run -p cargo-zaplib -- build -p test_suite
 pushd zaplib/web
     # Dev build (instead of prod, so we get better stack traces)
     yarn
-    yarn run build-dev
+    yarn run build
 popd
 
 # Integration tests with Browserstack (uses test suite)

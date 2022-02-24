@@ -39,7 +39,7 @@ Then the simple Jest test would look like this:
 // example-jest.test.js
 
 // Import set of polyfills to run zaplib in NodeJS environment
-require("zaplib/dist/zaplib_nodejs_polyfill");
+require("zaplib/dist/zaplib_nodejs_polyfill.development");
 
 const zaplib = require("zaplib");
 const fs = require("fs");
@@ -60,5 +60,5 @@ test("initializes zaplib and calls sum", async () => {
 });
 ```
 Couple of notes:
- - Zaplib provides a set of polyfills for running in Node.js, which can be found in `zaplib/dist/zaplib_nodejs_polyfill` (in the `zaplib` npm package).
+ - Zaplib provides a set of polyfills for running in Node.js, which can be found in `zaplib/dist/zaplib_nodejs_polyfill.development` (in the `zaplib` npm package).
  - Make sure to initialize `wasmPath = ...` to the path of your wasm file

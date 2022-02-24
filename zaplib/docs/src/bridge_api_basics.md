@@ -1,6 +1,6 @@
 # Basics
 
-First, make sure to install the [npm package](https://www.npmjs.com/package/zaplib) and include the main entry point (`zaplib_runtime.js`).
+First, make sure to include the main entry point (`zaplib_runtime.development.js`).
 
 ## zaplib.initialize
 

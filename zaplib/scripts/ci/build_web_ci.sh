@@ -14,7 +14,6 @@ pushd zaplib/web
     # are still some failing tests
     yarn install
     yarn run build
-    yarn run build-dev
     npm version 0.0.0-$(git rev-parse --short HEAD)
     npm publish --tag canary
 
