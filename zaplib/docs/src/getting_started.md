@@ -54,7 +54,7 @@ cargo zaplib serve
 
 3. Navigate Chrome to: 
 
-[`http://localhost:3000/zaplib/examples/example_single_button`](http://localhost:3000/zaplib/examples/example_single_button)
+<a target="_blank" href="http://localhost:3000/zaplib/examples/example_single_button">http://localhost:3000/zaplib/examples/example_single_button</a>
 
 ## Release Build
 
@@ -75,8 +75,7 @@ cargo zaplib build -p example_single_button --release
 
 You'll also need to add the `?release` query param:
 
-[`http://localhost:3000/zaplib/examples/example_single_button/?release`](http://localhost:3000/zaplib/examples/example_single_button/?release)
-
+<a target="_blank" href="http://localhost:3000/zaplib/examples/example_single_button/?release">http://localhost:3000/zaplib/examples/example_single_button/?release</a>
 
 ## Next Steps
 

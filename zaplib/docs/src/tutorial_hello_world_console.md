@@ -45,7 +45,7 @@ cargo zaplib build -p tutorial_hello_world_console
 
 ## 4. `index.html`
 
-The ```index.html``` file simply imports the Zaplib runtime, and initializes it by pointing at the compiled WASM file for this example. If you use Zaplib outside of this repo, you'd likely use npm or yarn to install and import the Zaplib runtime.
+The `index.html` file simply imports the Zaplib runtime, and initializes it by pointing at the compiled WASM file for this example. If you use Zaplib outside of this repo, you'd likely use npm or yarn to install and import the Zaplib runtime.
 
 ```html
 {{#include ../../examples/tutorial_hello_world_console/index.html}}

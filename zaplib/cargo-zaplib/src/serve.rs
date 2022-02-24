@@ -15,7 +15,7 @@ pub(crate) fn serve(path: String, port: u16, ssl: bool) {
 }
 
 async fn server_thread(path: String, port: u16, ssl: bool) {
-    build_npm_package(path.clone()).await;
+    build_npm_package(&path).await;
 
     info!("Static server of '{path}' starting on port {port}");
     // srv is server controller type, `dev::Server`
