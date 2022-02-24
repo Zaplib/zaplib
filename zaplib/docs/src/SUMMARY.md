@@ -45,6 +45,7 @@
 # Advanced
 - [Versioning](./versioning.md)
 - [Jest Integration](./jest_integration.md)
+- [Webpack Integration](./webpack_integration.md)
 - [CEF](./cef.md)
 - [Known Issues](./known_issues.md)
 - [Contributing](./contributing.md)

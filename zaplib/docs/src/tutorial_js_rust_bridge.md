@@ -138,8 +138,8 @@ zaplib.initialize({
 <!-- index.html -->
 <html>
     <head>
-        <!-- Update to match your path to zaplib_runtime.js -->
-        <script type="text/javascript" src="/zaplib/web/dist/zaplib_runtime.js"></script>
+        <!-- Update to match your path to zaplib_runtime -->
+        <script type="text/javascript" src="/zaplib/web/dist/zaplib_runtime.development.js"></script>
         <script type="text/javascript" src="./index.js"></script>
     </head>
     <body>

@@ -3,17 +3,17 @@
 // For async tests in jest
 require("regenerator-runtime/runtime");
 
-require("../dist/zaplib_nodejs_polyfill");
+require("../dist/zaplib_nodejs_polyfill.development");
 
 const fs = require("fs");
 
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { sendToDummyWorker } = require("../dist/test_jest");
+const { sendToDummyWorker } = require("../dist/test_jest.development");
 
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const zaplib = require("../dist/zaplib_runtime");
+const zaplib = require("../dist/zaplib_runtime.development");
 
 test("calls dummy worker", async () => {
   const result = await sendToDummyWorker("foo");

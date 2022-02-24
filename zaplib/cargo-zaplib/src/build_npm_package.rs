@@ -40,8 +40,8 @@ pub async fn build_npm_package(path: &str) {
         return;
     }
 
-    let build_status = Command::new("yarn").arg("build-dev").current_dir(&format!("{}/zaplib/web", path)).status();
+    let build_status = Command::new("yarn").arg("build").current_dir(&format!("{}/zaplib/web", path)).status();
     if build_status.is_err() {
-        info!("`yarn build-dev` in ./zaplib/web directory failed; skipping build");
+        info!("`yarn build` in ./zaplib/web directory failed; skipping build");
     }
 }
