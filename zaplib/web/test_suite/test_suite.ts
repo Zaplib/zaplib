@@ -37,7 +37,7 @@ export type TestSuiteWorkerSpec = {
         subarray: PostMessageTypedArray;
       }
     ];
-    testCallRustInSameThreadSyncWithZapbuffer: [void, PostMessageTypedArray];
+    testCallRustSyncWithZapbuffer: [void, PostMessageTypedArray];
   };
   receive: Record<string, never>;
 };
@@ -97,7 +97,7 @@ zaplib
             ),
             "Call rust in same thread sync with Float32Array from worker":
               runWorkerTest(
-                "testCallRustInSameThreadSyncFloat32ArrayFromWorker"
+                "testCallRustSyncFloat32ArrayFromWorker"
               ),
             "Test that for a worker 'inWorker' returns true":
               runWorkerTest("testInWorker"),
@@ -123,7 +123,7 @@ zaplib
             },
             "Call Rust in same thread with zapbuffer from worker": async () => {
               const result = await rpc.send(
-                "testCallRustInSameThreadSyncWithZapbuffer"
+                "testCallRustSyncWithZapbuffer"
               );
               const array = zaplib.deserializeZapArrayFromPostMessage(result);
               expect(array.length, 8);
@@ -137,7 +137,7 @@ zaplib
               expect(array[7], 80);
             },
             "Send signal from worker": runWorkerTest(
-              "testCallRustInSameThreadSyncWithSignal"
+              "testCallRustSyncWithSignal"
             ),
           }
         : {
@@ -305,7 +305,7 @@ zaplib
         const buffer = new SharedArrayBuffer(8);
         new Uint8Array(buffer).set([1, 2, 3, 4, 5, 6, 7, 8]);
         const uint8Part = new Uint8Array(buffer, 2, 4);
-        const [result] = zaplib.callRustInSameThreadSync("array_multiply_u8", [
+        const [result] = zaplib.callRustSync("array_multiply_u8", [
           JSON.stringify(10),
           uint8Part,
         ]);
@@ -318,7 +318,7 @@ zaplib
       "Call Rust with Float32Array (in same thread)": async () => {
         // Using a normal array
         const input = new Float32Array([0.1, 0.9, 0.3]);
-        const result = zaplib.callRustInSameThreadSync("array_multiply_f32", [
+        const result = zaplib.callRustSync("array_multiply_f32", [
           JSON.stringify(10),
           input,
         ])[0] as Float32Array;
@@ -331,7 +331,7 @@ zaplib
         const input2 = await zaplib.createMutableBuffer(
           new Float32Array([0.1, 0.9, 0.3])
         );
-        const result2 = zaplib.callRustInSameThreadSync("array_multiply_f32", [
+        const result2 = zaplib.callRustSync("array_multiply_f32", [
           JSON.stringify(10),
           input2,
         ])[0] as Float32Array;
@@ -345,7 +345,7 @@ zaplib
           new Float32Array([0.1, 0.9, 0.3])
         );
 
-        const result3 = zaplib.callRustInSameThreadSync(
+        const result3 = zaplib.callRustSync(
           "array_multiply_f32_readonly",
           [JSON.stringify(10), input3]
         )[0] as Float32Array;
@@ -399,7 +399,7 @@ zaplib
       }
       const syncFuncs = [
         () => {
-          zaplib.callRustInSameThreadSync("call_rust_no_return");
+          zaplib.callRustSync("call_rust_no_return");
         },
       ];
       for (const f of syncFuncs) {

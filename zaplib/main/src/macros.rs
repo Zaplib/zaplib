@@ -109,10 +109,10 @@ macro_rules! main_app {
         }
 
         #[cfg(all(target_arch = "wasm32"))]
-        #[export_name = "callRustInSameThreadSync"]
-        pub unsafe extern "C" fn call_rust_in_same_thread_sync(appcx: u64, zerde_ptr: u64) -> u64 {
+        #[export_name = "callRustSync"]
+        pub unsafe extern "C" fn call_rust_sync(appcx: u64, zerde_ptr: u64) -> u64 {
             let appcx = &*(appcx as *mut (*mut $app, *mut Cx, *mut CxAfterDraw));
-            (*appcx.1).call_rust_in_same_thread_sync(zerde_ptr)
+            (*appcx.1).call_rust_sync(zerde_ptr)
         }
     };
 }
@@ -132,7 +132,7 @@ macro_rules! register_call_rust {
         impl App {
             fn new(cx: &mut Cx) -> Self {
                 cx.on_call_rust(Self::on_call_rust);
-                cx.on_call_rust_in_same_thread_sync(Self::call_rust_in_same_thread_sync);
+                cx.on_call_rust_sync(Self::call_rust_sync);
                 Self {}
             }
 
@@ -142,7 +142,7 @@ macro_rules! register_call_rust {
                 call_rust(name, params)
             }
 
-            fn call_rust_in_same_thread_sync(name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
+            fn call_rust_sync(name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
                 call_rust(name, params)
             }
 

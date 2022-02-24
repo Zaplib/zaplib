@@ -579,7 +579,7 @@ export function transformParamsFromRustImpl(
 }
 
 // TODO(JP): Some of this code is duplicated with callRust/call_js; see if we can reuse some.
-export const callRustInSameThreadSyncImpl: (options: {
+export const callRustSyncImpl: (options: {
   name: string;
   params: ZapParam[];
   checkWasm: () => void;
@@ -640,7 +640,7 @@ export const callRustInSameThreadSyncImpl: (options: {
       }
     }
   }
-  const returnPtr = wasmExports.callRustInSameThreadSync(
+  const returnPtr = wasmExports.callRustSync(
     wasmAppPtr,
     BigInt(zerdeBuilder.getData().byteOffset)
   );

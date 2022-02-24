@@ -15,7 +15,7 @@ const {
   callRust,
   serializeZapArrayForPostMessage,
   deserializeZapArrayFromPostMessage,
-  callRustInSameThreadSync,
+  callRustSync,
   createMutableBuffer,
   createReadOnlyBuffer,
 } = jsRuntime === "cef" ? cef : wasm;
@@ -28,7 +28,7 @@ export {
   callRust,
   serializeZapArrayForPostMessage,
   deserializeZapArrayFromPostMessage,
-  callRustInSameThreadSync,
+  callRustSync,
   jsRuntime,
   createMutableBuffer,
   createReadOnlyBuffer,

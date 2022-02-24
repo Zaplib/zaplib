@@ -34,8 +34,8 @@ const tests = {
     ]);
     expect(result.length, 0);
   },
-  testCallRustInSameThreadSyncWithSignal: function () {
-    const result = zaplib.callRustInSameThreadSync("send_signal");
+  testCallRustSyncWithSignal: function () {
+    const result = zaplib.callRustSync("send_signal");
     expect(result.length, 0);
   },
   testCallRustFloat32ArrayFromWorker: async () => {
@@ -77,10 +77,10 @@ const tests = {
     expect(result3[1], 9);
     expect(result3[2], 3);
   },
-  testCallRustInSameThreadSyncFloat32ArrayFromWorker: async () => {
+  testCallRustSyncFloat32ArrayFromWorker: async () => {
     // Using a normal array
     const input = new Float32Array([0.1, 0.9, 0.3]);
-    const result = zaplib.callRustInSameThreadSync("array_multiply_f32", [
+    const result = zaplib.callRustSync("array_multiply_f32", [
       JSON.stringify(10),
       input,
     ])[0] as Float32Array;
@@ -93,7 +93,7 @@ const tests = {
     const input2 = zaplib.createMutableBuffer(
       new Float32Array([0.1, 0.9, 0.3])
     );
-    const result2 = zaplib.callRustInSameThreadSync("array_multiply_f32", [
+    const result2 = zaplib.callRustSync("array_multiply_f32", [
       JSON.stringify(10),
       input2,
     ])[0] as Float32Array;
@@ -107,7 +107,7 @@ const tests = {
       new Float32Array([0.1, 0.9, 0.3])
     );
 
-    const result3 = zaplib.callRustInSameThreadSync(
+    const result3 = zaplib.callRustSync(
       "array_multiply_f32_readonly",
       [JSON.stringify(10), input3]
     )[0] as Float32Array;
@@ -122,7 +122,7 @@ const tests = {
   testErrorAfterPanic: async () => {
     // all calls to Rust should fail after this
     const funcs = [
-      () => zaplib.callRustInSameThreadSync("call_rust_no_return"),
+      () => zaplib.callRustSync("call_rust_no_return"),
       () => zaplib.createMutableBuffer(new Uint8Array()),
       () => zaplib.createReadOnlyBuffer(new Uint8Array()),
     ];
@@ -150,7 +150,7 @@ rpc.receive("testSendZapArrayToMainThread", function () {
   const buffer = new SharedArrayBuffer(8);
   new Uint8Array(buffer).set([1, 2, 3, 4, 5, 6, 7, 8]);
   const uint8Part = new Uint8Array(buffer, 2, 4);
-  const zapArray = zaplib.callRustInSameThreadSync("array_multiply_u8", [
+  const zapArray = zaplib.callRustSync("array_multiply_u8", [
     JSON.stringify(10),
     uint8Part,
   ])[0] as Uint8Array;
@@ -160,11 +160,11 @@ rpc.receive("testSendZapArrayToMainThread", function () {
     subarray: zaplib.serializeZapArrayForPostMessage(zapArray.subarray(1, 3)),
   };
 });
-rpc.receive("testCallRustInSameThreadSyncWithZapbuffer", function () {
+rpc.receive("testCallRustSyncWithZapbuffer", function () {
   const result = zaplib.createMutableBuffer(
     new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8])
   );
-  const [result2] = zaplib.callRustInSameThreadSync("array_multiply_u8", [
+  const [result2] = zaplib.callRustSync("array_multiply_u8", [
     JSON.stringify(10),
     result,
   ]);

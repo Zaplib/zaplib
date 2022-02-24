@@ -4,7 +4,7 @@ import { makeTextarea, TextareaEvent } from "make_textarea";
 import {
   CallRust,
   CallJsCallback,
-  CallRustInSameThreadSync,
+  CallRustSync,
   ZapParam,
   PostMessageTypedArray,
   CreateBuffer,
@@ -31,10 +31,7 @@ declare global {
   interface Window {
     // Defined externally in `cef_browser.rs`.
     cefCallRust: (name: string, params: CefParams, callbackId: number) => void;
-    cefCallRustInSameThreadSync: (
-      name: string,
-      params: CefParams
-    ) => FromCefParams;
+    cefCallRustSync: (name: string, params: CefParams) => FromCefParams;
     cefReadyForMessages: () => void;
     cefCreateArrayBuffer: (
       size: number,
@@ -158,12 +155,9 @@ const transformReturnParams = (returnParams: FromCefParams) =>
   });
 
 // TODO(JP): Some of this code is duplicated with callRust/call_js; see if we can reuse some.
-export const callRustInSameThreadSync: CallRustInSameThreadSync = (
-  name,
-  params = []
-) =>
+export const callRustSync: CallRustSync = (name, params = []) =>
   transformReturnParams(
-    window.cefCallRustInSameThreadSync(name, transformParamsForRust(params))
+    window.cefCallRustSync(name, transformParamsForRust(params))
   );
 
 export const newWorkerPort = (): MessagePort => {

@@ -10,7 +10,7 @@
 // Currently this is only supported in WebAssembly, not when using CEF.
 
 import {
-  callRustInSameThreadSyncImpl,
+  callRustSyncImpl,
   createErrorCheckers,
   createWasmBuffer,
   getWasmEnv,
@@ -22,7 +22,7 @@ import {
 import { MainWorkerChannelEvent, WebWorkerRpc } from "rpc_types";
 import {
   CallRust,
-  CallRustInSameThreadSync,
+  CallRustSync,
   PostMessageTypedArray,
   WasmExports,
   ZapArray,
@@ -175,11 +175,8 @@ export const callRust: CallRust = async (name, params = []) => {
   );
 };
 
-export const callRustInSameThreadSync: CallRustInSameThreadSync = (
-  name,
-  params = []
-) =>
-  callRustInSameThreadSyncImpl({
+export const callRustSync: CallRustSync = (name, params = []) =>
+  callRustSyncImpl({
     name,
     params,
     checkWasm,

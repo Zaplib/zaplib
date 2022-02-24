@@ -16,7 +16,7 @@ import {
   checkValidZapArray,
 } from "zap_buffer";
 import {
-  callRustInSameThreadSyncImpl,
+  callRustSyncImpl,
   createErrorCheckers,
   getWasmEnv,
   getZapParamType,
@@ -31,7 +31,7 @@ import {
   CallRust,
   CallJsCallback,
   PostMessageTypedArray,
-  CallRustInSameThreadSync,
+  CallRustSync,
   SizingData,
   TlsAndStackData,
   ZapArray,
@@ -216,11 +216,8 @@ export const callRust: CallRust = async (name, params = []) => {
   );
 };
 
-export const callRustInSameThreadSync: CallRustInSameThreadSync = (
-  name,
-  params = []
-) =>
-  callRustInSameThreadSyncImpl({
+export const callRustSync: CallRustSync = (name, params = []) =>
+  callRustSyncImpl({
     name,
     params,
     checkWasm,

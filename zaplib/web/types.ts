@@ -73,7 +73,7 @@ export type WasmExports = {
   createWasmApp: () => BigInt;
   processWasmEvents: (appcx: BigInt, msgBytes: BigInt) => BigInt;
   decrementArc: (arcPtr: BigInt) => void;
-  callRustInSameThreadSync: (appcx: BigInt, msgBytes: BigInt) => BigInt;
+  callRustSync: (appcx: BigInt, msgBytes: BigInt) => BigInt;
   incrementArc: (arcPtr: BigInt) => void;
   createArcVec: (vecPtr: BigInt, vecLen: BigInt, paramType: BigInt) => BigInt;
   deallocVec: (vecPtr: BigInt, vecLen: BigInt, vecCap: BigInt) => BigInt;
@@ -132,9 +132,7 @@ export type CallRust = (
   params?: ZapParam[]
 ) => Promise<ZapParam[]>;
 
-export type CallRustInSameThreadSync = (
-  ...args: Parameters<CallRust>
-) => ZapParam[];
+export type CallRustSync = (...args: Parameters<CallRust>) => ZapParam[];
 
 // Keep in sync with `param.rs`
 export enum ZapParamType {

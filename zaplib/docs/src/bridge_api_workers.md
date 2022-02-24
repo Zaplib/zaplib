@@ -39,24 +39,24 @@ Note that this *is* enforced by monkey-patching `postMessage` when you call `zap
 * On the other side of the `postMessage` interface, get back a Zaplib-managed typed array by calling `zaplib.deserializeZapArrayFromPostMessage()`.
 * Both of these methods are synchronous.
 
-## zaplib.callRustInSameThreadSync
+## zaplib.callRustSync
 
 In Web Workers we also support calling Rust within that very thread. This means that execution transfers from JS to Rust, and no other processing can happen until the function returns. It also means that no `Promise`s are involved; it's purely synchronous code.
 
-To register a callback, you have to use `cx.on_call_rust_in_same_thread_sync()`. However, the callback function has no access to the application struct, nor to `Cx` itself:
+To register a callback, you have to use `cx.on_call_rust_sync()`. However, the callback function has no access to the application struct, nor to `Cx` itself:
 
 ```rust,noplayground
 impl ExampleApp {
     fn new(cx: &mut Cx) -> Self {
-        cx.on_call_rust_in_same_thread_sync(Self::on_call_rust_in_same_thread_sync);
+        cx.on_call_rust_sync(Self::on_call_rust_sync);
         Self {}
     }
 
-    fn on_call_rust_in_same_thread_sync(
+    fn on_call_rust_sync(
         name: String,
         params: Vec<ZapParam>
     ) -> Vec<ZapParam> {}
 }
 ```
 
-On the JS side, call `zaplib.callRustInSameThreadSync()`. This has the same function signature as `zaplib.callRust`, except that its results are not wrapped in a `Promise`.
+On the JS side, call `zaplib.callRustSync()`. This has the same function signature as `zaplib.callRust`, except that its results are not wrapped in a `Promise`.

@@ -36,7 +36,7 @@ impl PlatformType {
     }
 }
 
-pub type CallRustInSameThreadSyncFn = fn(name: String, params: Vec<ZapParam>) -> Vec<ZapParam>;
+pub type CallRustSyncFn = fn(name: String, params: Vec<ZapParam>) -> Vec<ZapParam>;
 
 /// The main "context" object which contains pretty much everything we need within the framework.
 pub struct Cx {
@@ -884,18 +884,18 @@ impl Cx {
         self.call_rust_fn = Some(Box::into_raw(Box::new(func)) as usize);
     }
 
-    /// Set the callback for `zaplib.callRustInSameThreadSync` calls.
+    /// Set the callback for `zaplib.callRustSync` calls.
     ///
     /// Can only be called in the `new` function of your app, since we do some thread-unsafe
     /// operations in this, and during `new` there are no threads yet. We make the assertion
-    /// here for consistency, but it's primarily for `on_call_rust_in_same_thread_sync_internal`
+    /// here for consistency, but it's primarily for `on_call_rust_sync_internal`
     /// in `cx_wasm32.rs`.
     #[allow(unused_variables)] // `func` is unused when not matching the `cfg` below.
-    pub fn on_call_rust_in_same_thread_sync(&mut self, func: CallRustInSameThreadSyncFn) {
-        assert!(!self.finished_app_new, "Can only call cx.on_call_rust_in_same_thread_sync in `new`");
+    pub fn on_call_rust_sync(&mut self, func: CallRustSyncFn) {
+        assert!(!self.finished_app_new, "Can only call cx.on_call_rust_sync in `new`");
 
         #[cfg(any(target_arch = "wasm32", feature = "cef"))]
-        self.on_call_rust_in_same_thread_sync_internal(func);
+        self.on_call_rust_sync_internal(func);
     }
 
     /// Mark that the `new` function of the main app has been called. Automatically called by the `main_app!` macro;
