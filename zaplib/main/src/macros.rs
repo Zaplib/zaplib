@@ -24,7 +24,8 @@ macro_rules! main_app {
                             }
                             SystemEvent::WebRustCall(e) => {
                                 let WebRustCallEvent { name, params, callback_id } = std::mem::take(e).unwrap();
-                                let call_rust_async_fn = cx.call_rust_async_fn.expect("`callRustAsync` called but no on_call_rust_async registered");
+                                let call_rust_async_fn =
+                                    cx.call_rust_async_fn.expect("`callRustAsync` called but no on_call_rust_async registered");
                                 unsafe {
                                     let func = Box::from_raw(
                                         call_rust_async_fn
@@ -82,7 +83,8 @@ macro_rules! main_app {
                             SystemEvent::WebRustCall(e) => {
                                 let WebRustCallEvent { name, params, callback_id } = std::mem::take(e).unwrap();
 
-                                let call_rust_async_fn = cx.call_rust_async_fn.expect("call_rust called but no on_call_rust_sync registered");
+                                let call_rust_async_fn =
+                                    cx.call_rust_async_fn.expect("call_rust called but no on_call_rust_sync registered");
                                 let func = Box::from_raw(
                                     call_rust_async_fn
                                         as *mut fn(
