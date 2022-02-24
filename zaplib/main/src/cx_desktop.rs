@@ -128,9 +128,9 @@ impl Cx {
         vsync
     }
 
-    /// See [`Cx::on_call_rust_in_same_thread_sync`] for documentation.
+    /// See [`Cx::on_call_rust_sync`] for documentation.
     #[cfg(feature = "cef")]
-    pub(crate) fn on_call_rust_in_same_thread_sync_internal(&mut self, func: CallRustInSameThreadSyncFn) {
-        self.cef_browser.on_call_rust_in_same_thread_sync(func);
+    pub(crate) fn on_call_rust_sync_internal(&mut self, func: CallRustSyncFn) {
+        self.cef_browser.on_call_rust_sync(func);
     }
 }

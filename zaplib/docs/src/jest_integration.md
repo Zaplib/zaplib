@@ -1,6 +1,6 @@
 # Jest Integration
 
-Zaplib can run in the [Jest testing framework](https://jestjs.io/). Following [Tutorial: Integrating with JS](./tutorial_js_rust_bridge.md), let's assume we have a `sum` hook for `callRust` defined:
+Zaplib can run in the [Jest testing framework](https://jestjs.io/). Following [Tutorial: Integrating with JS](./tutorial_js_rust_bridge.md), let's assume we have a `sum` hook for `callRustAsync` defined:
 
 ```rust,noplayground
 // src/main.rs
@@ -55,7 +55,7 @@ test("initializes zaplib and calls sum", async () => {
   const buffer = new SharedArrayBuffer(8);
   const data = new Uint8Array(buffer);
   data.set([1, 2, 3, 4, 5, 6, 7, 8]);
-  const [result] = await zaplib.callRust("sum", [data]);
+  const [result] = await zaplib.callRustAsync("sum", [data]);
   expect(result).toBe("36");
 });
 ```

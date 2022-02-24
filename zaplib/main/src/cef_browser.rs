@@ -25,13 +25,13 @@ pub(crate) enum MaybeCefBrowser {
         /// Already create a channel so it will queue up the messages that we send with [`MaybeCefBrowser::call_js`].
         messages_channel: (mpsc::Sender<CallJsEvent>, mpsc::Receiver<CallJsEvent>),
         /// Save this for when initializing.
-        call_rust_in_same_thread_sync_fn: Option<CallRustInSameThreadSyncFn>,
+        call_rust_sync_fn: Option<CallRustSyncFn>,
     },
 }
 
 impl MaybeCefBrowser {
     pub(crate) fn new() -> Self {
-        Self::Uninitialized { messages_channel: mpsc::channel(), call_rust_in_same_thread_sync_fn: None }
+        Self::Uninitialized { messages_channel: mpsc::channel(), call_rust_sync_fn: None }
     }
 
     /// Queues up messages if the browser isn't initialized yet; otherwise calls them directly.
@@ -43,12 +43,10 @@ impl MaybeCefBrowser {
         }
     }
 
-    pub(crate) fn on_call_rust_in_same_thread_sync(&mut self, func: CallRustInSameThreadSyncFn) {
+    pub(crate) fn on_call_rust_sync(&mut self, func: CallRustSyncFn) {
         match self {
-            MaybeCefBrowser::Initialized(cef_browser) => cef_browser.on_call_rust_in_same_thread_sync(func),
-            MaybeCefBrowser::Uninitialized { call_rust_in_same_thread_sync_fn, .. } => {
-                *call_rust_in_same_thread_sync_fn = Some(func)
-            }
+            MaybeCefBrowser::Initialized(cef_browser) => cef_browser.on_call_rust_sync(func),
+            MaybeCefBrowser::Uninitialized { call_rust_sync_fn, .. } => *call_rust_sync_fn = Some(func),
         }
     }
 
@@ -65,7 +63,7 @@ impl MaybeCefBrowser {
             MaybeCefBrowser::Initialized(_) => {
                 panic!("CEF is already initialized; we currently support only one browser at a time")
             }
-            MaybeCefBrowser::Uninitialized { messages_channel, call_rust_in_same_thread_sync_fn } => {
+            MaybeCefBrowser::Uninitialized { messages_channel, call_rust_sync_fn } => {
                 let mut channel = mpsc::channel();
                 std::mem::swap(&mut channel, messages_channel);
                 // Pass in the existing channel so we can process our queued messages.
@@ -77,8 +75,8 @@ impl MaybeCefBrowser {
                     #[cfg(feature = "cef-server")]
                     get_resource_url_callback,
                 );
-                if let Some(func) = call_rust_in_same_thread_sync_fn {
-                    cef_browser.on_call_rust_in_same_thread_sync(*func);
+                if let Some(func) = call_rust_sync_fn {
+                    cef_browser.on_call_rust_sync(*func);
                 }
                 *self = MaybeCefBrowser::Initialized(cef_browser);
             }
@@ -118,7 +116,7 @@ struct MyRenderProcessHandler {
     receive_channel: Arc<mpsc::Receiver<CallJsEvent>>,
     /// Synchronization mechanism to signal when JS init code was called
     ready_to_process: Arc<AtomicBool>,
-    call_rust_in_same_thread_sync_fn: Arc<RwLock<Option<CallRustInSameThreadSyncFn>>>,
+    call_rust_sync_fn: Arc<RwLock<Option<CallRustSyncFn>>>,
 }
 
 fn make_mutable_buffer<T>(param_type: u32, mut buffer: Vec<T>) -> V8Value {
@@ -297,10 +295,10 @@ impl RenderProcessHandler for MyRenderProcessHandler {
     fn on_context_created(&self, _browser: &Browser, frame: &Frame, context: &V8Context) {
         let window = context.get_global().unwrap();
 
-        // Connect `window.cefCallRust` to `SystemEvent::WebRustCall` on the main thread.
+        // Connect `window.cefCallRustAsync` to `SystemEvent::WebRustCall` on the main thread.
         // Note: This is also used in runtime detection for `jsRuntime`. If this is renamed or
         // removed, that must be updated.
-        assert!(window.set_fn_value("cefCallRust", (), |_name, _obj, args, _other_data| {
+        assert!(window.set_fn_value("cefCallRustAsync", (), |_name, _obj, args, _other_data| {
             let name = args[0].get_string_value();
             let params = get_zap_params(&args[1]);
             let callback_id = args[2].get_uint_value();
@@ -312,20 +310,20 @@ impl RenderProcessHandler for MyRenderProcessHandler {
             None
         }));
 
-        // Connect `window.cefCallRustInSameThreadSync` to `call_rust_in_same_thread_sync_fn`
+        // Connect `window.cefCallRustSync` to `call_rust_sync_fn`
         // on whatever thread this is getting called from.
         assert!(window.set_fn_value(
-            "cefCallRustInSameThreadSync",
-            self.call_rust_in_same_thread_sync_fn.clone(),
-            |_name, _obj, args, call_rust_in_same_thread_sync_fn| {
+            "cefCallRustSync",
+            self.call_rust_sync_fn.clone(),
+            |_name, _obj, args, call_rust_sync_fn| {
                 let name = args[0].get_string_value();
                 let params = get_zap_params(&args[1]);
 
-                if let Some(func) = *call_rust_in_same_thread_sync_fn.read().unwrap() {
+                if let Some(func) = *call_rust_sync_fn.read().unwrap() {
                     let return_buffers = func(name, params);
                     Some(Ok(make_buffers_and_arc_ptrs(return_buffers)))
                 } else {
-                    panic!("call_rust_in_same_thread_sync was called without call_rust_in_same_thread_sync_fn being set");
+                    panic!("call_rust_sync was called without call_rust_sync_fn being set");
                 }
             }
         ));
@@ -570,7 +568,7 @@ impl Client for MyClient {
 
 pub(crate) struct CefBrowser {
     pub(crate) browser: Arc<Browser>,
-    call_rust_in_same_thread_sync_fn: Arc<RwLock<Option<CallRustInSameThreadSyncFn>>>,
+    call_rust_sync_fn: Arc<RwLock<Option<CallRustSyncFn>>>,
     send_channel: mpsc::Sender<CallJsEvent>,
 }
 
@@ -583,13 +581,13 @@ impl CefBrowser {
         (tx, rx): (mpsc::Sender<CallJsEvent>, mpsc::Receiver<CallJsEvent>),
         #[cfg(feature = "cef-server")] get_resource_url_callback: Option<GetResourceUrlCallback>,
     ) -> Self {
-        let call_rust_in_same_thread_sync_fn = Arc::new(RwLock::new(None));
+        let call_rust_sync_fn = Arc::new(RwLock::new(None));
 
         let app = Arc::new(MyApp {
             render_process_handler: Arc::new(MyRenderProcessHandler {
                 receive_channel: Arc::new(rx),
                 ready_to_process: Arc::new(AtomicBool::new(false)),
-                call_rust_in_same_thread_sync_fn: Arc::clone(&call_rust_in_same_thread_sync_fn),
+                call_rust_sync_fn: Arc::clone(&call_rust_sync_fn),
             }),
             browser_process_handler: Arc::new(MyBrowserProcessHandler {}),
         });
@@ -669,7 +667,7 @@ impl CefBrowser {
         #[cfg(feature = "cef-dev-tools")]
         browser.get_host().unwrap().show_dev_tools();
 
-        Self { browser, send_channel: tx, call_rust_in_same_thread_sync_fn }
+        Self { browser, send_channel: tx, call_rust_sync_fn }
     }
 
     fn call_js(&mut self, call_js_event: CallJsEvent) {
@@ -698,8 +696,8 @@ impl CefBrowser {
         frame.execute_javascript(&code, &script_url, start_line);
     }
 
-    fn on_call_rust_in_same_thread_sync(&mut self, func: CallRustInSameThreadSyncFn) {
-        *self.call_rust_in_same_thread_sync_fn.write().unwrap() = Some(func);
+    fn on_call_rust_sync(&mut self, func: CallRustSyncFn) {
+        *self.call_rust_sync_fn.write().unwrap() = Some(func);
     }
 }
 

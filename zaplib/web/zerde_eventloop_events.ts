@@ -311,7 +311,7 @@ export class ZerdeEventloopEvents {
     this._zerdeBuilder.sendU32(y);
   }
 
-  callRust(
+  callRustAsync(
     name: string,
     params: (string | ZapArray | PostMessageTypedArray)[],
     callbackId: number

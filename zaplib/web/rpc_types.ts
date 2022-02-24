@@ -34,13 +34,13 @@ export type Worker<T extends RpcSpec> = {
   send: T["receive"];
 };
 
-export type WorkerCallRustParams = {
+export type WorkerCallRustAsyncParams = {
   name: string;
   params: (string | PostMessageTypedArray | ZapArray)[];
 };
 
 export enum WorkerEvent {
-  CallRust = "WorkerEvent.CallRust",
+  CallRustAsync = "WorkerEvent.CallRustAsync",
   CreateBuffer = "WorkerEvent.CreateBuffer",
   CreateReadOnlyBuffer = "WorkerEvent.CreateReadOnlyBuffer",
   BindMainWorkerPort = "WorkerEvent.BindMainWorkerPort",
@@ -87,7 +87,10 @@ export type WasmWorkerRpc = {
     [WorkerEvent.DecrementArc]: [number, void];
     [WorkerEvent.DeallocVec]: [MutableBufferData, void];
     [WorkerEvent.IncrementArc]: [number, void];
-    [WorkerEvent.CallRust]: [WorkerCallRustParams, Promise<RustZapParam[]>];
+    [WorkerEvent.CallRustAsync]: [
+      WorkerCallRustAsyncParams,
+      Promise<RustZapParam[]>
+    ];
     [WorkerEvent.CreateBuffer]: [ZapArray, number];
     [WorkerEvent.CreateReadOnlyBuffer]: [
       ZapArray,
@@ -213,7 +216,7 @@ export type AsyncWorkerRpc = {
 export enum MainWorkerChannelEvent {
   Init = "MainWorkerChannelEvent.Init",
   BindMainWorkerPort = "MainWorkerChannelEvent.BindMainWorkerPort",
-  CallRust = "MainWorkerChannelEvent.CallRust",
+  CallRustAsync = "MainWorkerChannelEvent.CallRustAsync",
   SendEventFromAnyThread = "MainWorkerChannelEvent.SendEventFromAnyThread",
 }
 export type WebWorkerRpc = {
@@ -232,8 +235,8 @@ export type WebWorkerRpc = {
       }
     ];
     [MainWorkerChannelEvent.SendEventFromAnyThread]: [BigInt, void];
-    [MainWorkerChannelEvent.CallRust]: [
-      WorkerCallRustParams,
+    [MainWorkerChannelEvent.CallRustAsync]: [
+      WorkerCallRustAsyncParams,
       Promise<RustZapParam[]>
     ];
   };
