@@ -34,7 +34,7 @@ When a Zaplib-managed typed array gets garbage collected, the WebAssembly memory
 
 Note that this *is* enforced by monkey-patching `postMessage` when you call `zaplib.initialize()` or `zaplib.initializeWorker`, so don't worry about getting this wrong.
 
-* Zaplib-managed typed arrays are those returned by `zaplib.createReadOnlyBuffer`, `zaplib.callRust`, and so on.
+* Zaplib-managed typed arrays are those returned by `zaplib.createReadOnlyBuffer`, `zaplib.callRustAsync`, and so on.
 * When sending a Zaplib-managed over `postMessage`, just wrap it in `zaplib.serializeZapArrayForPostMessage()`.
 * On the other side of the `postMessage` interface, get back a Zaplib-managed typed array by calling `zaplib.deserializeZapArrayFromPostMessage()`.
 * Both of these methods are synchronous.
@@ -59,4 +59,4 @@ impl ExampleApp {
 }
 ```
 
-On the JS side, call `zaplib.callRustSync()`. This has the same function signature as `zaplib.callRust`, except that its results are not wrapped in a `Promise`.
+On the JS side, call `zaplib.callRustSync()`. This has the same function signature as `zaplib.callRustAsync`, except that its results are not wrapped in a `Promise`.

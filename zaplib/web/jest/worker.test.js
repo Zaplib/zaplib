@@ -27,7 +27,7 @@ test("initializes zaplib and calls rust", async () => {
   const buffer = new SharedArrayBuffer(8);
   const data = new Uint8Array(buffer);
   data.set([1, 2, 3, 4, 5, 6, 7, 8]);
-  const [result] = await zaplib.callRust("total_sum", [data]);
+  const [result] = await zaplib.callRustAsync("total_sum", [data]);
   expect(result).toBe("36");
 });
 

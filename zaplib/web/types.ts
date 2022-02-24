@@ -127,12 +127,12 @@ export type CreateBufferWorkerSync = <T extends ZapArray>(data: T) => T;
 
 export type CallJsCallback = (params: ZapParam[]) => void;
 
-export type CallRust = (
+export type CallRustAsync = (
   name: string,
   params?: ZapParam[]
 ) => Promise<ZapParam[]>;
 
-export type CallRustSync = (...args: Parameters<CallRust>) => ZapParam[];
+export type CallRustSync = (...args: Parameters<CallRustAsync>) => ZapParam[];
 
 // Keep in sync with `param.rs`
 export enum ZapParamType {

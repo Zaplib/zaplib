@@ -578,7 +578,7 @@ export function transformParamsFromRustImpl(
   });
 }
 
-// TODO(JP): Some of this code is duplicated with callRust/call_js; see if we can reuse some.
+// TODO(JP): Some of this code is duplicated with callRustAsync/call_js; see if we can reuse some.
 export const callRustSyncImpl: (options: {
   name: string;
   params: ZapParam[];

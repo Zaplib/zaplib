@@ -16,10 +16,10 @@ Here is an overview of all the JS APIs, and their support with the WebAssembly r
 | zaplib.initializeWorker                     |      n/a          |        ✅          |       n/a       |    [#69][2] |
 | zaplib.registerCallJsCallbacks              |       ✅          |      [#70][3]      |       ✅        |  [#69][2]  [#70][3] |
 | zaplib.unregisterCallJsCallbacks            |       ✅          |      [#70][3]      |       ✅        |  [#69][2]  [#70][3] |
-| zaplib.callRust                             |       ✅          |        ✅          |       ✅        |   [#69][2] |
+| zaplib.callRustSync                         |       ✅          |        ✅          |       ✅        |   [#69][2] |
+| zaplib.callRustAsync                        |       ✅          |        ✅          |       ✅        |   [#69][2] |
 | zaplib.createReadOnlyBuffer                 |       ✅          |        ✅          |       ✅        |   [#69][2] |
 | zaplib.createMutableBuffer                  |       ✅          |        ✅          |       ✅        |   [#69][2] |
-| zaplib.callRustSync                         |       ✅          |        ✅          |       ✅        |   [#69]`[2] |
 | zaplib.newWorkerPort                        |       ✅          |        ✅          |     [#69][2]    |   [#69][2] |
 | zaplib.serializeZapArrayForPostMessage      |       ✅          |        ✅          |     [#69][2]    |   [#69][2] |
 | zaplib.deserializeZapArrayFromPostMessage   |       ✅          |        ✅          |     [#69][2]    |   [#69][2] |

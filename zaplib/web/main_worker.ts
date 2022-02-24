@@ -28,7 +28,7 @@ import {
   Worker,
   WasmWorkerRpc,
   WebWorkerRpc,
-  WorkerCallRustParams,
+  WorkerCallRustAsyncParams,
   WorkerEvent,
   MainWorkerChannelEvent,
 } from "rpc_types";
@@ -84,8 +84,8 @@ export class WasmApp {
   private xrCanPresent = false;
   private xrIsPresenting = false;
   private zerdeParser!: ZerdeParser;
-  private callRustNewCallbackId: number;
-  private callRustPendingCallbacks: Record<
+  private callRustAsyncNewCallbackId: number;
+  private callRustAsyncPendingCallbacks: Record<
     number,
     (arg0: RustZapParam[]) => void
   >;
@@ -127,8 +127,8 @@ export class WasmApp {
     this.websockets = {};
     this.fileHandles = fileHandles;
 
-    this.callRustNewCallbackId = 0;
-    this.callRustPendingCallbacks = {};
+    this.callRustAsyncNewCallbackId = 0;
+    this.callRustAsyncPendingCallbacks = {};
 
     if (offscreenCanvas) {
       this.webglRenderer = new WebGLRenderer(
@@ -171,23 +171,25 @@ export class WasmApp {
       this.doWasmIo();
     });
 
-    const callRust = ({
+    const callRustAsync = ({
       name,
       params,
-    }: WorkerCallRustParams): Promise<RustZapParam[]> => {
-      const callbackId = this.callRustNewCallbackId++;
+    }: WorkerCallRustAsyncParams): Promise<RustZapParam[]> => {
+      const callbackId = this.callRustAsyncNewCallbackId++;
       const promise = new Promise<RustZapParam[]>((resolve, _reject) => {
-        this.callRustPendingCallbacks[callbackId] = (data: RustZapParam[]) => {
+        this.callRustAsyncPendingCallbacks[callbackId] = (
+          data: RustZapParam[]
+        ) => {
           // TODO(Dmitry): implement retrun_error on rust side and use reject(...) to communicate the error
           resolve(data);
         };
       });
 
-      this.zerdeEventloopEvents.callRust(name, params, callbackId);
+      this.zerdeEventloopEvents.callRustAsync(name, params, callbackId);
       this.doWasmIo();
       return promise;
     };
-    rpc.receive(WorkerEvent.CallRust, callRust);
+    rpc.receive(WorkerEvent.CallRustAsync, callRustAsync);
 
     rpc.receive(WorkerEvent.CreateBuffer, (data: ZapArray) =>
       this.zerdeEventloopEvents.createWasmBuffer(data)
@@ -238,7 +240,10 @@ export class WasmApp {
         }
       );
 
-      userWorkerRpc.receive(MainWorkerChannelEvent.CallRust, callRust);
+      userWorkerRpc.receive(
+        MainWorkerChannelEvent.CallRustAsync,
+        callRustAsync
+      );
 
       userWorkerRpc.receive(
         MainWorkerChannelEvent.SendEventFromAnyThread,
@@ -952,8 +957,8 @@ export class WasmApp {
       const params = self.zerdeParser.parseZapParams();
       if (fnName === "_zaplibReturnParams") {
         const callbackId = JSON.parse(params[0] as string);
-        self.callRustPendingCallbacks[callbackId](params.slice(1));
-        delete self.callRustPendingCallbacks[callbackId];
+        self.callRustAsyncPendingCallbacks[callbackId](params.slice(1));
+        delete self.callRustAsyncPendingCallbacks[callbackId];
       } else {
         rpc.send(WorkerEvent.CallJs, { fnName, params });
       }

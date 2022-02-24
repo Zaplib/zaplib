@@ -24,10 +24,10 @@ macro_rules! main_app {
                             }
                             SystemEvent::WebRustCall(e) => {
                                 let WebRustCallEvent { name, params, callback_id } = std::mem::take(e).unwrap();
-                                let call_rust_fn = cx.call_rust_fn.expect("call_rust called but no on_call_rust registered");
+                                let call_rust_async_fn = cx.call_rust_async_fn.expect("`callRustAsync` called but no on_call_rust_async registered");
                                 unsafe {
                                     let func = Box::from_raw(
-                                        call_rust_fn
+                                        call_rust_async_fn
                                             as *mut fn(
                                                 this: &mut $app,
                                                 cx: &mut Cx,
@@ -37,7 +37,7 @@ macro_rules! main_app {
                                     );
                                     let mut return_params = func(&mut app, cx, name, params);
 
-                                    // Prevent call_rust_fn from getting dropped
+                                    // Prevent call_rust_async_fn from getting dropped
                                     Box::into_raw(func);
 
                                     cx.return_to_js(callback_id, return_params);
@@ -82,9 +82,9 @@ macro_rules! main_app {
                             SystemEvent::WebRustCall(e) => {
                                 let WebRustCallEvent { name, params, callback_id } = std::mem::take(e).unwrap();
 
-                                let call_rust_fn = cx.call_rust_fn.expect("call_rust called but no on_call_rust registered");
+                                let call_rust_async_fn = cx.call_rust_async_fn.expect("call_rust called but no on_call_rust_sync registered");
                                 let func = Box::from_raw(
-                                    call_rust_fn
+                                    call_rust_async_fn
                                         as *mut fn(
                                             this: &mut $app,
                                             cx: &mut Cx,
@@ -93,7 +93,7 @@ macro_rules! main_app {
                                         ) -> Vec<ZapParam>,
                                 );
                                 let mut return_params = func(&mut *appcx.0, cx, name, params);
-                                // Prevent call_rust_fn from getting dropped
+                                // Prevent call_rust_async_fn from getting dropped
                                 Box::into_raw(func);
 
                                 cx.return_to_js(callback_id, return_params);
@@ -131,18 +131,18 @@ macro_rules! register_call_rust {
         struct App {}
         impl App {
             fn new(cx: &mut Cx) -> Self {
-                cx.on_call_rust(Self::on_call_rust);
-                cx.on_call_rust_sync(Self::call_rust_sync);
+                cx.on_call_rust_async(Self::on_call_rust_async);
+                cx.on_call_rust_sync(Self::on_call_rust_sync);
                 Self {}
             }
 
             fn handle(&mut self, cx: &mut Cx, event: &mut Event) {}
 
-            fn on_call_rust(&mut self, cx: &mut Cx, name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
+            fn on_call_rust_async(&mut self, cx: &mut Cx, name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
                 call_rust(name, params)
             }
 
-            fn call_rust_sync(name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
+            fn on_call_rust_sync(name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
                 call_rust(name, params)
             }
 

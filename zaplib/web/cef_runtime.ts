@@ -2,7 +2,7 @@ import { cursorMap } from "cursor_map";
 import { copyArrayToRustBuffer, getZapParamType } from "common";
 import { makeTextarea, TextareaEvent } from "make_textarea";
 import {
-  CallRust,
+  CallRustAsync,
   CallJsCallback,
   CallRustSync,
   ZapParam,
@@ -30,7 +30,11 @@ type FromCefParams = (string | CefBufferData)[];
 declare global {
   interface Window {
     // Defined externally in `cef_browser.rs`.
-    cefCallRust: (name: string, params: CefParams, callbackId: number) => void;
+    cefCallRustAsync: (
+      name: string,
+      params: CefParams,
+      callbackId: number
+    ) => void;
     cefCallRustSync: (name: string, params: CefParams) => FromCefParams;
     cefReadyForMessages: () => void;
     cefCreateArrayBuffer: (
@@ -74,7 +78,7 @@ const transformParamsForRust = (params: ZapParam[]): CefParams =>
     }
   });
 
-export const callRust: CallRust = (name, params = []) => {
+export const callRustAsync: CallRustAsync = (name, params = []) => {
   const callbackId = newCallbackId++;
   const promise = new Promise<ZapParam[]>((resolve, _reject) => {
     pendingCallbacks[callbackId] = (data) => {
@@ -82,7 +86,7 @@ export const callRust: CallRust = (name, params = []) => {
       resolve(data);
     };
   });
-  window.cefCallRust(name, transformParamsForRust(params), callbackId);
+  window.cefCallRustAsync(name, transformParamsForRust(params), callbackId);
   return promise;
 };
 
@@ -154,7 +158,7 @@ const transformReturnParams = (returnParams: FromCefParams) =>
     }
   });
 
-// TODO(JP): Some of this code is duplicated with callRust/call_js; see if we can reuse some.
+// TODO(JP): Some of this code is duplicated with callRustAsync/call_js; see if we can reuse some.
 export const callRustSync: CallRustSync = (name, params = []) =>
   transformReturnParams(
     window.cefCallRustSync(name, transformParamsForRust(params))

@@ -295,10 +295,10 @@ impl RenderProcessHandler for MyRenderProcessHandler {
     fn on_context_created(&self, _browser: &Browser, frame: &Frame, context: &V8Context) {
         let window = context.get_global().unwrap();
 
-        // Connect `window.cefCallRust` to `SystemEvent::WebRustCall` on the main thread.
+        // Connect `window.cefCallRustAsync` to `SystemEvent::WebRustCall` on the main thread.
         // Note: This is also used in runtime detection for `jsRuntime`. If this is renamed or
         // removed, that must be updated.
-        assert!(window.set_fn_value("cefCallRust", (), |_name, _obj, args, _other_data| {
+        assert!(window.set_fn_value("cefCallRustAsync", (), |_name, _obj, args, _other_data| {
             let name = args[0].get_string_value();
             let params = get_zap_params(&args[1]);
             let callback_id = args[2].get_uint_value();

@@ -19,8 +19,8 @@ pub struct TestSuiteApp {
 
 impl TestSuiteApp {
     pub fn new(cx: &mut Cx) -> Self {
-        cx.on_call_rust_sync(Self::call_rust_sync);
-        cx.on_call_rust(Self::on_call_rust);
+        cx.on_call_rust_sync(Self::on_call_rust_sync);
+        cx.on_call_rust_async(Self::on_call_rust_async);
         let buffer = Arc::new(vec![1; 8]);
         let buffers = vec![buffer];
         Self {
@@ -58,7 +58,7 @@ impl TestSuiteApp {
                         }
                     }
                 } else {
-                    // call_rust_sync send_signal uses a fake signal ID
+                    // on_call_rust_sync send_signal uses a fake signal ID
                     log!("received signal!");
                 }
             }
@@ -89,7 +89,7 @@ impl TestSuiteApp {
         }
     }
 
-    fn on_call_rust(&mut self, cx: &mut Cx, name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
+    fn on_call_rust_async(&mut self, cx: &mut Cx, name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
         match name.as_str() {
             "array_multiply_u8" => {
                 let value: u8 = serde_json::from_str(params[0].as_str()).unwrap();
@@ -167,7 +167,7 @@ impl TestSuiteApp {
         self.window.end_window(cx);
     }
 
-    pub fn call_rust_sync(name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
+    pub fn on_call_rust_sync(name: String, params: Vec<ZapParam>) -> Vec<ZapParam> {
         match name.as_str() {
             "array_multiply_u8" => {
                 let value: u8 = serde_json::from_str(params[0].as_str()).unwrap();

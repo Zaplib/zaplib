@@ -28,7 +28,7 @@ import {
 } from "common";
 import { makeTextarea, TextareaEvent } from "make_textarea";
 import {
-  CallRust,
+  CallRustAsync,
   CallJsCallback,
   PostMessageTypedArray,
   CallRustSync,
@@ -192,7 +192,7 @@ export const serializeZapArrayForPostMessage = (
   };
 };
 
-export const callRust: CallRust = async (name, params = []) => {
+export const callRustAsync: CallRustAsync = async (name, params = []) => {
   checkWasm();
 
   const transformedParams = params.map((param) => {
@@ -204,7 +204,7 @@ export const callRust: CallRust = async (name, params = []) => {
     } else {
       if (!(param.buffer instanceof SharedArrayBuffer)) {
         console.warn(
-          "Consider passing Uint8Arrays backed by ZapBuffer or SharedArrayBuffer into `callRust` to prevent copying data"
+          "Consider passing Uint8Arrays backed by ZapBuffer or SharedArrayBuffer into `callRustAsync` to prevent copying data"
         );
       }
       return param;
@@ -212,7 +212,10 @@ export const callRust: CallRust = async (name, params = []) => {
   });
 
   return transformParamsFromRust(
-    await rpc.send(WorkerEvent.CallRust, { name, params: transformedParams })
+    await rpc.send(WorkerEvent.CallRustAsync, {
+      name,
+      params: transformedParams,
+    })
   );
 };
 

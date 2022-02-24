@@ -10,11 +10,11 @@ import { inWorker } from "type_of_runtime";
 const rpc = new Rpc<Worker<TestSuiteWorkerSpec>>(self);
 
 const tests = {
-  testCallRustFromWorker: async function () {
+  testCallRustAsyncFromWorker: async function () {
     const buffer = new SharedArrayBuffer(8);
     new Uint8Array(buffer).set([1, 2, 3, 4, 5, 6, 7, 8]);
     const uint8Part = new Uint8Array(buffer, 2, 4);
-    const [result] = await zaplib.callRust("array_multiply_u8", [
+    const [result] = await zaplib.callRustAsync("array_multiply_u8", [
       JSON.stringify(10),
       uint8Part,
     ]);
@@ -24,25 +24,28 @@ const tests = {
     expect(result[2], 50);
     expect(result[3], 60);
   },
-  testCallRustNoReturnFromWorker: async function () {
+  testCallRustAsyncNoReturnFromWorker: async function () {
     const buffer = new SharedArrayBuffer(8);
     new Uint8Array(buffer).set([1, 2, 3, 4, 5, 6, 7, 8]);
     const uint8Part = new Uint8Array(buffer, 2, 4);
-    const result = await zaplib.callRust("call_rust_no_return", [
+    const result = await zaplib.callRustAsync("call_rust_no_return", [
       JSON.stringify(10),
       uint8Part,
     ]);
     expect(result.length, 0);
   },
-  testCallRustSyncWithSignal: function () {
+  testCallRustAsyncSyncWithSignal: function () {
     const result = zaplib.callRustSync("send_signal");
     expect(result.length, 0);
   },
-  testCallRustFloat32ArrayFromWorker: async () => {
+  testCallRustAsyncFloat32ArrayFromWorker: async () => {
     // Using a normal array
     const input = new Float32Array([0.1, 0.9, 0.3]);
     const result = (
-      await zaplib.callRust("array_multiply_f32", [JSON.stringify(10), input])
+      await zaplib.callRustAsync("array_multiply_f32", [
+        JSON.stringify(10),
+        input,
+      ])
     )[0] as Float32Array;
     expect(result.length, 3);
     expect(result[0], 1);
@@ -54,7 +57,10 @@ const tests = {
       new Float32Array([0.1, 0.9, 0.3])
     );
     const result2 = (
-      await zaplib.callRust("array_multiply_f32", [JSON.stringify(10), input2])
+      await zaplib.callRustAsync("array_multiply_f32", [
+        JSON.stringify(10),
+        input2,
+      ])
     )[0] as Float32Array;
     expect(result2.length, 3);
     expect(result2[0], 1);
@@ -67,7 +73,7 @@ const tests = {
     );
 
     const result3 = (
-      await zaplib.callRust("array_multiply_f32_readonly", [
+      await zaplib.callRustAsync("array_multiply_f32_readonly", [
         JSON.stringify(10),
         input3,
       ])
@@ -77,7 +83,7 @@ const tests = {
     expect(result3[1], 9);
     expect(result3[2], 3);
   },
-  testCallRustSyncFloat32ArrayFromWorker: async () => {
+  testCallRustAsyncSyncFloat32ArrayFromWorker: async () => {
     // Using a normal array
     const input = new Float32Array([0.1, 0.9, 0.3]);
     const result = zaplib.callRustSync("array_multiply_f32", [
@@ -107,10 +113,10 @@ const tests = {
       new Float32Array([0.1, 0.9, 0.3])
     );
 
-    const result3 = zaplib.callRustSync(
-      "array_multiply_f32_readonly",
-      [JSON.stringify(10), input3]
-    )[0] as Float32Array;
+    const result3 = zaplib.callRustSync("array_multiply_f32_readonly", [
+      JSON.stringify(10),
+      input3,
+    ])[0] as Float32Array;
     expect(result3.length, 3);
     expect(result3[0], 1);
     expect(result3[1], 9);
@@ -130,7 +136,7 @@ const tests = {
       expectThrow(f, "Zaplib WebAssembly instance crashed");
     }
     await expectThrowAsync(
-      () => zaplib.callRust("call_rust_no_return"),
+      () => zaplib.callRustAsync("call_rust_no_return"),
       "Zaplib WebAssembly instance crashed"
     );
   },
@@ -160,7 +166,7 @@ rpc.receive("testSendZapArrayToMainThread", function () {
     subarray: zaplib.serializeZapArrayForPostMessage(zapArray.subarray(1, 3)),
   };
 });
-rpc.receive("testCallRustSyncWithZapbuffer", function () {
+rpc.receive("testCallRustAsyncSyncWithZapbuffer", function () {
   const result = zaplib.createMutableBuffer(
     new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8])
   );

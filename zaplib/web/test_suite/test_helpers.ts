@@ -1,4 +1,4 @@
-import { CallRust, ZapArray } from "types";
+import { CallRustAsync, ZapArray } from "types";
 import { jsRuntime } from "type_of_runtime";
 import { allocatedArcs, allocatedVecs, ZapBuffer } from "zap_buffer";
 
@@ -64,7 +64,10 @@ const generateGarbage = () => {
   }
 };
 
-const arcAllocated = async (callRust: CallRust, buffer: ZapBuffer) => {
+const arcAllocated = async (
+  callRustAsync: CallRustAsync,
+  buffer: ZapBuffer
+) => {
   if (!buffer.__zaplibBufferData.readonly)
     throw new Error("arcAllocated called on mutable buffer");
 
@@ -73,7 +76,9 @@ const arcAllocated = async (callRust: CallRust, buffer: ZapBuffer) => {
   // We still have the buffer here! So it should still be allocated.
   expect(allocatedArcs[arcPtr], true);
 
-  const [result] = await callRust("check_arc_count", [`${BigInt(arcPtr)}`]);
+  const [result] = await callRustAsync("check_arc_count", [
+    `${BigInt(arcPtr)}`,
+  ]);
   const [countBeforeDeallocation] = result;
   expect(countBeforeDeallocation, 1);
 
@@ -111,11 +116,11 @@ const vecDeallocated = async (bufferPtr: number) => {
 // This is a bit brittle given that there are no guarantees for garbage collection during this time,
 // but observationally this ends up being enough time. The caller must also ensure that the buffer will go out of scope
 // shortly after calling this.
-// We have to pass in `callRust` because we can call this function from a variety of runtimes.
+// We have to pass in `callRustAsync` because we can call this function from a variety of runtimes.
 // Note that assertions on garbage collection are extremely sensitive to exactly how these functions are written,
 // and can easily break if you restucture the function, use a different/newer browser, etc!
 export const expectDeallocationOrUnregister = (
-  callRust: CallRust,
+  callRustAsync: CallRustAsync,
   zapArray: ZapArray
 ): Promise<void> => {
   // Deallocation code is only run in WASM for now.
@@ -123,7 +128,9 @@ export const expectDeallocationOrUnregister = (
 
   const buffer = zapArray.buffer as ZapBuffer;
   return buffer.readonly
-    ? arcAllocated(callRust, buffer).then((arcPtr) => arcDeallocated(arcPtr))
+    ? arcAllocated(callRustAsync, buffer).then((arcPtr) =>
+        arcDeallocated(arcPtr)
+      )
     : vecDeallocated(buffer.__zaplibBufferData.bufferPtr);
 };
 

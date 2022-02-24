@@ -218,8 +218,8 @@ pub struct Cx {
     /// See [`DebugLog`] for more information on supported types
     pub(crate) debug_logs: Vec<DebugLog>,
 
-    /// Function registered through [`Cx::on_call_rust`]
-    pub call_rust_fn: Option<usize>,
+    /// Function registered through [`Cx::on_call_rust_async`]
+    pub call_rust_async_fn: Option<usize>,
 
     /// Reference to the main_app type
     pub app_type_id: TypeId,
@@ -362,7 +362,7 @@ impl Cx {
 
             debug_logs: Vec::new(),
 
-            call_rust_fn: None,
+            call_rust_async_fn: None,
             app_type_id,
             finished_app_new: false,
         }
@@ -869,19 +869,19 @@ impl Cx {
         }
     }
 
-    /// Register function to handle callRust from JavaScript. Registered function must be a method on the main app.
-    pub fn on_call_rust<T: 'static>(
+    /// Register function to handle `callRustSync` from JavaScript. Registered function must be a method on the main app.
+    pub fn on_call_rust_async<T: 'static>(
         &mut self,
         func: fn(this: &mut T, cx: &mut Cx, name: String, params: Vec<ZapParam>) -> Vec<ZapParam>,
     ) {
-        if self.call_rust_fn.is_some() {
-            panic!("Attempting to call on_call_rust twice.");
+        if self.call_rust_async_fn.is_some() {
+            panic!("Attempting to call on_call_rust_async twice.");
         }
 
         if self.app_type_id != TypeId::of::<T>() {
-            panic!("Error in on_call_rust: Function must be a method on the main_app.");
+            panic!("Error in on_call_rust_async: Function must be a method on the main_app.");
         }
-        self.call_rust_fn = Some(Box::into_raw(Box::new(func)) as usize);
+        self.call_rust_async_fn = Some(Box::into_raw(Box::new(func)) as usize);
     }
 
     /// Set the callback for `zaplib.callRustSync` calls.
@@ -938,7 +938,7 @@ pub trait CxDesktopVsWasmCommon {
     #[cfg(any(target_arch = "wasm32", feature = "cef"))]
     fn call_js(&mut self, name: &str, params: Vec<ZapParam>);
 
-    /// Mechanism to communicate back returns values from call_rust functions.
+    /// Mechanism to communicate back returns values from `callRustAsync` functions.
     fn return_to_js(&mut self, callback_id: u32, params: Vec<ZapParam>);
 }
 
