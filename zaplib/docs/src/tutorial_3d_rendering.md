@@ -137,7 +137,7 @@ Then, modify `loadSTLIntoGeometry` to replace our JavaScript parsing code.
 ```
 A few key changes:
  * We call `zaplib.initialize` with the location of our built WebAssembly binary.
- * `zaplib.callRust` returns our vertices and normals already as Float32Arrays, which we can plug into ThreeJS.
+ * `zaplib.callRustAsync` returns our vertices and normals already as Float32Arrays, which we can plug into ThreeJS.
 
 Great! Now let's run the example in the browser. There should be no difference in the behavior and things will load as normal, without blocking our main browser thread.
 <!-- Maybe there should be an actual observable difference here. -->

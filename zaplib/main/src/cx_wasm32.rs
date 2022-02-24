@@ -516,14 +516,14 @@ impl Cx {
         self.process_post_event(&mut event);
     }
 
-    /// This is unsafe, since we don't have a mutex on [`Cx::call_rust_in_same_thread_sync_fn`]! So if someone
+    /// This is unsafe, since we don't have a mutex on [`Cx::call_rust_sync_fn`]! So if someone
     /// were to change it while another thread is about to call it, bad things can happen. We guard against this
     /// by making sure that we only mutate it when the app is being initialized.
     ///
-    /// See [`Cx::on_call_rust_in_same_thread_sync_internal`] for this guarantee.
-    pub unsafe fn call_rust_in_same_thread_sync(&self, zerde_ptr: u64) -> u64 {
+    /// See [`Cx::on_call_rust_sync_internal`] for this guarantee.
+    pub unsafe fn call_rust_sync(&self, zerde_ptr: u64) -> u64 {
         assert!(self.finished_app_new);
-        if let Some(func) = *self.platform.call_rust_in_same_thread_sync_fn.get() {
+        if let Some(func) = *self.platform.call_rust_sync_fn.get() {
             let mut zerde_parser = ZerdeParser::from(zerde_ptr);
             let name = zerde_parser.parse_string();
             let params = zerde_parser.parse_zap_params();
@@ -532,19 +532,19 @@ impl Cx {
             zerde_builder.build_zap_params(return_params);
             zerde_builder.take_ptr()
         } else {
-            panic!("call_rust_in_same_thread_sync called but no call_rust_in_same_thread_sync_fn was registered");
+            panic!("call_rust_sync called but no call_rust_sync_fn was registered");
         }
     }
 
     /// We have to make sure that we only mutate this during initialization, since there are no other threads there.
-    /// Note that the assertion also happens in [`Cx::on_call_rust_in_same_thread_sync`] for consistency, so we just
+    /// Note that the assertion also happens in [`Cx::on_call_rust_sync`] for consistency, so we just
     /// check it here for good measure.
     ///
-    /// See [`Cx::call_rust_in_same_thread_sync`].
-    pub(crate) fn on_call_rust_in_same_thread_sync_internal(&self, func: CallRustInSameThreadSyncFn) {
+    /// See [`Cx::call_rust_sync`].
+    pub(crate) fn on_call_rust_sync_internal(&self, func: CallRustSyncFn) {
         assert!(!self.finished_app_new);
         assert!(!self.platform.is_initialized);
-        let fn_ref = unsafe { &mut *self.platform.call_rust_in_same_thread_sync_fn.get() };
+        let fn_ref = unsafe { &mut *self.platform.call_rust_sync_fn.get() };
         *fn_ref = Some(func);
     }
 }
@@ -664,7 +664,7 @@ pub(crate) struct CxPlatform {
     pub(crate) index_buffers: usize,
     pub(crate) vaos: usize,
     pub(crate) pointers_down: Vec<bool>,
-    call_rust_in_same_thread_sync_fn: UnsafeCell<Option<CallRustInSameThreadSyncFn>>,
+    call_rust_sync_fn: UnsafeCell<Option<CallRustSyncFn>>,
     // pub(crate) xr_last_left_input: XRInput,
     // pub(crate) xr_last_right_input: XRInput,
 }
@@ -679,7 +679,7 @@ impl Default for CxPlatform {
             index_buffers: 0,
             vaos: 0,
             pointers_down: Vec::new(),
-            call_rust_in_same_thread_sync_fn: UnsafeCell::new(None),
+            call_rust_sync_fn: UnsafeCell::new(None),
             // xr_last_left_input: XRInput::default(),
             // xr_last_right_input: XRInput::default(),
         }

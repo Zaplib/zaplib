@@ -4,7 +4,7 @@ import { OrbitControls } from 'https://cdn.skypack.dev/three@v0.135.0/examples/j
 const loadSTLIntoGeometry = async (assetUrl) => {
     await zaplib.initialize({ wasmModule: '/target/wasm32-unknown-unknown/debug/tutorial_3d_rendering_step2.wasm' });
 
-    const [vertices, normals] = await zaplib.callRust("parse_stl");
+    const [vertices, normals] = await zaplib.callRustAsync("parse_stl");
     const geometry = new THREE.BufferGeometry();
     geometry.attributes.position = new THREE.BufferAttribute(vertices, 3);
     geometry.attributes.normal = new THREE.BufferAttribute(normals, 3);

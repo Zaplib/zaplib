@@ -276,7 +276,7 @@ impl PartialEq for UserFile {
     }
 }
 
-/// Fires when a web worker calls `callRust` to trigger a function in Rust.
+/// Fires when a web worker calls `callRustAsync` to trigger a function in Rust.
 #[derive(Clone, Debug)]
 pub struct WebRustCallEvent {
     /// Description of the event.
@@ -294,7 +294,7 @@ pub struct AppOpenFilesEvent {
 /// See [`Event::System`].
 #[derive(Debug, Clone)]
 pub enum SystemEvent {
-    /// See [`WebRustCallEvent`]. This event must have a handler registered through [`Cx::on_call_rust`].
+    /// See [`WebRustCallEvent`]. This event must have a handler registered through [`Cx::on_call_rust_async`].
     WebRustCall(Option<WebRustCallEvent>),
     Draw,
     /// We're going to repaint our draw tree.

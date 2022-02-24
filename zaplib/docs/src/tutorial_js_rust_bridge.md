@@ -130,7 +130,7 @@ zaplib.initialize({
     wasmModule: `path/to/target/wasm32-unknown-unknown/debug/tutorial_js_rust_bridge.wasm`,
     defaultStyles: true
 }).then(() => {
-  zaplib.callRust('sum');
+  zaplib.callRustAsync('sum');
 });
 ```
 
@@ -149,7 +149,7 @@ zaplib.initialize({
 ```
 ### What's new?
 - `zaplib.initialize`, with a path to the `.wasm` file. This assumes our web server is at the same port that served this HTML.
-- `zaplib.callRust`, where the first parameter specifies a `name` of associated logic in Rust.
+- `zaplib.callRustAsync`, where the first parameter specifies a `name` of associated logic in Rust.
 - Importing `zaplib_runtime` in our HTML.
 
 ### Results
@@ -163,7 +163,7 @@ Here is our modified code.
 ```js
 // index.js (after zaplib.initialize)
 const values = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-zaplib.callRust('sum', [values]);
+zaplib.callRustAsync('sum', [values]);
 ```
 
 ```rust,noplayground
@@ -190,7 +190,7 @@ register_call_rust!(call_rust);
 ```
 
 ### What's new?
-`callRust` can be passed a second parameter, a list of parameters of arbitrary length. Parameters must be either strings or [TypedArrays](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays). In the above case, we're using a `Uint8Array`.
+`callRustAsync` can be passed a second parameter, a list of parameters of arbitrary length. Parameters must be either strings or [TypedArrays](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays). In the above case, we're using a `Uint8Array`.
 
 Our callback in Rust must now read this value, casting the parameter to the correct type. For Uint8Arrays, we can use the `as_u8_slice()` convenience method for this. Now we can use this like any normal array!
 
@@ -201,7 +201,7 @@ Here is our modified code.
 ```js
 // index.js (after zaplib.initialize)
 const values = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-const [sumArray] = await zaplib.callRust('sum', [values]);
+const [sumArray] = await zaplib.callRustAsync('sum', [values]);
 const sum = sumArray[0];
 document.getElementById('root').textContent = sum;
 ```
@@ -228,7 +228,7 @@ register_call_rust!(call_rust);
 ```
 
 ### What's new?
-`callRust` will respond asynchronously with an array of parameters, so our function must now use async/await. We'll populate the first item of this array with our sum, which will be a buffer with one item.
+`callRustAsync` will respond asynchronously with an array of parameters, so our function must now use async/await. We'll populate the first item of this array with our sum, which will be a buffer with one item.
 
 In Rust, our function can now return a vector of results. Note that each result value must be of type `ZapParam` using the helper `into_param()`.
 

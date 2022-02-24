@@ -7,7 +7,7 @@ Let's start with our example from before, with a few modifications. We still wan
 ```js
 // index.js (after zaplib.initialize)
 const values = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-const [sumArray] = await zaplib.callRust('sum', [values]);
+const [sumArray] = await zaplib.callRustAsync('sum', [values]);
 const sum = sumArray[0];
 document.getElementById('root').textContent = sum;
 ```
@@ -22,7 +22,7 @@ Let's first create a Uint8Array that's managed in Rust. Our new code:
 ```js
 // index.js (after zaplib.initialize)
 const values = await zaplib.createReadOnlyBuffer(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
-const [sumArray] = await zaplib.callRust('sum', [values]);
+const [sumArray] = await zaplib.callRustAsync('sum', [values]);
 const sum = sumArray[0];
 document.getElementById('root').textContent = sum;
 ```
@@ -31,7 +31,7 @@ document.getElementById('root').textContent = sum;
 We only change one line above: initializing `values` using `zaplib.createReadOnlyBuffer`. This consumes a `Uint8Array` and copies it into WebAssembly memory, which is Rust-managed.
 
 ## Reusing the allocated memory.
-Let's add to our contrived example, and get both the sum and the product of the values, using two separate calls to `callRust`:
+Let's add to our contrived example, and get both the sum and the product of the values, using two separate calls to `callRustAsync`:
 
 ```rust,noplayground
 // src/main.rs
@@ -64,12 +64,12 @@ register_call_rust!(call_rust);
 ```js
 // index.js (after zaplib.initialize)
 const values = await zaplib.createReadOnlyBuffer(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
-const sum = (await zaplib.callRust('sum', [values]))[0][0];
-const product = (await zaplib.callRust('product', [values]))[0][0];
+const sum = (await zaplib.callRustAsync('sum', [values]))[0][0];
+const product = (await zaplib.callRustAsync('product', [values]))[0][0];
 document.getElementById('root').textContent = "sum: " + sum + " product: " + product;
 ```
 
-Even though we called `callRust` multiple times with `values`, there was no copying of data involved!
+Even though we called `callRustAsync` multiple times with `values`, there was no copying of data involved!
 
 ## Read-Only vs Mutable
 The `values` buffer is read-only, which means that you can safely read from it in JavaScript and Rust at the same time! In fact, you can pass it safely to Rust threads or Web Workers (using `zaplib.serializeZapArrayForPostMessage`). Zaplib will keep track of where you use the array, so that it gets properly deallocated when you don't use it anymore.

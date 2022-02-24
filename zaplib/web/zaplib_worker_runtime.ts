@@ -1,6 +1,6 @@
 /// <reference lib="WebWorker" />
 
-// The "Zaplib WebWorker runtime" exposes some common Zaplib functions inside your WebWorkers, like `callRust`.
+// The "Zaplib WebWorker runtime" exposes some common Zaplib functions inside your WebWorkers, like `callRustAsync`.
 //
 // Include the output of this (zaplib_worker_runtime.js) at the start of each worker, and initialize the runtime
 // by calling `self.initializeWorker` with a `MessagePort` obtained by `newWorkerPort` (which is
@@ -10,7 +10,7 @@
 // Currently this is only supported in WebAssembly, not when using CEF.
 
 import {
-  callRustInSameThreadSyncImpl,
+  callRustSyncImpl,
   createErrorCheckers,
   createWasmBuffer,
   getWasmEnv,
@@ -21,8 +21,8 @@ import {
 } from "common";
 import { MainWorkerChannelEvent, WebWorkerRpc } from "rpc_types";
 import {
-  CallRust,
-  CallRustInSameThreadSync,
+  CallRustAsync,
+  CallRustSync,
   PostMessageTypedArray,
   WasmExports,
   ZapArray,
@@ -148,7 +148,7 @@ export const newWorkerPort = (): MessagePort => {
 };
 
 // TODO(JP): Allocate buffers on the wasm memory directly here.
-export const callRust: CallRust = async (name, params = []) => {
+export const callRustAsync: CallRustAsync = async (name, params = []) => {
   checkWasm();
 
   const transformedParams = params.map((param) => {
@@ -160,7 +160,7 @@ export const callRust: CallRust = async (name, params = []) => {
     } else {
       if (!(param.buffer instanceof SharedArrayBuffer)) {
         console.warn(
-          "Consider passing Uint8Arrays backed by ZapBuffer or SharedArrayBuffer into `callRust` to prevent copying data"
+          "Consider passing Uint8Arrays backed by ZapBuffer or SharedArrayBuffer into `callRustAsync` to prevent copying data"
         );
       }
       return param;
@@ -168,18 +168,15 @@ export const callRust: CallRust = async (name, params = []) => {
   });
 
   return transformParamsFromRust(
-    await rpc.send(MainWorkerChannelEvent.CallRust, {
+    await rpc.send(MainWorkerChannelEvent.CallRustAsync, {
       name,
       params: transformedParams,
     })
   );
 };
 
-export const callRustInSameThreadSync: CallRustInSameThreadSync = (
-  name,
-  params = []
-) =>
-  callRustInSameThreadSyncImpl({
+export const callRustSync: CallRustSync = (name, params = []) =>
+  callRustSyncImpl({
     name,
     params,
     checkWasm,
