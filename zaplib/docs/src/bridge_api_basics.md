@@ -85,7 +85,7 @@ For more information about the parameter types, see the [next chapter](./bridge_
 
 Use these functions to allocate raw data on the WebAssembly heap. These are convenience functions that have the same effect as calling `zaplib.callRustAsync` with non-Zaplib-backed typed arrays and immediately returning them.
 
-Note that when called on the browser's main thread, these calls are asynchronous (they return a `Promise`), while within Web Workers they are synchronous. In the future, we would like to make them synchronous in both cases.
+Note that when called on the browser's main thread, these calls are asynchronous (they return a `Promise`), while within Web Workers they are synchronous. In the future, we would like to make them [synchronous in both cases](https://github.com/Zaplib/zaplib/issues/89).
 
 ## zaplib.registerCallJsCallbacks & zaplib.unregisterCallJsCallbacks
 
