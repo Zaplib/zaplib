@@ -89,11 +89,11 @@ Note that when called on the browser's main thread, these calls are asynchronous
 
 ## zaplib.isZapBuffer
 
-Determines if a given TypedArray is backed by Zaplib managed memory. This can be especially useful when determining how to communicate a buffer across a WebWorker boundary - [see this section](/docs/bridge_api_workers.html#zaplibserializezaparrayforpostmessage--zaplibdeserializezaparrayfrompostmessage).
+Determines if a given ArrayBuffer is backed by Zaplib managed memory. This can be especially useful when determining how to communicate a buffer across a WebWorker boundary - [see this section](/docs/bridge_api_workers.html#zaplibserializezaparrayforpostmessage--zaplibdeserializezaparrayfrompostmessage).
 
-| Returns (Typescript)                       | Description |
-|---------------------------------------------|---------|
-| `boolean`                           | True if Zaplib managed memory, false if JavaScript managed memory. |
+| Parameter (Typescript) | Returns (Typescript) | Description |
+|-|-|-|
+| `buffer: ArrayBufferLike` | `boolean` | True if Zaplib managed memory, false if JavaScript managed memory. |
 
 ## zaplib.registerCallJsCallbacks & zaplib.unregisterCallJsCallbacks
 
