@@ -1,6 +1,6 @@
 [package]
 name = "cargo-zaplib"
-version = "0.0.3"
+version = "0.0.4"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/Zaplib/zaplib"

@@ -452,7 +452,7 @@ dependencies = [
 
 [[package]]
 name = "cargo-zaplib"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "actix-files",
  "actix-http",
