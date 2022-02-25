@@ -87,6 +87,14 @@ Use these functions to allocate raw data on the WebAssembly heap. These are conv
 
 Note that when called on the browser's main thread, these calls are asynchronous (they return a `Promise`), while within Web Workers they are synchronous. In the future, we would like to make them [synchronous in both cases](https://github.com/Zaplib/zaplib/issues/89).
 
+## zaplib.isZapBuffer
+
+Determines if a given TypedArray is backed by Zaplib managed memory. This can be especially useful when determining how to communicate a buffer across a WebWorker boundary - [see this section](/docs/bridge_api_workers.html#zaplibserializezaparrayforpostmessage--zaplibdeserializezaparrayfrompostmessage).
+
+| Returns (Typescript)                       | Description |
+|---------------------------------------------|---------|
+| `boolean`                           | True if Zaplib managed memory, false if JavaScript managed memory. |
+
 ## zaplib.registerCallJsCallbacks & zaplib.unregisterCallJsCallbacks
 
 In order to call from Rust to JS — e.g. in response to an event in Rust — you can register callbacks on the JS side, using `zaplib.registerCallJsCallbacks`. An example:
