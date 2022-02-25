@@ -219,7 +219,7 @@ export function getCachedZapBuffer(
   return zapBufferCache.get(zapBuffer) as ZapArray;
 }
 
-export function isZapBuffer(potentialZapBuffer: unknown): boolean {
+export function isZapBuffer(potentialZapBuffer: ArrayBufferLike): boolean {
   return (
     typeof potentialZapBuffer === "object" &&
     potentialZapBuffer instanceof ZapBuffer

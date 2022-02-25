@@ -26,6 +26,7 @@ Here is an overview of all the JS APIs, and their support with the WebAssembly r
 | zaplib.serializeZapArrayForPostMessage      |       ✅          |        ✅          |     [#69][2]    |   [#69][2] |
 | zaplib.deserializeZapArrayFromPostMessage   |       ✅          |        ✅          |     [#69][2]    |   [#69][2] |
 | zaplib.jsRuntime                            |       ✅          |      [#69][2]      |       ✅        |   [#69][2] |
+| zaplib.isZapBuffer                          |       ✅          |        ✅          |       ✅        |    ✅       |
 
 [1]: https://github.com/Zaplib/zaplib/issues/51
 [2]: https://github.com/Zaplib/zaplib/issues/69

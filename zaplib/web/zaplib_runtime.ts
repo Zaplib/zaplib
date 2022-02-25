@@ -5,6 +5,7 @@
 import * as wasm from "wasm_runtime";
 import * as cef from "cef_runtime";
 import { jsRuntime } from "type_of_runtime";
+import { isZapBuffer } from "zap_buffer";
 import "./zaplib.css";
 
 const {
@@ -32,4 +33,5 @@ export {
   jsRuntime,
   createMutableBuffer,
   createReadOnlyBuffer,
+  isZapBuffer,
 };

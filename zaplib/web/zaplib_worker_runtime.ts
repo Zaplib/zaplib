@@ -263,3 +263,5 @@ export const deserializeZapArrayFromPostMessage = (
     postMessageData.byteLength
   );
 };
+
+export { isZapBuffer };
