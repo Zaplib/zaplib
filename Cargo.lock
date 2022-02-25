@@ -455,6 +455,7 @@ name = "cargo-zaplib"
 version = "0.0.3"
 dependencies = [
  "actix-files",
+ "actix-http",
  "actix-web",
  "clap 3.1.0",
  "env_logger",
