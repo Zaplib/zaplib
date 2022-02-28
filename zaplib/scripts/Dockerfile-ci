@@ -83,3 +83,15 @@ RUN apt-get update && \
   chmod +x BrowserStackLocal && \
   rm BrowserStackLocal-linux-x64.zip && \
   mv BrowserStackLocal /usr/local/bin
+
+# aws-cli; from https://stackoverflow.com/a/67548876
+RUN apt-get update && \
+    apt-get install -y \
+        unzip \
+        curl \
+    && apt-get clean \
+    && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+    && unzip awscliv2.zip \
+    && ./aws/install \
+    && rm -rf \
+        awscliv2.zip

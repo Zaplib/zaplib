@@ -4,7 +4,7 @@ jobs:
   build_web_ci:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+      image: janpaul123/zaplib-ci@sha256:aec4766b988a9b716084ef9faeee9b9c383558ca037c53a1a6c6bf4e34035690
     steps:
       - uses: actions/checkout@v2
       - uses: Swatinem/rust-cache@v1
@@ -18,7 +18,7 @@ jobs:
   browser_tests:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+      image: janpaul123/zaplib-ci@sha256:aec4766b988a9b716084ef9faeee9b9c383558ca037c53a1a6c6bf4e34035690
     steps:
       - uses: actions/checkout@v2
         with:
@@ -39,22 +39,20 @@ jobs:
       - run: zaplib/scripts/ci/browser_tests.sh
         env:
           BROWSERSTACK_KEY: ${{ secrets.BROWSERSTACK_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+      - uses: peter-evans/commit-comment@v1
+        with:
+          body: ${{ env.SCREENSHOT_GITHUB_MESSAGE }}
       - uses: actions/upload-artifact@v2
         with:
           name: screenshots
           path: screenshots_report/screenshots/
-      # TODO(JP): Include screenshots report in automated deployment;
-      # see https://github.com/Zaplib/zaplib/issues/22. Then also include
-      # automatic comment posted to Github, so someone can review the
-      # screenshots.
-      - uses: actions/upload-artifact@v2
-        with:
-          name: screenshots_report
-          path: screenshots_report/
   checks_for_all_targets_debug:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+      image: janpaul123/zaplib-ci@sha256:aec4766b988a9b716084ef9faeee9b9c383558ca037c53a1a6c6bf4e34035690
     steps:
       - uses: actions/checkout@v2
       - uses: Swatinem/rust-cache@v1
@@ -62,7 +60,7 @@ jobs:
   checks_for_all_targets_release:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+      image: janpaul123/zaplib-ci@sha256:aec4766b988a9b716084ef9faeee9b9c383558ca037c53a1a6c6bf4e34035690
     steps:
       - uses: actions/checkout@v2
       - uses: Swatinem/rust-cache@v1
@@ -70,7 +68,7 @@ jobs:
   debug_builds_native:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+      image: janpaul123/zaplib-ci@sha256:aec4766b988a9b716084ef9faeee9b9c383558ca037c53a1a6c6bf4e34035690
     steps:
       - uses: actions/checkout@v2
       - uses: Swatinem/rust-cache@v1
@@ -78,7 +76,7 @@ jobs:
   debug_builds_wasm:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+      image: janpaul123/zaplib-ci@sha256:aec4766b988a9b716084ef9faeee9b9c383558ca037c53a1a6c6bf4e34035690
     steps:
       - uses: actions/checkout@v2
       - uses: Swatinem/rust-cache@v1
@@ -86,7 +84,7 @@ jobs:
   release_builds_native:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+      image: janpaul123/zaplib-ci@sha256:aec4766b988a9b716084ef9faeee9b9c383558ca037c53a1a6c6bf4e34035690
     steps:
       - uses: actions/checkout@v2
       - uses: Swatinem/rust-cache@v1
@@ -94,7 +92,7 @@ jobs:
   release_builds_wasm:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+      image: janpaul123/zaplib-ci@sha256:aec4766b988a9b716084ef9faeee9b9c383558ca037c53a1a6c6bf4e34035690
     steps:
       - uses: actions/checkout@v2
       - uses: Swatinem/rust-cache@v1
@@ -102,7 +100,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+      image: janpaul123/zaplib-ci@sha256:aec4766b988a9b716084ef9faeee9b9c383558ca037c53a1a6c6bf4e34035690
     steps:
       - uses: actions/checkout@v2
       - uses: Swatinem/rust-cache@v1
@@ -110,7 +108,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     container:
-      image: janpaul123/zaplib-ci@sha256:84c43567c8bf613fa60fdb3c7708b983069906840544a9366db220bcc9ea787a
+      image: janpaul123/zaplib-ci@sha256:aec4766b988a9b716084ef9faeee9b9c383558ca037c53a1a6c6bf4e34035690
     steps:
       - uses: actions/checkout@v2
       - uses: Swatinem/rust-cache@v1
