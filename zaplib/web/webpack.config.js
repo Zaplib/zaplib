@@ -7,6 +7,13 @@ const { GitRevisionPlugin } = require("git-revision-webpack-plugin");
 
 const gitRevisionPlugin = new GitRevisionPlugin();
 
+let gitSha = "(no git sha found)";
+try {
+  gitSha = gitRevisionPlugin.commithash();
+} catch (e) {
+  console.log("no git sha found");
+}
+
 // TODO(Paras): Export type definitions for our library builds, both for TypeScript
 // and potentially Flow, using something like https://github.com/joarwilk/flowgen.
 
@@ -49,7 +56,7 @@ const common = (env, argv) => {
     },
     plugins: [
       new webpack.DefinePlugin({
-        __GIT_SHA__: JSON.stringify(gitRevisionPlugin.commithash()),
+        __GIT_SHA__: JSON.stringify(gitSha),
       }),
     ],
   };

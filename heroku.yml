@@ -1,0 +1,4 @@
+build:
+  docker:
+    # Must be at the root; see https://devcenter.heroku.com/articles/build-docker-images-heroku-yml#known-issues-and-limitations
+    web: Dockerfile-website
