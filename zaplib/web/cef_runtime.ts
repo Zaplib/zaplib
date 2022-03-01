@@ -53,6 +53,8 @@ declare global {
   }
 }
 
+overwriteTypedArraysWithZapArrays();
+
 let newCallbackId = 0;
 // keeping track of pending callbacks from rust side
 const pendingCallbacks: Record<number, (arg0: ZapParam[]) => void> = {};
@@ -186,8 +188,6 @@ export const deserializeZapArrayFromPostMessage = (
 
 export const initialize: Initialize = (initParams) =>
   new Promise<void>((resolve) => {
-    overwriteTypedArraysWithZapArrays();
-
     window.fromCefSetMouseCursor = (cursorId) => {
       if (document.body) {
         document.body.style.cursor = cursorMap[cursorId] || "default";

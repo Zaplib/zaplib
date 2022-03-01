@@ -75,6 +75,8 @@ declare global {
   }
 }
 
+overwriteTypedArraysWithZapArrays();
+
 type CanvasData = {
   // Set to undefined if there's no canvas to render to. Set to OffscreenCanvas
   // if the browser supports that. Otherwise we use the WebGLRenderer on this thread.
@@ -465,8 +467,6 @@ export const initialize: Initialize = (initParams) => {
     );
   }
 
-  overwriteTypedArraysWithZapArrays();
-
   return new Promise<void>((resolve, reject) => {
     _rpc = new Rpc(new MainWorker());
 
@@ -671,7 +671,7 @@ export const initialize: Initialize = (initParams) => {
           };
         },
         onScreenResize: () => {
-          // Dummy function for if we're note rendering.
+          // Dummy function for if we're not rendering.
         },
         renderingMethod: undefined,
       };
