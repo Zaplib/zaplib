@@ -552,13 +552,6 @@ export const initialize: Initialize = (initParams) => {
           "Sorry, we need browser support for WebGL to run<br/>Please update your browser to a more modern one<br/>Update to at least iOS 10, Safari 10, latest Chrome, Edge or Firefox<br/>Go and update and come back, your browser will be better, faster and more secure!<br/>If you are using chrome on OSX on a 2011/2012 mac please enable your GPU at: Override software rendering list:Enable (the top item) in: <a href='about://flags'>about://flags</a>. Or switch to Firefox or Safari.";
       });
 
-      // TODO(JP): See if we can instead do this when we resolve the `initialize` Promise.
-      rpc.receive(WorkerEvent.RemoveLoadingIndicators, () => {
-        if (initParams.defaultStyles) {
-          removeLoadingIndicator();
-        }
-      });
-
       rpc.receive(WorkerEvent.SetDocumentTitle, (title: string) => {
         document.title = title;
       });
@@ -803,6 +796,9 @@ export const initialize: Initialize = (initParams) => {
             )
             .then(() => {
               canvasData.onScreenResize();
+              if (initParams.defaultStyles) {
+                removeLoadingIndicator();
+              }
               resolve();
             });
         }, reject);
