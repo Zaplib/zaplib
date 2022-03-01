@@ -24,7 +24,7 @@ cargo run -p zaplib_ci -- --webdriver-url "https://jpposma_0ZuiXP:${BROWSERSTACK
 # Screenshots are saved in `screenshots/`. Previous ones in `previous_screenshots/`. Let's compare!
 # `--ignoreChange` makes it so this call doesn't fail when there are changed screenshots; we don't
 # want to block merging in that case.
-zaplib/web/node_modules/.bin/reg-cli screenshots/ previous_screenshots/ diff_screenshots/ --report ./index.html --json ./reg.json --ignoreChange --enableAntialias
+zaplib/web/node_modules/.bin/reg-cli screenshots/ previous_screenshots/ diff_screenshots/ --report ./index.html --json ./reg.json --ignoreChange --enableAntialias --matchingThreshold 0.05
 # Now let's bundle everything up in screenshots_report/
 mkdir screenshots_report/
 mv index.html screenshots_report/
