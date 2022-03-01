@@ -29,6 +29,7 @@ import {
   RustZapParam,
   MutableBufferData,
   CreateBufferWorkerSync,
+  IsInitialized,
 } from "types";
 import { inWorker } from "type_of_runtime";
 import {
@@ -52,6 +53,10 @@ let alreadyCalledInitialize = false;
 let wasmOnline: Uint8Array;
 const wasmInitialized = () => Atomics.load(wasmOnline, 0) === 1;
 const { checkWasm, wrapWasmExports } = createErrorCheckers(wasmInitialized);
+
+// Once set to true, it will never go back to false (even in case of an error).
+let initialized = false;
+export const isInitialized: IsInitialized = () => initialized;
 
 export const initializeWorker = (zapWorkerPort: MessagePort): Promise<void> => {
   if (alreadyCalledInitialize) {
@@ -108,6 +113,7 @@ export const initializeWorker = (zapWorkerPort: MessagePort): Promise<void> => {
               tlsAndStackData
             );
             wasmExports = wrapWasmExports(instance.exports);
+            initialized = true;
             resolve();
           });
         }

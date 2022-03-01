@@ -11,6 +11,7 @@ This initializes the library. A couple of things happen:
 * A `<textarea>` element is added to `<body>`. Again, it only springs into action when necessary. But if you need to fully hide it, use the `.zaplib_textarea` CSS class.
 * We add event listeners on the full page to capture events that are relevant for Zaplib.
 * We monkey-patch typed array constructors (e.g. `new Uint8Array`) and `postMessage` calls to add some additional features. See [next chapter](./bridge_api_params.md) for more details.
+* Call the convenience method `zaplib.isInitialized` to check for the initialization status. Once set to true, it will never go back to false (even in case of an error).
 
 | Parameter (Typescript)                      | Description |
 |---------------------------------------------|---------|

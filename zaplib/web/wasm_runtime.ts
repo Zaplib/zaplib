@@ -41,6 +41,7 @@ import {
   RustZapParam,
   Initialize,
   WasmExports,
+  IsInitialized,
 } from "types";
 import { WebGLRenderer } from "webgl_renderer";
 import {
@@ -454,6 +455,10 @@ function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
   return { renderingMethod, onScreenResize, getSizingData };
 }
 
+// Once set to true, it will never go back to false (even in case of an error).
+let initialized = false;
+export const isInitialized: IsInitialized = () => initialized;
+
 let alreadyCalledInitialize = false;
 export const initialize: Initialize = (initParams) => {
   if (alreadyCalledInitialize) {
@@ -799,6 +804,7 @@ export const initialize: Initialize = (initParams) => {
               if (initParams.defaultStyles) {
                 removeLoadingIndicator();
               }
+              initialized = true;
               resolve();
             });
         }, reject);

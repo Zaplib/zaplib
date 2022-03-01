@@ -6,6 +6,8 @@ export type Initialize = (initParams: {
   onRenderingPanic?: (error: Error) => void;
 }) => Promise<void>;
 
+export type IsInitialized = () => boolean;
+
 export type UniformType =
   | "float"
   | "vec2"

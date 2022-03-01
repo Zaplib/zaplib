@@ -54,6 +54,7 @@ const env = new URL(window.document.location.toString()).searchParams.has(
 
 let onRenderingPanicCalled = false;
 
+expect(zaplib.isInitialized(), false);
 zaplib
   .initialize({
     wasmModule: `target/wasm32-unknown-unknown/${env}/test_suite.wasm`,
@@ -63,6 +64,8 @@ zaplib
     },
   })
   .then(async () => {
+    expect(zaplib.isInitialized(), true);
+
     // Initialize the worker by sending a "zap worker port" to it in the first message.
     if (zaplib.jsRuntime === "wasm") {
       const zapWorkerPort = zaplib.newWorkerPort();
