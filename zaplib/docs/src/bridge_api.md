@@ -6,9 +6,9 @@ The [Zaplib package](https://www.npmjs.com/package/zaplib) on npm has two entryp
 1. `zaplib_runtime.development.js`: the main runtime, to be used on the browser's main thread.
 2. `zaplib_worker_runtime.development.js`: the Web Worker runtime, for use in your workers.
 
-> In production, use: `zaplib_runtime.production.js` and `zaplib_runtime.production.js`.
+In production, similarly use: `zaplib_runtime.production.js` and `zaplib_worker_runtime.production.js`.
 
-The APIs between these runtimes is mostly the same, but there are some small differences which we will note.
+> Note: Zaplib performs some global setup upon import, notably modifying TypedArray implementations. We advise importing Zaplib first before other dependencies, so that all of your application code uses these modified values.
 
 Here is an overview of all the JS APIs, and their support with the WebAssembly runtime and the experimental [CEF](./cef.md) runtime.  Missing features are annotated with their ticket id.
 

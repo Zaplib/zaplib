@@ -40,6 +40,8 @@ import {
   checkValidZapArray,
 } from "zap_buffer";
 
+overwriteTypedArraysWithZapArrays();
+
 let rpc: Rpc<WebWorkerRpc>;
 let wasmExports: WasmExports;
 let wasmMemory: WebAssembly.Memory;
@@ -62,8 +64,6 @@ export const initializeWorker = (zapWorkerPort: MessagePort): Promise<void> => {
       "zaplib.initializeWorker() can only be called in a WebWorker"
     );
   }
-
-  overwriteTypedArraysWithZapArrays();
 
   return new Promise((resolve) => {
     rpc = new Rpc(zapWorkerPort);

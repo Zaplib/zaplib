@@ -179,7 +179,11 @@ function patchPostMessage(cls: any) {
   };
 }
 
+let overwriteTypedArraysWithZapArraysCalled = false;
 export function overwriteTypedArraysWithZapArrays(): void {
+  // Make sure this is called at most once
+  if (overwriteTypedArraysWithZapArraysCalled) return;
+
   for (const [cls, zapCls] of Object.entries(classesToExtend)) {
     if (cls in self) {
       // @ts-ignore
@@ -197,6 +201,7 @@ export function overwriteTypedArraysWithZapArrays(): void {
   if (self.MessagePort) {
     patchPostMessage(self.MessagePort);
   }
+  overwriteTypedArraysWithZapArraysCalled = true;
 }
 
 const zapBufferCache = new WeakMap<ZapBuffer, ZapArray>();
