@@ -6,6 +6,8 @@ set -euxo pipefail
 cd "${0%/*}/../../.."
 
 # Build the wasm packages that we need in tests.
+# We specify these builds individually in order to save on build times,
+# since this job is already pretty slow now.
 cargo run -p cargo-zaplib -- build -p test_suite
 cargo run -p cargo-zaplib -- build -p tutorial_2d_rendering_step1
 cargo run -p cargo-zaplib -- build -p tutorial_2d_rendering_step2
