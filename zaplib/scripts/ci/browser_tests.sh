@@ -38,6 +38,6 @@ if grep --fixed-strings '"newItems":[]' screenshots_report/reg.json && grep --fi
 then
   echo "SCREENSHOT_GITHUB_MESSAGE=[✅ No screenshot diffs found.](http://zaplib-screenshots.s3-website-us-east-1.amazonaws.com/$GITHUB_SHA)" >> $GITHUB_ENV
 else
-  echo "SCREENSHOT_GITHUB_MESSAGE=[🤔 Screenshot diffs found.](http://zaplib-screenshots.s3-website-us-east-1.amazonaws.com/$GITHUB_SHA) Please look at the screenshots and tag this comment with 👍 or 👎. Only merge when both the PR author and all the reviewers are happy with the changes." >> $GITHUB_ENV
+  echo "SCREENSHOT_GITHUB_MESSAGE=[🤔 Screenshot diffs found.](http://zaplib-screenshots.s3-website-us-east-1.amazonaws.com/$GITHUB_SHA) Please look at the screenshots and tag this comment with 👍 or 👎. Only merge when both the PR author and a reviewer are happy with the changes." >> $GITHUB_ENV
 fi
 
