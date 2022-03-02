@@ -263,7 +263,7 @@ async fn examples_screenshots(browser_name: &str, driver: &mut WebDriver, local_
     let examples = [
         // Tracking these TODOs in https://github.com/Zaplib/zaplib/issues/29
         // "example_bigedit/?release", // TODO(JP): Pause animation.
-        ("example_charts", "example_charts/?release"),
+        // ("example_charts", "example_charts/?release"), // TODO(JP): Randomness.
         // "example_lightning", // TODO(JP): Pause animation.
         ("example_lots_of_buttons", "example_lots_of_buttons/?release"),
         ("example_shader", "example_shader/?release"),
