@@ -40,7 +40,7 @@ const isFirefox =
 // var is_add_to_homescreen_safari = is_mobile_safari && navigator.standalone;
 //var is_oculus_browser = navigator.userAgent.indexOf('OculusBrowser') > -1;
 
-type Timer = { id: number; repeats: number; sysId: number };
+type Timer = { id: number; repeats: number; sysId: NodeJS.Timer };
 
 export type Pointer = {
   x: number;
