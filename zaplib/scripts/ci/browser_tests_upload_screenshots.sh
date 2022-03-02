@@ -8,7 +8,7 @@ cd "${0%/*}/../../.."
 # Screenshots are saved in `screenshots/`. Previous ones in `previous_screenshots/`. Let's compare!
 # `--ignoreChange` makes it so this call doesn't fail when there are changed screenshots; we don't
 # want to block merging in that case.
-zaplib/web/node_modules/.bin/reg-cli screenshots/ previous_screenshots/ diff_screenshots/ --report ./index.html --json ./reg.json --ignoreChange --enableAntialias --matchingThreshold 0.05
+zaplib/web/node_modules/.bin/reg-cli screenshots/ previous_screenshots/ diff_screenshots/ --report ./index.html --json ./reg.json --ignoreChange --enableAntialias --matchingThreshold 0.15
 # Now let's bundle everything up in screenshots_report/
 mkdir screenshots_report/
 mv index.html screenshots_report/
