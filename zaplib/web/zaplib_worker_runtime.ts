@@ -3,7 +3,7 @@
 // The "Zaplib WebWorker runtime" exposes some common Zaplib functions inside your WebWorkers, like `callRustAsync`.
 //
 // Include the output of this (zaplib_worker_runtime) at the start of each worker, and initialize the runtime
-// by calling `self.initializeWorker` with a `MessagePort` obtained by `newWorkerPort` (which is
+// by calling `globalThis.initializeWorker` with a `MessagePort` obtained by `newWorkerPort` (which is
 // available on `window` in the main browser thread, and in any worker that already has the runtime running). You
 // can pass the port to the worker using `postMessage`; just be sure to include it in the list of transferables.
 //

@@ -356,8 +356,8 @@ function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
     if (wasmInitialized()) rpc.send(WorkerEvent.WindowBlur);
   });
 
-  const isMobileSafari = self.navigator.platform.match(/iPhone|iPad/i);
-  const isAndroid = self.navigator.userAgent.match(/Android/i);
+  const isMobileSafari = globalThis.navigator.platform.match(/iPhone|iPad/i);
+  const isAndroid = globalThis.navigator.userAgent.match(/Android/i);
 
   if (!isMobileSafari && !isAndroid) {
     // mobile keyboards are unusable on a UI like this
@@ -418,7 +418,7 @@ function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
     mq.addEventListener("change", () => onScreenResize());
   } else {
     // poll for it. yes. its terrible
-    self.setInterval(() => {
+    globalThis.setInterval(() => {
       if (window.devicePixelRatio != dpiFactor) {
         dpiFactor = window.devicePixelRatio;
         onScreenResize();
@@ -771,7 +771,7 @@ export const initialize: Initialize = (initParams) => {
 
         WebAssembly.instantiate(wasmModule, { env }).then((instance: any) => {
           const offscreenCanvas =
-            self.OffscreenCanvas &&
+            globalThis.OffscreenCanvas &&
             canvasData.renderingMethod instanceof OffscreenCanvas
               ? canvasData.renderingMethod
               : undefined;

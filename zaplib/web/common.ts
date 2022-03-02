@@ -530,7 +530,7 @@ export const getWasmEnv = ({
     },
     randomU64: () =>
       new BigUint64Array(
-        self.crypto.getRandomValues(new Uint32Array(2)).buffer
+        globalThis.crypto.getRandomValues(new Uint32Array(2)).buffer
       )[0],
     sendTaskWorkerMessage: (twMessagePtr) => {
       sendTaskWorkerMessage(taskWorkerSab, parseInt(twMessagePtr));

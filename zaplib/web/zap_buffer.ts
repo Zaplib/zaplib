@@ -185,21 +185,21 @@ export function overwriteTypedArraysWithZapArrays(): void {
   if (overwriteTypedArraysWithZapArraysCalled) return;
 
   for (const [cls, zapCls] of Object.entries(classesToExtend)) {
-    if (cls in self) {
+    if (cls in globalThis) {
       // @ts-ignore
-      self[cls] = self[zapCls];
+      globalThis[cls] = globalThis[zapCls];
     }
   }
-  patchPostMessage(self);
+  patchPostMessage(globalThis);
 
   // In Safari nested workers are not defined.
-  if (self.Worker) {
-    patchPostMessage(self.Worker);
+  if (globalThis.Worker) {
+    patchPostMessage(globalThis.Worker);
   }
 
   // Skipping this in nodejs case as web-worker polyfill doesn't provide MessagePort
-  if (self.MessagePort) {
-    patchPostMessage(self.MessagePort);
+  if (globalThis.MessagePort) {
+    patchPostMessage(globalThis.MessagePort);
   }
   overwriteTypedArraysWithZapArraysCalled = true;
 }
