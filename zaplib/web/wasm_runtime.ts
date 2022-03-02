@@ -58,7 +58,7 @@ import {
 } from "rpc_types";
 import { addLoadingIndicator, removeLoadingIndicator } from "loading_indicator";
 import { addDefaultStyles } from "default_styles";
-import { inWorker } from "type_of_runtime";
+import { inNodeJs, inWorker } from "type_of_runtime";
 
 declare global {
   interface Document {
@@ -466,9 +466,9 @@ export const initialize: Initialize = (initParams) => {
   }
   alreadyCalledInitialize = true;
 
-  if (inWorker) {
-    throw new Error(
-      "zaplib.initialize() can only be called on the browser's main thread"
+  if (inWorker && !inNodeJs) {
+    console.warn(
+      "zaplib.initialize() can should be called on the browser's main thread. It might work in a browser worker, but not all browsers currently support this (e.g. Safari doesn't)"
     );
   }
 

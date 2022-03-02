@@ -7,6 +7,13 @@ export const jsRuntime = "cefCallRustAsync" in self ? "cef" : "wasm";
 // From https://stackoverflow.com/a/23619712
 export const inWorker = typeof importScripts === "function";
 
+// Only Node.JS has a process variable that is of `Class` `process`
+// From https://github.com/iliakan/detect-node/blob/00381fd0fdbdefa625ac7b8230adfc1df11d49ad/index.js
+export const inNodeJs =
+  Object.prototype.toString.call(
+    typeof process !== "undefined" ? process : 0
+  ) === "[object process]";
+
 // Injected using webpack.DefinePlugin.
 declare const __GIT_SHA__: string;
 export const gitSha = __GIT_SHA__;
