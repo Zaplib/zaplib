@@ -77,7 +77,7 @@ async fn run_tests(webdriver_url: String, local_port: u16, browserstack_local_id
                     "consoleLogs": "verbose",
                 },
                 "browserName" : "Chrome",
-                "browserVersion" : "latest",
+                "browserVersion" : "98.0",
             },
             // "OS X Monterey, Firefox": {
             //     "bstack:options" : {
@@ -101,7 +101,7 @@ async fn run_tests(webdriver_url: String, local_port: u16, browserstack_local_id
                     "osVersion" : "Monterey",
                 },
                 "browserName" : "Edge",
-                "browserVersion" : "latest",
+                "browserVersion" : "98.0",
             },
             "Windows 11, Chrome": {
                 "bstack:options" : {
@@ -110,7 +110,7 @@ async fn run_tests(webdriver_url: String, local_port: u16, browserstack_local_id
                     "consoleLogs": "verbose",
                 },
                 "browserName" : "Chrome",
-                "browserVersion" : "latest",
+                "browserVersion" : "98.0",
             },
             // "Windows 11, Firefox": {
             //     "bstack:options" : {
@@ -126,7 +126,7 @@ async fn run_tests(webdriver_url: String, local_port: u16, browserstack_local_id
                     "osVersion" : "11",
                 },
                 "browserName" : "Edge",
-                "browserVersion" : "latest",
+                "browserVersion" : "98.0",
             },
             // "iPhone 13, iOS 15": {
             //     "device" : "iPhone 13",
