@@ -4,8 +4,8 @@
 // Worker poylfil to use Webworkers
 // @ts-ignore
 import Worker from "vendor/web-worker/node";
-self.Worker = Worker;
+globalThis.Worker = Worker;
 
 // eslint-disable-next-line
 const threads = require("worker_threads");
-self.MessageChannel = threads.MessageChannel;
+globalThis.MessageChannel = threads.MessageChannel;

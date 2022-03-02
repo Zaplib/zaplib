@@ -33,14 +33,14 @@ import {
   MainWorkerChannelEvent,
 } from "rpc_types";
 
-const rpc = new Rpc<Worker<WasmWorkerRpc>>(self);
+const rpc = new Rpc<Worker<WasmWorkerRpc>>(globalThis);
 
 const isFirefox =
-  self.navigator?.userAgent.toLowerCase().indexOf("firefox") > -1;
+  globalThis.navigator?.userAgent.toLowerCase().indexOf("firefox") > -1;
 // var is_add_to_homescreen_safari = is_mobile_safari && navigator.standalone;
 //var is_oculus_browser = navigator.userAgent.indexOf('OculusBrowser') > -1;
 
-type Timer = { id: number; repeats: number; sysId: number };
+type Timer = { id: number; repeats: number; sysId: NodeJS.Timer };
 
 export type Pointer = {
   x: number;
@@ -355,8 +355,8 @@ export class WasmApp {
     //         let dy = new_scroll_top - last_scroll_top;
     //         last_scroll_top = new_scroll_top;
     //         last_scroll_left = new_scroll_left;
-    //         self.clearTimeout(scroll_timeout);
-    //         scroll_timeout = self.setTimeout(_ => {
+    //         globalThis.clearTimeout(scroll_timeout);
+    //         scroll_timeout = globalThis.setTimeout(_ => {
     //             ts.scrollTop = 200000;
     //             ts.scrollLeft = 200000;
     //             last_scroll_top = ts.scrollTop;
@@ -567,11 +567,11 @@ export class WasmApp {
     }
     const sysId =
       repeats !== 0
-        ? self.setInterval(() => {
+        ? globalThis.setInterval(() => {
             this.zerdeEventloopEvents.timerFired(id);
             this.doWasmIo();
           }, interval * 1000.0)
-        : self.setTimeout(() => {
+        : globalThis.setTimeout(() => {
             for (let i = 0; i < this.timers.length; i++) {
               const timer = this.timers[i];
               if (timer.id == id) {
@@ -591,9 +591,9 @@ export class WasmApp {
       const timer = this.timers[i];
       if (timer.id == id) {
         if (timer.repeats) {
-          self.clearInterval(timer.sysId);
+          globalThis.clearInterval(timer.sysId);
         } else {
-          self.clearTimeout(timer.sysId);
+          globalThis.clearTimeout(timer.sysId);
         }
         this.timers.splice(i, 1);
         return;
@@ -712,7 +712,7 @@ export class WasmApp {
     if (this.runWebGLPromise) {
       await this.runWebGLPromise;
     }
-    (self.requestAnimationFrame || self.setTimeout)(async () => {
+    (globalThis.requestAnimationFrame || globalThis.setTimeout)(async () => {
       if (this.runWebGLPromise) {
         await this.runWebGLPromise;
       }
@@ -741,7 +741,7 @@ export class WasmApp {
   //   // ok this changes a bunch in how the renderflow works.
   //   // first thing we are going to do is get the vr displays.
   //   // @ts-ignore - Let's not worry about XR.
-  //   const xrSystem = self.navigator.xr;
+  //   const xrSystem = globalThis.navigator.xr;
   //   if (xrSystem) {
   //     xrSystem.isSessionSupported("immersive-vr").then((supported) => {
   //       if (supported) {
@@ -838,91 +838,92 @@ export class WasmApp {
     });
   }
 
-  // Array of function id's wasm can call on us; `self` is pointer to WasmApp.
+  // Array of function id's wasm can call on us; `zelf` is pointer to WasmApp.
+  // (It's not called `self` as to not overload https://developer.mozilla.org/en-US/docs/Web/API/Window/self)
   // Function names are suffixed with the index in the array, and annotated with
   // their name in cx_wasm32.rs, for easier matching.
-  private sendFnTable: ((self: this) => void | boolean)[] = [
+  private sendFnTable: ((zelf: this) => void | boolean)[] = [
     // end
-    function end0(_self) {
+    function end0(_zelf) {
       return true;
     },
     // run_webgl
-    function runWebGL1(self) {
-      const zerdeParserPtr = self.zerdeParser.parseU64();
-      if (self.webglRenderer) {
-        self.webglRenderer.processMessages(Number(zerdeParserPtr));
-        self.exports.deallocWasmMessage(zerdeParserPtr);
+    function runWebGL1(zelf) {
+      const zerdeParserPtr = zelf.zerdeParser.parseU64();
+      if (zelf.webglRenderer) {
+        zelf.webglRenderer.processMessages(Number(zerdeParserPtr));
+        zelf.exports.deallocWasmMessage(zerdeParserPtr);
       } else {
-        self.runWebGLPromise = rpc
+        zelf.runWebGLPromise = rpc
           .send(WorkerEvent.RunWebGL, Number(zerdeParserPtr))
           .then(() => {
-            self.exports.deallocWasmMessage(zerdeParserPtr);
-            self.runWebGLPromise = undefined;
+            zelf.exports.deallocWasmMessage(zerdeParserPtr);
+            zelf.runWebGLPromise = undefined;
           });
       }
     },
     // log
-    function log2(self) {
-      console.log(self.zerdeParser.parseString());
+    function log2(zelf) {
+      console.log(zelf.zerdeParser.parseString());
     },
     // request_animation_frame
-    function requestAnimationFrame3(self) {
-      self.requestAnimationFrame();
+    function requestAnimationFrame3(zelf) {
+      zelf.requestAnimationFrame();
     },
     // set_document_title
-    function setDocumentTitle4(self) {
-      self.setDocumentTitle(self.zerdeParser.parseString());
+    function setDocumentTitle4(zelf) {
+      zelf.setDocumentTitle(zelf.zerdeParser.parseString());
     },
     // set_mouse_cursor
-    function setMouseCursor5(self) {
-      self.setMouseCursor(self.zerdeParser.parseU32());
+    function setMouseCursor5(zelf) {
+      zelf.setMouseCursor(zelf.zerdeParser.parseU32());
     },
     // show_text_ime
-    function showTextIme6(self) {
-      const x = self.zerdeParser.parseF32();
-      const y = self.zerdeParser.parseF32();
+    function showTextIme6(zelf) {
+      const x = zelf.zerdeParser.parseF32();
+      const y = zelf.zerdeParser.parseF32();
       rpc.send(WorkerEvent.ShowTextIME, { x, y });
     },
     // hide_text_ime
-    function hideTextIme7(_self) {
+    function hideTextIme7(_zelf) {
       // TODO(JP): doesn't seem to do anything, is that intentional?
     },
     // text_copy_response
-    function textCopyResponse8(self) {
-      const textCopyResponse = self.zerdeParser.parseString();
+    function textCopyResponse8(zelf) {
+      const textCopyResponse = zelf.zerdeParser.parseString();
       rpc.send(WorkerEvent.TextCopyResponse, textCopyResponse);
     },
     // start_timer
-    function startTimer9(self) {
-      const repeats = self.zerdeParser.parseU32();
-      const id = self.zerdeParser.parseF64();
-      const interval = self.zerdeParser.parseF64();
-      self.startTimer(id, interval, repeats);
+    function startTimer9(zelf) {
+      const repeats = zelf.zerdeParser.parseU32();
+      const id = zelf.zerdeParser.parseF64();
+      const interval = zelf.zerdeParser.parseF64();
+      zelf.startTimer(id, interval, repeats);
     },
     // stop_timer
-    function stopTimer10(self) {
-      const id = self.zerdeParser.parseF64();
-      self.stopTimer(id);
+    function stopTimer10(zelf) {
+      const id = zelf.zerdeParser.parseF64();
+      zelf.stopTimer(id);
     },
     // xr_start_presenting
-    function xrStartPresenting11(self) {
-      self.xrStartPresenting();
+    function xrStartPresenting11(zelf) {
+      zelf.xrStartPresenting();
     },
     // xr_stop_presenting
-    function xrStopPresenting12(self) {
-      self.xrStopPresenting();
+    function xrStopPresenting12(zelf) {
+      zelf.xrStopPresenting();
     },
     // http_send
-    function httpSend13(self) {
-      const port = self.zerdeParser.parseU32();
-      const signalId = self.zerdeParser.parseU32();
-      const verb = self.zerdeParser.parseString();
-      const path = self.zerdeParser.parseString();
-      const proto = self.zerdeParser.parseString();
-      const domain = self.zerdeParser.parseString();
-      const contentType = self.zerdeParser.parseString();
-      const body = self.zerdeParser.parseU8Slice();
-      self.httpSend(
+    function httpSend13(zelf) {
+      const port = zelf.zerdeParser.parseU32();
+      const signalId = zelf.zerdeParser.parseU32();
+      const verb = zelf.zerdeParser.parseString();
+      const path = zelf.zerdeParser.parseString();
+      const proto = zelf.zerdeParser.parseString();
+      const domain = zelf.zerdeParser.parseString();
+      const contentType = zelf.zerdeParser.parseString();
+      const body = zelf.zerdeParser.parseU8Slice();
+      zelf.httpSend(
         verb,
         path,
         proto,
@@ -934,31 +935,31 @@ export class WasmApp {
       );
     },
     // fullscreen
-    function fullscreen14(_self) {
+    function fullscreen14(_zelf) {
       rpc.send(WorkerEvent.Fullscreen);
     },
     // normalscreen
-    function normalscreen15(_self) {
+    function normalscreen15(_zelf) {
       rpc.send(WorkerEvent.Normalscreen);
     },
     // websocket_send
-    function websocketSend16(self) {
-      const url = self.zerdeParser.parseString();
-      const data = self.zerdeParser.parseU8Slice();
-      self.websocketSend(url, data);
+    function websocketSend16(zelf) {
+      const url = zelf.zerdeParser.parseString();
+      const data = zelf.zerdeParser.parseU8Slice();
+      zelf.websocketSend(url, data);
     },
     // enable_global_file_drop_target
-    function enableGlobalFileDropTarget17(self) {
-      self.enableGlobalFileDropTarget();
+    function enableGlobalFileDropTarget17(zelf) {
+      zelf.enableGlobalFileDropTarget();
     },
     // call_js
-    function callJs18(self) {
-      const fnName = self.zerdeParser.parseString();
-      const params = self.zerdeParser.parseZapParams();
+    function callJs18(zelf) {
+      const fnName = zelf.zerdeParser.parseString();
+      const params = zelf.zerdeParser.parseZapParams();
       if (fnName === "_zaplibReturnParams") {
         const callbackId = JSON.parse(params[0] as string);
-        self.callRustAsyncPendingCallbacks[callbackId](params.slice(1));
-        delete self.callRustAsyncPendingCallbacks[callbackId];
+        zelf.callRustAsyncPendingCallbacks[callbackId](params.slice(1));
+        delete zelf.callRustAsyncPendingCallbacks[callbackId];
       } else {
         rpc.send(WorkerEvent.CallJs, { fnName, params });
       }

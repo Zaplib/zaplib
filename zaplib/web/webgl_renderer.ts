@@ -645,31 +645,31 @@ export class WebGLRenderer {
 
   private uniformFnTable: Record<
     string,
-    (self: WebGLRenderer, loc: WebGLUniformLocation | null, off: number) => void
+    (zelf: WebGLRenderer, loc: WebGLUniformLocation | null, off: number) => void
   > = {
-    float: function setFloat(self, loc, off) {
+    float: function setFloat(zelf, loc, off) {
       const slot = off >> 2;
-      self.gl.uniform1f(loc, self.basef32[slot]);
+      zelf.gl.uniform1f(loc, zelf.basef32[slot]);
     },
-    vec2: function setVec2(self, loc, off) {
+    vec2: function setVec2(zelf, loc, off) {
       const slot = off >> 2;
-      const basef32 = self.basef32;
-      self.gl.uniform2f(loc, basef32[slot], basef32[slot + 1]);
+      const basef32 = zelf.basef32;
+      zelf.gl.uniform2f(loc, basef32[slot], basef32[slot + 1]);
     },
-    vec3: function setVec3(self, loc, off) {
+    vec3: function setVec3(zelf, loc, off) {
       const slot = off >> 2;
-      const basef32 = self.basef32;
-      self.gl.uniform3f(
+      const basef32 = zelf.basef32;
+      zelf.gl.uniform3f(
         loc,
         basef32[slot],
         basef32[slot + 1],
         basef32[slot + 2]
       );
     },
-    vec4: function setVec4(self, loc, off) {
+    vec4: function setVec4(zelf, loc, off) {
       const slot = off >> 2;
-      const basef32 = self.basef32;
-      self.gl.uniform4f(
+      const basef32 = zelf.basef32;
+      zelf.gl.uniform4f(
         loc,
         basef32[slot],
         basef32[slot + 1],
@@ -677,97 +677,98 @@ export class WebGLRenderer {
         basef32[slot + 3]
       );
     },
-    mat2: function setMat2(self, loc, off) {
-      self.gl.uniformMatrix2fv(
+    mat2: function setMat2(zelf, loc, off) {
+      zelf.gl.uniformMatrix2fv(
         loc,
         false,
-        new Float32Array(self.memory.buffer, off, 4)
+        new Float32Array(zelf.memory.buffer, off, 4)
       );
     },
-    mat3: function setMat3(self, loc, off) {
-      self.gl.uniformMatrix3fv(
+    mat3: function setMat3(zelf, loc, off) {
+      zelf.gl.uniformMatrix3fv(
         loc,
         false,
-        new Float32Array(self.memory.buffer, off, 9)
+        new Float32Array(zelf.memory.buffer, off, 9)
       );
     },
-    mat4: function setMat4(self, loc, off) {
-      const mat4 = new Float32Array(self.memory.buffer, off, 16);
-      self.gl.uniformMatrix4fv(loc, false, mat4);
+    mat4: function setMat4(zelf, loc, off) {
+      const mat4 = new Float32Array(zelf.memory.buffer, off, 16);
+      zelf.gl.uniformMatrix4fv(loc, false, mat4);
     },
   };
 
-  // Array of function id's wasm can call on us; `self` is pointer to WebGLRenderer.
+  // Array of function id's wasm can call on us; `zelf` is pointer to WebGLRenderer.
+  // (It's not called `self` as to not overload https://developer.mozilla.org/en-US/docs/Web/API/Window/self)
   // Function names are suffixed with the index in the array, and annotated with
   // their name in cx_webgl.rs, for easier matching.
-  private sendFnTable: ((self: this) => void | boolean)[] = [
+  private sendFnTable: ((zelf: this) => void | boolean)[] = [
     // end
-    function end0(_self) {
+    function end0(_zelf) {
       return true;
     },
     // compile_webgl_shader
-    function compileWebGLShader1(self) {
+    function compileWebGLShader1(zelf) {
       function parseShvarvec(): Uniform[] {
-        const len = self.zerdeParser.parseU32();
+        const len = zelf.zerdeParser.parseU32();
         const vars: Uniform[] = [];
         for (let i = 0; i < len; i++) {
           vars.push({
-            ty: self.zerdeParser.parseString() as UniformType,
-            name: self.zerdeParser.parseString(),
+            ty: zelf.zerdeParser.parseString() as UniformType,
+            name: zelf.zerdeParser.parseString(),
           });
         }
         return vars;
       }
 
       const ash = {
-        shaderId: self.zerdeParser.parseU32(),
-        fragment: self.zerdeParser.parseString(),
-        vertex: self.zerdeParser.parseString(),
-        geometrySlots: self.zerdeParser.parseU32(),
-        instanceSlots: self.zerdeParser.parseU32(),
+        shaderId: zelf.zerdeParser.parseU32(),
+        fragment: zelf.zerdeParser.parseString(),
+        vertex: zelf.zerdeParser.parseString(),
+        geometrySlots: zelf.zerdeParser.parseU32(),
+        instanceSlots: zelf.zerdeParser.parseU32(),
         passUniforms: parseShvarvec(),
         viewUniforms: parseShvarvec(),
         drawUniforms: parseShvarvec(),
         userUniforms: parseShvarvec(),
         textureSlots: parseShvarvec(),
       };
-      self.compileWebGLShader(ash);
+      zelf.compileWebGLShader(ash);
     },
     // alloc_array_buffer
-    function allocArrayBuffer2(self) {
-      const arrayBufferId = self.zerdeParser.parseU32();
-      const len = self.zerdeParser.parseU32();
-      const pointer = self.zerdeParser.parseU32();
-      const array = new Float32Array(self.memory.buffer, pointer, len);
-      self.allocArrayBuffer(arrayBufferId, array);
+    function allocArrayBuffer2(zelf) {
+      const arrayBufferId = zelf.zerdeParser.parseU32();
+      const len = zelf.zerdeParser.parseU32();
+      const pointer = zelf.zerdeParser.parseU32();
+      const array = new Float32Array(zelf.memory.buffer, pointer, len);
+      zelf.allocArrayBuffer(arrayBufferId, array);
     },
     // alloc_index_buffer
-    function allocIndexBuffer3(self) {
-      const indexBufferId = self.zerdeParser.parseU32();
-      const len = self.zerdeParser.parseU32();
-      const pointer = self.zerdeParser.parseU32();
-      const array = new Uint32Array(self.memory.buffer, pointer, len);
-      self.allocIndexBuffer(indexBufferId, array);
+    function allocIndexBuffer3(zelf) {
+      const indexBufferId = zelf.zerdeParser.parseU32();
+      const len = zelf.zerdeParser.parseU32();
+      const pointer = zelf.zerdeParser.parseU32();
+      const array = new Uint32Array(zelf.memory.buffer, pointer, len);
+      zelf.allocIndexBuffer(indexBufferId, array);
     },
     // alloc_vao
-    function allocVao4(self) {
-      const vaoId = self.zerdeParser.parseU32();
-      const shaderId = self.zerdeParser.parseU32();
-      const geomIbId = self.zerdeParser.parseU32();
-      const geomVbId = self.zerdeParser.parseU32();
-      const instVbId = self.zerdeParser.parseU32();
-      self.allocVao(vaoId, shaderId, geomIbId, geomVbId, instVbId);
+    function allocVao4(zelf) {
+      const vaoId = zelf.zerdeParser.parseU32();
+      const shaderId = zelf.zerdeParser.parseU32();
+      const geomIbId = zelf.zerdeParser.parseU32();
+      const geomVbId = zelf.zerdeParser.parseU32();
+      const instVbId = zelf.zerdeParser.parseU32();
+      zelf.allocVao(vaoId, shaderId, geomIbId, geomVbId, instVbId);
     },
     // draw_call
-    function drawCall5(self) {
-      const shaderId = self.zerdeParser.parseU32();
-      const vaoId = self.zerdeParser.parseU32();
-      const uniformsPassPtr = self.zerdeParser.parseU32();
-      const uniformsViewPtr = self.zerdeParser.parseU32();
-      const uniformsDrawPtr = self.zerdeParser.parseU32();
-      const uniformsUserPtr = self.zerdeParser.parseU32();
-      const textures = self.zerdeParser.parseU32();
-      self.drawCall(
+    function drawCall5(zelf) {
+      const shaderId = zelf.zerdeParser.parseU32();
+      const vaoId = zelf.zerdeParser.parseU32();
+      const uniformsPassPtr = zelf.zerdeParser.parseU32();
+      const uniformsViewPtr = zelf.zerdeParser.parseU32();
+      const uniformsDrawPtr = zelf.zerdeParser.parseU32();
+      const uniformsUserPtr = zelf.zerdeParser.parseU32();
+      const textures = zelf.zerdeParser.parseU32();
+      zelf.drawCall(
         shaderId,
         vaoId,
         uniformsPassPtr,
@@ -778,53 +779,53 @@ export class WebGLRenderer {
       );
     },
     // update_texture_image2d
-    function allocTexture6(self) {
-      const textureId = self.zerdeParser.parseU32();
-      const width = self.zerdeParser.parseU32();
-      const height = self.zerdeParser.parseU32();
-      const dataPtr = self.zerdeParser.parseU32();
-      self.allocTexture(textureId, width, height, dataPtr);
+    function allocTexture6(zelf) {
+      const textureId = zelf.zerdeParser.parseU32();
+      const width = zelf.zerdeParser.parseU32();
+      const height = zelf.zerdeParser.parseU32();
+      const dataPtr = zelf.zerdeParser.parseU32();
+      zelf.allocTexture(textureId, width, height, dataPtr);
     },
     // begin_render_targets
-    function beginRenderTargets7(self) {
-      const passId = self.zerdeParser.parseU32();
-      const width = self.zerdeParser.parseU32();
-      const height = self.zerdeParser.parseU32();
-      self.beginRenderTargets(passId, width, height);
+    function beginRenderTargets7(zelf) {
+      const passId = zelf.zerdeParser.parseU32();
+      const width = zelf.zerdeParser.parseU32();
+      const height = zelf.zerdeParser.parseU32();
+      zelf.beginRenderTargets(passId, width, height);
     },
     // add_color_target
-    function addColorTarget8(self) {
-      const textureId = self.zerdeParser.parseU32();
-      const initOnly = self.zerdeParser.parseU32();
-      const r = self.zerdeParser.parseF32();
-      const g = self.zerdeParser.parseF32();
-      const b = self.zerdeParser.parseF32();
-      const a = self.zerdeParser.parseF32();
-      self.addColorTarget(textureId, initOnly, r, g, b, a);
+    function addColorTarget8(zelf) {
+      const textureId = zelf.zerdeParser.parseU32();
+      const initOnly = zelf.zerdeParser.parseU32();
+      const r = zelf.zerdeParser.parseF32();
+      const g = zelf.zerdeParser.parseF32();
+      const b = zelf.zerdeParser.parseF32();
+      const a = zelf.zerdeParser.parseF32();
+      zelf.addColorTarget(textureId, initOnly, r, g, b, a);
     },
     // set_depth_target
-    function setDepthTarget9(self) {
-      const textureId = self.zerdeParser.parseU32();
-      const initOnly = self.zerdeParser.parseU32();
-      const depth = self.zerdeParser.parseF32();
-      self.setDepthTarget(textureId, initOnly, depth);
+    function setDepthTarget9(zelf) {
+      const textureId = zelf.zerdeParser.parseU32();
+      const initOnly = zelf.zerdeParser.parseU32();
+      const depth = zelf.zerdeParser.parseF32();
+      zelf.setDepthTarget(textureId, initOnly, depth);
     },
     // end_render_targets
-    function endRenderTargets10(self) {
-      self.endRenderTargets();
+    function endRenderTargets10(zelf) {
+      zelf.endRenderTargets();
     },
     // set_default_depth_and_blend_mode
-    function setDefaultDepthAndBlendMode11(self) {
-      self.setDefaultDepthAndBlendMode();
+    function setDefaultDepthAndBlendMode11(zelf) {
+      zelf.setDefaultDepthAndBlendMode();
     },
     // begin_main_canvas
-    function beginMainCanvas12(self) {
-      const r = self.zerdeParser.parseF32();
-      const g = self.zerdeParser.parseF32();
-      const b = self.zerdeParser.parseF32();
-      const a = self.zerdeParser.parseF32();
-      const depth = self.zerdeParser.parseF32();
-      self.beginMainCanvas(r, g, b, a, depth);
+    function beginMainCanvas12(zelf) {
+      const r = zelf.zerdeParser.parseF32();
+      const g = zelf.zerdeParser.parseF32();
+      const b = zelf.zerdeParser.parseF32();
+      const a = zelf.zerdeParser.parseF32();
+      const depth = zelf.zerdeParser.parseF32();
+      zelf.beginMainCanvas(r, g, b, a, depth);
     },
   ];
 }
