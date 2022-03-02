@@ -10,6 +10,7 @@ import {
   CreateBuffer,
   ZapParamType,
   Initialize,
+  IsInitialized,
 } from "types";
 import {
   getCachedZapBuffer,
@@ -186,6 +187,10 @@ export const deserializeZapArrayFromPostMessage = (
   );
 };
 
+// Once set to true, it will never go back to false (even in case of an error).
+let initialized = false;
+export const isInitialized: IsInitialized = () => initialized;
+
 export const initialize: Initialize = (initParams) =>
   new Promise<void>((resolve) => {
     window.fromCefSetMouseCursor = (cursorId) => {
@@ -261,6 +266,7 @@ export const initialize: Initialize = (initParams) =>
         }
       });
 
+      initialized = true;
       resolve();
     });
   });

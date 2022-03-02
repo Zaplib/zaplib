@@ -143,7 +143,12 @@ const tests = {
 };
 export type TestSuiteTests = keyof typeof tests;
 
-rpc.receive("initWasm", (port) => zaplib.initializeWorker(port));
+rpc.receive("initWasm", (port) => {
+  expect(zaplib.isInitialized(), false);
+  return zaplib.initializeWorker(port).then(() => {
+    expect(zaplib.isInitialized(), true);
+  });
+});
 
 rpc.receive("runTest", async (testName) => tests[testName]());
 

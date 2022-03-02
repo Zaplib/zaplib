@@ -267,8 +267,6 @@ export class WasmApp {
     Atomics.store(wasmOnline, 0, 1);
     this.exports = wrapWasmExports(this.exports);
 
-    rpc.send(WorkerEvent.RemoveLoadingIndicators);
-
     // initialize the application
     this.zerdeEventloopEvents.init({
       width: this.sizingData.width,

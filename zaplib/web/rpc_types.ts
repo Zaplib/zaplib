@@ -60,7 +60,6 @@ export enum WorkerEvent {
   ScreenResize = "WorkerEvent.ScreenResize",
   CanvasWheel = "WorkerEvent.CanvasWheel",
   ShowIncompatibleBrowserNotification = "WorkerEvent.ShowIncompatibleBrowserNotification",
-  RemoveLoadingIndicators = "WorkerEvent.RemoveLoadingIndicators",
   SetDocumentTitle = "WorkerEvent.SetDocumentTitle",
   SetMouseCursor = "WorkerEvent.SetMouseCursor",
   Fullscreen = "WorkerEvent.Fullscreen",
@@ -139,7 +138,6 @@ export type WasmWorkerRpc = {
   };
   receive: {
     [WorkerEvent.ShowIncompatibleBrowserNotification]: [void, void];
-    [WorkerEvent.RemoveLoadingIndicators]: [void, void];
     [WorkerEvent.SetDocumentTitle]: [string, void];
     [WorkerEvent.SetMouseCursor]: [string, void];
     [WorkerEvent.Fullscreen]: [void, void];

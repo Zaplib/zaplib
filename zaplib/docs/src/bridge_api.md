@@ -16,6 +16,7 @@ Here is an overview of all the JS APIs, and their support with the WebAssembly r
 | ------------------------------------------- | :---------------: | :---------------: | :--------------: | :--------------: |
 | zaplib.initialize                           |       ✅          |        n/a          |       ✅       |       n/a         |
 | zaplib.initializeWorker                     |      n/a          |        ✅          |       n/a       |    [#69][2] |
+| zaplib.isInitialized                        |       ✅          |        ✅          |       ✅        |   [#69][2] |
 | zaplib.registerCallJsCallbacks              |       ✅          |      [#70][3]      |       ✅        |  [#69][2]  [#70][3] |
 | zaplib.unregisterCallJsCallbacks            |       ✅          |      [#70][3]      |       ✅        |  [#69][2]  [#70][3] |
 | zaplib.callRustSync                         |       ✅          |        ✅          |       ✅        |   [#69][2] |

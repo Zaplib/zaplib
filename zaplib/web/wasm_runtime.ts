@@ -41,6 +41,7 @@ import {
   RustZapParam,
   Initialize,
   WasmExports,
+  IsInitialized,
 } from "types";
 import { WebGLRenderer } from "webgl_renderer";
 import {
@@ -454,6 +455,10 @@ function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
   return { renderingMethod, onScreenResize, getSizingData };
 }
 
+// Once set to true, it will never go back to false (even in case of an error).
+let initialized = false;
+export const isInitialized: IsInitialized = () => initialized;
+
 let alreadyCalledInitialize = false;
 export const initialize: Initialize = (initParams) => {
   if (alreadyCalledInitialize) {
@@ -550,13 +555,6 @@ export const initialize: Initialize = (initParams) => {
         span.style.color = "white";
         span.innerHTML =
           "Sorry, we need browser support for WebGL to run<br/>Please update your browser to a more modern one<br/>Update to at least iOS 10, Safari 10, latest Chrome, Edge or Firefox<br/>Go and update and come back, your browser will be better, faster and more secure!<br/>If you are using chrome on OSX on a 2011/2012 mac please enable your GPU at: Override software rendering list:Enable (the top item) in: <a href='about://flags'>about://flags</a>. Or switch to Firefox or Safari.";
-      });
-
-      // TODO(JP): See if we can instead do this when we resolve the `initialize` Promise.
-      rpc.receive(WorkerEvent.RemoveLoadingIndicators, () => {
-        if (initParams.defaultStyles) {
-          removeLoadingIndicator();
-        }
       });
 
       rpc.receive(WorkerEvent.SetDocumentTitle, (title: string) => {
@@ -803,6 +801,10 @@ export const initialize: Initialize = (initParams) => {
             )
             .then(() => {
               canvasData.onScreenResize();
+              if (initParams.defaultStyles) {
+                removeLoadingIndicator();
+              }
+              initialized = true;
               resolve();
             });
         }, reject);

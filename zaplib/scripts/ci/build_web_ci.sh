@@ -14,8 +14,11 @@ pushd zaplib/web
     # are still some failing tests
     yarn install
     yarn run build
-    npm version 0.0.0-$(git rev-parse --short HEAD)
-    npm publish --tag canary
+    export VERSION=0.0.0-$(git rev-parse --short HEAD)
+    npm version $VERSION
+    # Don't publish if this git hash has already been published.
+    # This way we allow for rerunning the CI workspace.
+    (npm view zaplib@$VERSION | grep tarball) || npm publish --tag canary
 
     # JS Tests
     yarn lint

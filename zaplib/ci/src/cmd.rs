@@ -173,15 +173,46 @@ async fn run_tests(webdriver_url: String, local_port: u16, browserstack_local_id
                             false
                         }
                         Ok(mut driver) => {
-                            let result = test_suite_all_tests_3x(browser_name, &mut driver, local_port, true).await;
-                            driver.quit().await.unwrap();
-                            match result {
+                            let result = match test_suite_all_tests_3x(browser_name, &mut driver, local_port).await {
                                 Err(err) => {
                                     error!("[{browser_name}] Run error: {err}");
                                     false
                                 }
-                                Ok(()) => true,
+                                Ok(()) => {
+                                    // TODO(JP): Samsung Galaxy is a bit unstable and crashes throughout the session;
+                                    // enable it later. See https://github.com/Zaplib/zaplib/issues/67
+                                    if browser_name == "Samsung Galaxy S21, Android 11.0" {
+                                        true
+                                    } else {
+                                        match examples_screenshots(browser_name, &mut driver, local_port).await {
+                                            Err(err) => {
+                                                error!("[{browser_name}] Run error: {err}");
+                                                false
+                                            }
+                                            Ok(()) => true,
+                                        }
+                                    }
+                                }
+                            };
+                            if result {
+                                driver
+                                    .execute_script(
+                                        r#"browserstack_executor: {"action": "setSessionStatus", "arguments":
+                                            {"status": "passed", "reason": ""}}"#,
+                                    )
+                                    .await
+                                    .unwrap();
+                            } else {
+                                driver
+                                    .execute_script(
+                                        r#"browserstack_executor: {"action": "setSessionStatus", "arguments":
+                                            {"status": "failed", "reason": ""}}"#,
+                                    )
+                                    .await
+                                    .unwrap();
                             }
+                            driver.quit().await.unwrap();
+                            result
                         }
                     }
                 }
@@ -196,17 +227,12 @@ async fn run_tests(webdriver_url: String, local_port: u16, browserstack_local_id
         let mut capabilities = DesiredCapabilities::new(json!({}));
         capabilities.add("acceptSslCerts", true).unwrap();
         let mut driver = WebDriver::new(&webdriver_url, &capabilities).await.unwrap();
-        test_suite_all_tests_3x("local browser", &mut driver, local_port, false).await.unwrap();
+        test_suite_all_tests_3x("local browser", &mut driver, local_port).await.unwrap();
         driver.quit().await.unwrap();
     }
 }
 
-async fn test_suite_all_tests_3x(
-    browser_name: &str,
-    driver: &mut WebDriver,
-    local_port: u16,
-    is_browserstack: bool,
-) -> Result<(), Box<dyn Error>> {
+async fn test_suite_all_tests_3x(browser_name: &str, driver: &mut WebDriver, local_port: u16) -> Result<(), Box<dyn Error>> {
     info!("[{browser_name}] Connected to WebDriver...");
     // bs-local.com redirects to localhost; necessary for using HTTPS with Browserstack.
     driver.get(format!("https://bs-local.com:{}/zaplib/web/test_suite", local_port)).await?;
@@ -227,32 +253,68 @@ async fn test_suite_all_tests_3x(
     match result.value().as_str().unwrap_or("--zaplib_ci: no string was returned--") {
         "SUCCESS" => {
             info!("[{browser_name}] Tests passed!");
-            if is_browserstack {
-                driver
-                    .execute_script(
-                        r#"browserstack_executor: {"action": "setSessionStatus", "arguments":
-                          {"status":"passed","reason": ""}}"#,
-                    )
-                    .await?;
-            }
             Ok(())
         }
-        str => {
-            if is_browserstack {
-                // Print test failure before we update Browserstack, in case that call fails.
-                error!("[{browser_name}] Tests failed: {str}");
-                driver
-                    .execute_script(
-                        r#"browserstack_executor: {"action": "setSessionStatus", "arguments":
-                          {"status":"failed","reason": ""}}"#,
-                    )
-                    .await?;
-                Err(Box::new(SimpleError::new("Tests failed (see above)")))
-            } else {
-                Err(Box::new(SimpleError::new(format!("Tests failed: {str}"))))
+        str => Err(Box::new(SimpleError::new(format!("Tests failed: {str}")))),
+    }
+}
+
+async fn examples_screenshots(browser_name: &str, driver: &mut WebDriver, local_port: u16) -> Result<(), Box<dyn Error>> {
+    let examples = [
+        // Tracking these TODOs in https://github.com/Zaplib/zaplib/issues/29
+        // "example_bigedit/?release", // TODO(JP): Pause animation.
+        // ("example_charts", "example_charts/?release"), // TODO(JP): Randomness.
+        // "example_lightning", // TODO(JP): Pause animation.
+        ("example_lots_of_buttons", "example_lots_of_buttons/?release"),
+        ("example_shader", "example_shader/?release"),
+        ("example_single_button", "example_single_button/?release"),
+        ("example_text", "example_text/?release"),
+        ("test_bottom_bar", "test_bottom_bar/?release"),
+        // ("test_geometry", "test_geometry/?release"), // TODO(JP): Pause animation.
+        ("test_layout", "test_layout/?release"),
+        // "test_many_quads/?release", // TODO(JP): Pause animation.
+        // "test_multithread/?release", // TODO(JP): Pause animation.
+        ("test_padding", "test_padding/?release"),
+        ("test_popover", "test_popover/?release"),
+        // "test_shader_2d_primitives/", // TODO(JP): Make work in Wasm context (not just CEF).
+        ("tutorial_2d_rendering_step1", "tutorial_2d_rendering/step1"),
+        ("tutorial_2d_rendering_step2", "tutorial_2d_rendering/step2"),
+        ("tutorial_2d_rendering_step3", "tutorial_2d_rendering/step3"),
+        ("tutorial_3d_rendering_step2", "tutorial_3d_rendering/step2"),
+        ("tutorial_3d_rendering_step3", "tutorial_3d_rendering/step3"),
+        ("tutorial_hello_thread", "tutorial_hello_thread"),
+        ("tutorial_hello_world_canvas", "tutorial_hello_world_canvas"),
+        ("tutorial_hello_world_console", "tutorial_hello_world_console"),
+        ("tutorial_js_rust_bridge", "tutorial_js_rust_bridge"),
+        ("tutorial_ui_components", "tutorial_ui_components"),
+        ("tutorial_ui_layout", "tutorial_ui_layout"),
+    ];
+
+    for (example_name, example_path) in examples {
+        let url = format!("https://bs-local.com:{}/zaplib/examples/{}", local_port, example_path);
+        info!("[{browser_name}] Navigating to {url}...");
+        driver.get(url).await?;
+        let script = r#"
+            const done = arguments[0];
+            const interval = setInterval(() => {
+                if (zaplib.isInitialized()) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        done("SUCCESS");
+                    }, 2000); // TODO(JP): Shorten this time. See https://github.com/Zaplib/zaplib/issues/29
+                }
+            }, 10);
+        "#;
+        let result = driver.execute_async_script(script).await?;
+        driver.screenshot(Path::new(&("screenshots/".to_string() + example_name + " --" + browser_name + ".png"))).await?;
+        match result.value().as_str().unwrap_or("--zaplib_ci: no string was returned--") {
+            "SUCCESS" => {
+                info!("[{browser_name}] Successfully taken screenshot of {example_name}");
             }
+            str => return Err(Box::new(SimpleError::new(format!("Screenshot {example_name} failed: {str}")))),
         }
     }
+    Ok(())
 }
 
 /// NOTE(JP): There is some overlap with the code for `cargo zaplib serve`, but they might diverge. If these

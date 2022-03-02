@@ -10,6 +10,7 @@ import "./zaplib.css";
 
 const {
   initialize,
+  isInitialized,
   newWorkerPort,
   registerCallJsCallbacks,
   unregisterCallJsCallbacks,
@@ -23,6 +24,7 @@ const {
 
 export {
   initialize,
+  isInitialized,
   newWorkerPort,
   registerCallJsCallbacks,
   unregisterCallJsCallbacks,
