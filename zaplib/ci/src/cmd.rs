@@ -301,7 +301,7 @@ async fn examples_screenshots(browser_name: &str, driver: &mut WebDriver, local_
                     clearInterval(interval);
                     setTimeout(() => {
                         done("SUCCESS");
-                    }, 2000); // TODO(JP): Shorten this time. See https://github.com/Zaplib/zaplib/issues/29
+                    }, 3000); // TODO(JP): Shorten this time. See https://github.com/Zaplib/zaplib/issues/29
                 }
             }, 10);
         "#;

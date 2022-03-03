@@ -24,6 +24,15 @@ jobs:
         with:
           fetch-depth: 0 # Get full repo; necessary for `find_screenshots_compare_commit.sh`
       - uses: Swatinem/rust-cache@v1
+      - uses: actions/setup-node@master
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: zaplib/scripts/ci/browser_tests.sh
+        env:
+          BROWSERSTACK_KEY: ${{ secrets.BROWSERSTACK_KEY }}
+      # Download the previous screenshots after running the tests, to give the main branch a bit
+      # more time to upload, if it was just merged.
       - run: zaplib/scripts/ci/find_screenshots_compare_commit.sh
       - uses: dawidd6/action-download-artifact@v2
         with:
@@ -32,13 +41,8 @@ jobs:
           name: screenshots
           path: previous_screenshots/
         continue-on-error: true
-      - uses: actions/setup-node@master
-        with:
-          node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
-      - run: zaplib/scripts/ci/browser_tests.sh
+      - run: zaplib/scripts/ci/browser_tests_upload_screenshots.sh
         env:
-          BROWSERSTACK_KEY: ${{ secrets.BROWSERSTACK_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
