@@ -1,13 +1,15 @@
 # Versioning
 
-We don't release proper versions yet. Instead, you should pick a git commit and pin to that. In your `Cargo.toml`:
+While we're in early alpha, we won't be releasing proper versions. You can require a specific version via git commit hash. For example:
+
+### `Cargo.toml`
 
 ```toml
 [dependencies]
 zaplib = { git = "https://github.com/Zaplib/zaplib", rev="c015a1e" }
 ```
 
-And in `package.json` (a version like this is pushed automatically to [npm](https://www.npmjs.com/) on every commit):
+### `package.json`
 
 ```js
 "dependencies": {
@@ -15,4 +17,7 @@ And in `package.json` (a version like this is pushed automatically to [npm](http
 }
 ```
 
-When upgrading, be sure to update both `Cargo.toml` and `package.json`, and be sure to follow along in [Slack](/slack.html) to learn about API changes.
+## Warnings
+
+1. It's very important that `Cargo.toml` and `package.json` point to the same commit hash.
+2. While we're in alpha, please follow along in [Slack](/slack.html) to learn about API changes.
