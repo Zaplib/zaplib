@@ -542,7 +542,7 @@ export const initialize: Initialize = (initParams) => {
   if (self.Worker !== globalThis.Worker) {
     // This can happen e.g. when using a custom Jest environment that overrides self.Worker.
     console.warn(
-      "self.Worker is not set; this means that we can't instantiate Zaplib Workers. In Node.js you might need to import zaplib/dist/zaplib_nodejs_polyfill.development and/or set globalThis.self.Worker = globalThis.Worker."
+      "self.Worker is not set; this means that we can't instantiate Zaplib Workers. This may be caused by overwriting `self` (such as in a test mock). In Node.js you might need to import zaplib/dist/zaplib_nodejs_polyfill.development and/or set globalThis.self.Worker = globalThis.Worker."
     );
   }
 
