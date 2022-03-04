@@ -37,6 +37,7 @@ import { ZerdeBuilder, ZerdeParser } from "zerde";
 export interface Channel {
   postMessage(data: unknown, transfer?: unknown[]): void;
   onmessage: null | ((ev: MessageEvent) => unknown);
+  terminate?: () => void;
 }
 
 const RESPONSE = "$$RESPONSE";

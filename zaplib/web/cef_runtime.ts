@@ -295,3 +295,5 @@ export const createReadOnlyBuffer: CreateBuffer = async (data) => {
     [cefBuffer, arcPtr, paramType],
   ])[0] as typeof data;
 };
+
+export const close = (): void => void 0;

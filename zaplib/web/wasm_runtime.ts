@@ -902,3 +902,9 @@ export const initialize: Initialize = (initParams) => {
     }
   });
 };
+
+export const close = (): void => {
+  if (_rpc && _rpc._channel && _rpc._channel.terminate) {
+    _rpc._channel.terminate();
+  }
+}

@@ -9,6 +9,7 @@ import { isZapBuffer } from "zap_buffer";
 
 const {
   initialize,
+  close,
   isInitialized,
   newWorkerPort,
   registerCallJsCallbacks,
@@ -23,6 +24,7 @@ const {
 
 export {
   initialize,
+  close,
   isInitialized,
   newWorkerPort,
   registerCallJsCallbacks,
