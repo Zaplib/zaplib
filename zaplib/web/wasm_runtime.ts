@@ -122,6 +122,7 @@ Atomics.store(wasmOnline, 0, 0);
 const wasmInitialized = () => Atomics.load(wasmOnline, 0) === 1;
 const { checkWasm, wrapWasmExports } = createErrorCheckers(wasmInitialized);
 
+// Gets overridden when `initParams.onPanic` is set.
 let onPanic: (e: unknown) => void = (e: unknown) => {
   Atomics.store(wasmOnline, 0, 0);
   console.warn(
@@ -547,7 +548,7 @@ export const initialize: Initialize = (initParams) => {
 
   if (inWorker && !inNodeJs) {
     console.warn(
-      "zaplib.initialize() can should be called on the browser's main thread. It might work in a browser worker, but not all browsers currently support this (e.g. Safari doesn't)"
+      "zaplib.initialize() should be called on the browser's main thread. It might work in a Web Worker, but not all browsers currently support this (e.g. Safari doesn't)"
     );
   }
 
@@ -557,7 +558,7 @@ export const initialize: Initialize = (initParams) => {
     const baseUri =
       initParams.baseUri ??
       (globalThis.location
-        ? location.protocol + "//" + location.host + "/"
+        ? `${globalThis.location.protocol}//${globalThis.location.host}/`
         : "unknown://");
 
     let wasmModulePromise: Promise<WebAssembly.Module>;
@@ -894,7 +895,7 @@ export const initialize: Initialize = (initParams) => {
       });
     };
 
-    if (typeof document === "undefined" || document.readyState !== "loading") {
+    if (!globalThis.document || document.readyState !== "loading") {
       loader();
     } else {
       document.addEventListener("DOMContentLoaded", loader);
