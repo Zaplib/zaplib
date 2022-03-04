@@ -204,6 +204,8 @@ export const initialize: Initialize = (initParams) =>
     };
 
     document.addEventListener("DOMContentLoaded", () => {
+      require("./zaplib.css");
+
       if (initParams.defaultStyles) {
         addDefaultStyles();
       }

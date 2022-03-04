@@ -314,6 +314,8 @@ export const deserializeZapArrayFromPostMessage = (
 };
 
 function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
+  require("./zaplib.css");
+
   canvas.className = "zaplib_canvas";
 
   document.addEventListener("contextmenu", (event) => {
