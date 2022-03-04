@@ -592,6 +592,7 @@ export const initialize: Initialize = (initParams) => {
         taskWorkerSab,
         wasmMemory,
       });
+      taskWorkerRpc?._channel?.terminate?.();
 
       // Initial has to be equal to or higher than required by the app (which at the time of writing
       // is around 20 pages).
@@ -902,9 +903,3 @@ export const initialize: Initialize = (initParams) => {
     }
   });
 };
-
-export const close = (): void => {
-  if (_rpc && _rpc._channel && _rpc._channel.terminate) {
-    _rpc._channel.terminate();
-  }
-}
