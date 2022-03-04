@@ -58,7 +58,7 @@ import {
 } from "rpc_types";
 import { addLoadingIndicator, removeLoadingIndicator } from "loading_indicator";
 import { addDefaultStyles } from "default_styles";
-import { inWorker } from "type_of_runtime";
+import { inNodeJs, inWorker } from "type_of_runtime";
 
 declare global {
   interface Document {
@@ -122,6 +122,20 @@ Atomics.store(wasmOnline, 0, 0);
 const wasmInitialized = () => Atomics.load(wasmOnline, 0) === 1;
 const { checkWasm, wrapWasmExports } = createErrorCheckers(wasmInitialized);
 
+// Gets overridden when `initParams.onPanic` is set.
+let onPanic: (e: unknown) => void = (e: unknown) => {
+  Atomics.store(wasmOnline, 0, 0);
+  console.warn(
+    "Specify `onPanic` to catch errors from rendering. See https://zaplib.com/docs/bridge_api_basics.html#zaplibinitialize."
+  );
+  // We are likely in a Promse.catch handler, so also make sure an error is thrown
+  // globally, since not everyone might catch unresolved promise errors globally.
+  setTimeout(() => {
+    throw e;
+  });
+  throw e;
+};
+
 // Wrap RPC so we can globally catch Rust panics
 let _rpc: Rpc<WasmWorkerRpc>;
 const rpc: Pick<typeof _rpc, "send" | "receive"> = {
@@ -135,12 +149,23 @@ const rpc: Pick<typeof _rpc, "send" | "receive"> = {
       throw ev;
     }
   },
-  receive: (...args) => _rpc.receive(...args),
+  receive: (topic, handler) => {
+    _rpc.receive(topic, (...args) => {
+      try {
+        return handler(...args);
+      } catch (e) {
+        onPanic(e);
+        throw e;
+      }
+    });
+  },
 };
 
 export const newWorkerPort = (): MessagePort => {
   const channel = new MessageChannel();
-  rpc.send(WorkerEvent.BindMainWorkerPort, channel.port1, [channel.port1]);
+  rpc
+    .send(WorkerEvent.BindMainWorkerPort, channel.port1, [channel.port1])
+    .catch(onPanic);
   return channel.port2;
 };
 
@@ -149,11 +174,11 @@ let wasmExports: WasmExports;
 let wasmAppPtr: BigInt;
 
 const destructor = (arcPtr: number) => {
-  rpc.send(WorkerEvent.DecrementArc, arcPtr);
+  rpc.send(WorkerEvent.DecrementArc, arcPtr).catch(onPanic);
 };
 
 const mutableDestructor = (bufferData: MutableBufferData) => {
-  rpc.send(WorkerEvent.DeallocVec, bufferData);
+  rpc.send(WorkerEvent.DeallocVec, bufferData).catch(onPanic);
 };
 
 const transformParamsFromRust = (params: RustZapParam[]) =>
@@ -290,6 +315,8 @@ export const deserializeZapArrayFromPostMessage = (
 };
 
 function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
+  require("./zaplib.css");
+
   canvas.className = "zaplib_canvas";
 
   document.addEventListener("contextmenu", (event) => {
@@ -302,30 +329,45 @@ function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
   });
 
   document.addEventListener("mousedown", (event) => {
-    if (wasmInitialized())
-      rpc.send(WorkerEvent.CanvasMouseDown, makeRpcMouseEvent(event));
+    if (wasmInitialized()) {
+      rpc
+        .send(WorkerEvent.CanvasMouseDown, makeRpcMouseEvent(event))
+        .catch(onPanic);
+    }
   });
   window.addEventListener("mouseup", (event) => {
-    if (wasmInitialized())
-      rpc.send(WorkerEvent.WindowMouseUp, makeRpcMouseEvent(event));
+    if (wasmInitialized()) {
+      rpc
+        .send(WorkerEvent.WindowMouseUp, makeRpcMouseEvent(event))
+        .catch(onPanic);
+    }
   });
   window.addEventListener("mousemove", (event) => {
     document.body.scrollTop = 0;
     document.body.scrollLeft = 0;
-    if (wasmInitialized())
-      rpc.send(WorkerEvent.WindowMouseMove, makeRpcMouseEvent(event));
+    if (wasmInitialized()) {
+      rpc
+        .send(WorkerEvent.WindowMouseMove, makeRpcMouseEvent(event))
+        .catch(onPanic);
+    }
   });
   window.addEventListener("mouseout", (event) => {
-    if (wasmInitialized())
-      rpc.send(WorkerEvent.WindowMouseOut, makeRpcMouseEvent(event));
+    if (wasmInitialized()) {
+      rpc
+        .send(WorkerEvent.WindowMouseOut, makeRpcMouseEvent(event))
+        .catch(onPanic);
+    }
   });
 
   document.addEventListener(
     "touchstart",
     (event: TouchEvent) => {
       event.preventDefault();
-      if (wasmInitialized())
-        rpc.send(WorkerEvent.WindowTouchStart, makeRpcTouchEvent(event));
+      if (wasmInitialized()) {
+        rpc
+          .send(WorkerEvent.WindowTouchStart, makeRpcTouchEvent(event))
+          .catch(onPanic);
+      }
     },
     { passive: false }
   );
@@ -333,28 +375,41 @@ function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
     "touchmove",
     (event: TouchEvent) => {
       event.preventDefault();
-      if (wasmInitialized())
-        rpc.send(WorkerEvent.WindowTouchMove, makeRpcTouchEvent(event));
+      if (wasmInitialized()) {
+        rpc
+          .send(WorkerEvent.WindowTouchMove, makeRpcTouchEvent(event))
+          .catch(onPanic);
+      }
     },
     { passive: false }
   );
   const touchEndCancelLeave = (event: TouchEvent) => {
     event.preventDefault();
-    if (wasmInitialized())
-      rpc.send(WorkerEvent.WindowTouchEndCancelLeave, makeRpcTouchEvent(event));
+    if (wasmInitialized()) {
+      rpc
+        .send(WorkerEvent.WindowTouchEndCancelLeave, makeRpcTouchEvent(event))
+        .catch(onPanic);
+    }
   };
   window.addEventListener("touchend", touchEndCancelLeave);
   window.addEventListener("touchcancel", touchEndCancelLeave);
 
   document.addEventListener("wheel", (event) => {
-    if (wasmInitialized())
-      rpc.send(WorkerEvent.CanvasWheel, makeRpcWheelEvent(event));
+    if (wasmInitialized()) {
+      rpc
+        .send(WorkerEvent.CanvasWheel, makeRpcWheelEvent(event))
+        .catch(onPanic);
+    }
   });
   window.addEventListener("focus", () => {
-    if (wasmInitialized()) rpc.send(WorkerEvent.WindowFocus);
+    if (wasmInitialized()) {
+      rpc.send(WorkerEvent.WindowFocus).catch(onPanic);
+    }
   });
   window.addEventListener("blur", () => {
-    if (wasmInitialized()) rpc.send(WorkerEvent.WindowBlur);
+    if (wasmInitialized()) {
+      rpc.send(WorkerEvent.WindowBlur).catch(onPanic);
+    }
   });
 
   const isMobileSafari = globalThis.navigator.platform.match(/iPhone|iPad/i);
@@ -363,7 +418,9 @@ function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
   if (!isMobileSafari && !isAndroid) {
     // mobile keyboards are unusable on a UI like this
     const { showTextIME } = makeTextarea((taEvent: TextareaEvent) => {
-      if (wasmInitialized()) rpc.send(taEvent.type, taEvent);
+      if (wasmInitialized()) {
+        rpc.send(taEvent.type, taEvent).catch(onPanic);
+      }
     });
     rpc.receive(WorkerEvent.ShowTextIME, showTextIME);
   }
@@ -407,7 +464,9 @@ function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
     if (webglRenderer) {
       webglRenderer.resize(sizingData);
     }
-    if (wasmInitialized()) rpc.send(WorkerEvent.ScreenResize, sizingData);
+    if (wasmInitialized()) {
+      rpc.send(WorkerEvent.ScreenResize, sizingData).catch(onPanic);
+    }
   };
   window.addEventListener("resize", () => onScreenResize());
   window.addEventListener("orientationchange", () => onScreenResize());
@@ -438,7 +497,9 @@ function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
       wasmMemory,
       getSizingData(),
       () => {
-        rpc.send(WorkerEvent.ShowIncompatibleBrowserNotification);
+        rpc
+          .send(WorkerEvent.ShowIncompatibleBrowserNotification)
+          .catch(onPanic);
       }
     );
     rpc.receive(WorkerEvent.RunWebGL, (zerdeParserPtr) => {
@@ -466,9 +527,28 @@ export const initialize: Initialize = (initParams) => {
   }
   alreadyCalledInitialize = true;
 
-  if (inWorker) {
-    throw new Error(
-      "zaplib.initialize() can only be called on the browser's main thread"
+  if (initParams.onPanic) {
+    const newOnRenderingPanic = initParams.onPanic;
+    onPanic = (e: unknown) => {
+      Atomics.store(wasmOnline, 0, 0);
+      if (e instanceof Error) {
+        newOnRenderingPanic(e);
+      } else {
+        newOnRenderingPanic(new Error("" + e));
+      }
+    };
+  }
+
+  if (self.Worker !== globalThis.Worker) {
+    // This can happen e.g. when using a custom Jest environment that overrides self.Worker.
+    console.warn(
+      "self.Worker is not set; this means that we can't instantiate Zaplib Workers. In Node.js you might need to import zaplib/dist/zaplib_nodejs_polyfill.development and/or set globalThis.self.Worker = globalThis.Worker."
+    );
+  }
+
+  if (inWorker && !inNodeJs) {
+    console.warn(
+      "zaplib.initialize() should be called on the browser's main thread. It might work in a Web Worker, but not all browsers currently support this (e.g. Safari doesn't)"
     );
   }
 
@@ -477,7 +557,9 @@ export const initialize: Initialize = (initParams) => {
 
     const baseUri =
       initParams.baseUri ??
-      window.location.protocol + "//" + window.location.host + "/";
+      (globalThis.location
+        ? `${globalThis.location.protocol}//${globalThis.location.host}/`
+        : "unknown://");
 
     let wasmModulePromise: Promise<WebAssembly.Module>;
     if (typeof initParams.wasmModule == "string") {
@@ -558,11 +640,11 @@ export const initialize: Initialize = (initParams) => {
       });
 
       rpc.receive(WorkerEvent.SetDocumentTitle, (title: string) => {
-        document.title = title;
+        if (globalThis.document) document.title = title;
       });
 
       rpc.receive(WorkerEvent.SetMouseCursor, (style: string) => {
-        document.body.style.cursor = style;
+        if (globalThis.document) document.body.style.cursor = style;
       });
 
       rpc.receive(WorkerEvent.Fullscreen, () => {
@@ -601,19 +683,26 @@ export const initialize: Initialize = (initParams) => {
             ev.stopPropagation();
             ev.preventDefault();
             dataTransfer.dropEffect = "copy";
-            if (wasmInitialized()) rpc.send(WorkerEvent.DragEnter);
+            if (wasmInitialized()) {
+              rpc.send(WorkerEvent.DragEnter).catch(onPanic);
+            }
           }
         });
         document.addEventListener("dragover", (ev) => {
           ev.stopPropagation();
           ev.preventDefault();
-          if (wasmInitialized())
-            rpc.send(WorkerEvent.DragOver, { x: ev.clientX, y: ev.clientY });
+          if (wasmInitialized()) {
+            rpc
+              .send(WorkerEvent.DragOver, { x: ev.clientX, y: ev.clientY })
+              .catch(onPanic);
+          }
         });
         document.addEventListener("dragleave", (ev) => {
           ev.stopPropagation();
           ev.preventDefault();
-          if (wasmInitialized()) rpc.send(WorkerEvent.DragLeave);
+          if (wasmInitialized()) {
+            rpc.send(WorkerEvent.DragLeave).catch(onPanic);
+          }
         });
         document.addEventListener("drop", (ev) => {
           if (!ev.dataTransfer) {
@@ -638,7 +727,9 @@ export const initialize: Initialize = (initParams) => {
             fileHandles.push(fileHandle);
           }
           if (wasmInitialized()) {
-            rpc.send(WorkerEvent.Drop, { fileHandles, fileHandlesToSend });
+            rpc
+              .send(WorkerEvent.Drop, { fileHandles, fileHandlesToSend })
+              .catch(onPanic);
           }
         });
       });
@@ -683,16 +774,7 @@ export const initialize: Initialize = (initParams) => {
         canvasData = initializeCanvas(canvas);
       }
 
-      rpc.receive(WorkerEvent.Panic, (e) => {
-        if (initParams.onRenderingPanic) {
-          initParams.onRenderingPanic(e);
-        } else {
-          console.warn(
-            "Specify `onRenderingPanic` to catch errors from rendering. See https://zaplib.com/docs/bridge_api_basics.html#zaplibinitialize."
-          );
-          throw e;
-        }
-      });
+      rpc.receive(WorkerEvent.Panic, onPanic);
 
       wasmModulePromise.then((wasmModule) => {
         // Threads need to be spawned on the browser's main thread, otherwise Safari (as of version 15.2)
@@ -718,9 +800,11 @@ export const initialize: Initialize = (initParams) => {
           asyncWorkers.add(worker);
 
           const channel = new MessageChannel();
-          rpc.send(WorkerEvent.BindMainWorkerPort, channel.port1, [
-            channel.port1,
-          ]);
+          rpc
+            .send(WorkerEvent.BindMainWorkerPort, channel.port1, [
+              channel.port1,
+            ])
+            .catch(onPanic);
 
           workerRpc.receive(AsyncWorkerEvent.ThreadSpawn, threadSpawn);
 
@@ -811,7 +895,7 @@ export const initialize: Initialize = (initParams) => {
       });
     };
 
-    if (document.readyState !== "loading") {
+    if (!globalThis.document || document.readyState !== "loading") {
       loader();
     } else {
       document.addEventListener("DOMContentLoaded", loader);

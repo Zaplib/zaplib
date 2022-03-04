@@ -129,9 +129,9 @@ export const classesToExtend = {
 for (const [cls, zapCls] of Object.entries(classesToExtend)) {
   // Get a new type name by prefixing old one with "Zaplib".
   // e.g. Uint8Array is extended by ZapUint8Array, etc
-  if (cls in self) {
+  if (cls in globalThis) {
     // @ts-ignore
-    self[zapCls] = zapBufferExtends(self[cls]);
+    globalThis[zapCls] = zapBufferExtends(globalThis[cls]);
   }
 }
 

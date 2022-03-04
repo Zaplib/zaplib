@@ -1,4 +1,4 @@
-// These are jest-specific tests that test subset of Zaplib functionality using NodeJS env.
+// These are jest-specific tests that test a subset of Zaplib functionality using NodeJS env.
 
 // @ts-ignore
 import DummyWorker from "worker-loader?inline=no-fallback!./dummy_worker";

@@ -31,7 +31,7 @@ test("initializes zaplib and calls rust", async () => {
   expect(result).toBe("36");
 });
 
-test("creates work with undefined url", () => {
+test("creates worker with undefined url", () => {
   expect( () => {
     const worker = new Worker(undefined);
   }).toThrow("Creating worker with undefined url");

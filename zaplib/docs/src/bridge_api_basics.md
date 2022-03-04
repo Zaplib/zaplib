@@ -18,7 +18,7 @@ This initializes the library. A couple of things happen:
 | <code>initParams.wasmModule: string &#124; Promise<WebAssembly.Module></code> | Path to the `.wasm` file or a Promise for compiled wasm module. During development, typically something like `/target/wasm32-unknown-unknown/debug/my_package_name.wasm`. |
 | `initParams.defaultStyles?: boolean` | Whether to inject some default styles, including a loading indicator and a canvas. Useful for examples / getting started. |
 | `initParams.canvas?: HTMLCanvasElement` | A `<canvas>` element that must span the whole page. If not given, then rendering isn't possible. `defaultStyles: true` will automatically create this and add it to `<body>`. See also the [Canvas page](./rendering_api_canvas.md). |
-| `initParams.onRenderingPanic?: (e: Error) => void` | A callback to run if Zaplib panics during `draw` or `handle` functions. |
+| `initParams.onPanic?: (e: Error) => void` | A callback to run if Zaplib panics during `draw` or `handle` functions. |
 
 <p></p>
 
