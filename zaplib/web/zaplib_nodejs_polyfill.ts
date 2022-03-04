@@ -9,3 +9,7 @@ globalThis.Worker = Worker;
 // eslint-disable-next-line
 const threads = require("worker_threads");
 globalThis.MessageChannel = threads.MessageChannel;
+
+// Webpack's worker loader needs this.
+// @ts-ignore
+globalThis.self = globalThis.self || globalThis;

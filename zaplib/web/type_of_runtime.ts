@@ -1,7 +1,7 @@
 // We only define `cefCallRustAsync` if in CEF, so we can use this for environment detection.
 // This should only be used at the top level `zaplib_runtime` file or in test, since we want to keep
 // CEF and WASM code separate for bundle size.
-export const jsRuntime = "cefCallRustAsync" in self ? "cef" : "wasm";
+export const jsRuntime = "cefCallRustAsync" in globalThis ? "cef" : "wasm";
 
 // Whether or not we're in a WebWorker.
 // From https://stackoverflow.com/a/23619712

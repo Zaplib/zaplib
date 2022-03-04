@@ -29,6 +29,7 @@ const common = (env, argv) => {
         name: "zaplib",
         type: "umd",
       },
+      globalObject: "globalThis",
     },
     module: {
       rules: [

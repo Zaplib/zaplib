@@ -477,7 +477,9 @@ export const initialize: Initialize = (initParams) => {
 
     const baseUri =
       initParams.baseUri ??
-      window.location.protocol + "//" + window.location.host + "/";
+      (globalThis.location
+        ? location.protocol + "//" + location.host + "/"
+        : "unknown://");
 
     let wasmModulePromise: Promise<WebAssembly.Module>;
     if (typeof initParams.wasmModule == "string") {
@@ -558,11 +560,11 @@ export const initialize: Initialize = (initParams) => {
       });
 
       rpc.receive(WorkerEvent.SetDocumentTitle, (title: string) => {
-        document.title = title;
+        if (globalThis.document) document.title = title;
       });
 
       rpc.receive(WorkerEvent.SetMouseCursor, (style: string) => {
-        document.body.style.cursor = style;
+        if (globalThis.document) document.body.style.cursor = style;
       });
 
       rpc.receive(WorkerEvent.Fullscreen, () => {
@@ -811,7 +813,7 @@ export const initialize: Initialize = (initParams) => {
       });
     };
 
-    if (document.readyState !== "loading") {
+    if (typeof document === "undefined" || document.readyState !== "loading") {
       loader();
     } else {
       document.addEventListener("DOMContentLoaded", loader);
