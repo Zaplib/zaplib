@@ -6,15 +6,17 @@ Can we somehow bolded code changes between code snippets?
 
 # Tutorial: Integrating with JS
 
-This guide will show you how to add Rust code to an existing JavaScript codebase, explaining how to:
-* Create a WebAssembly instance and load your Rust code.
-* Call functions in Rust and communicate results to JavaScript.
+Zaplib helps you make web apps fast. It was designed to be incrementally adopted within a pre-existing JavaScript/TypeScript codebase. 
 
-You can either follow this tutorial directly; creating the necessary files from scratch. It's easiest to create your code in the `zaplib` directory.
+This guide will walk you through the steps to get started using Zaplib in your JS/TS app:
 
-Or for a full working example, check out `tutorial_js_rust_bridge` in the `zaplib/examples` directory.
+1. Create a WebAssembly instance and load your Rust code.
+2. From Javascript call your Rust function, and communicate the results back to JavaScript.
 
-## Identifying a need
+The full code for this guide can be found in [`zaplib/examples/tutorial_js_rust_bridge`](https://github.com/Zaplib/zaplib/tree/main/zaplib/examples/tutorial_hello_world_console).
+
+## Porting a JS function to Rust
+
 Let's say you have a JavaScript codebase which needs to calculate the sum of all values in an array.
 
 ```html

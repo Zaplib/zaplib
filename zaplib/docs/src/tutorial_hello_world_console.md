@@ -1,6 +1,8 @@
 # Tutorial: Hello World Console
 
-Let's write the most basic application: printing "Hello, world!" to the console. You can follow along in [`zaplib/examples/tutorial_hello_world_console`](https://github.com/Zaplib/zaplib/tree/main/zaplib/examples/tutorial_hello_world_console).
+Let's write the most basic application: printing "Hello, world!" to the console. 
+
+You can follow along in [`zaplib/examples/tutorial_hello_world_console`](https://github.com/Zaplib/zaplib/tree/main/zaplib/examples/tutorial_hello_world_console).
 
 ## 1. `Cargo.toml`
 
