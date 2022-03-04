@@ -60,7 +60,7 @@ If you're familiar with [Web Workers](https://developer.mozilla.org/en-US/docs/W
 
 Let's read some files! 
 
-In Rust, you'd normally use [`std::file::File`](https://doc.rust-lang.org/std/fs/struct.File.html), but it is not available in WebAssembly, so we use `UniversalFile`. Natively it uses `std::file::File`. In WebAssembly it uses makes an HTTP request for the file. The following example reads the project's `Cargo.toml` file. It works both natively by reading the file locally, like normal. It works in WebAssembly if your file server also serves your `Cargo.toml` file.
+In Rust, you'd normally use [`std::file::File`](https://doc.rust-lang.org/std/fs/struct.File.html), but it is not available in WebAssembly, so we use `UniversalFile`. Natively it uses `std::file::File`. In WebAssembly it makes an HTTP request for the file. The following example reads the project's `Cargo.toml` file. It works both natively by reading the file locally, like normal. It works in WebAssembly if your file server also serves your `Cargo.toml` file.
 
 First, add the following import to the top of your file:
 
@@ -102,6 +102,6 @@ Now let's put it all together. This might be a bit overwhelming all at once, but
 
 This code is from [`zaplib/examples/tutorial_hello_thread`](https://github.com/Zaplib/zaplib/tree/main/zaplib/examples/tutorial_hello_thread), so you can just run `cargo run -p tutorial_hello_thread` to run it natively.
 
-Run this either natively or in WebAssembly, and then drag in a small text file onto the screen. It should print the contents to the console. Since we did the file reading in a thread, it won't block any other code; though in this example it's hard to tell the difference both because there's no other compute happening and because Zaplib runs your Rust code in a Web Worker anyways. 😉
+Run this either natively or in WebAssembly, and then drag in a small text file onto the screen. It should print the contents to the console. Since we did the file reading in a thread, it won't block any other code; though in this example it's hard to tell the difference both because there's no other compute happening and because Zaplib runs your Rust code in a Web Worker anyway. 😉
 
 If you're actually going to do file reading, be sure to read up on the [`std::file::File`](https://doc.rust-lang.org/std/fs/struct.File.html) documentation, since the advice there still applies (e.g. it's often a good idea to wrap things in a `BufReader`).
