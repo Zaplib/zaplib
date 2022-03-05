@@ -24,5 +24,6 @@ pushd zaplib/web
     yarn lint
 
     # Run jest (uses test suite)
-    yarn run jest --forceExit
+    # --detectOpenHandles ensures that the tests hang if we leave any Web Workers open
+    yarn run jest --detectOpenHandles
 popd

@@ -13,7 +13,7 @@ cargo fmt
 2. Format JS/TS:
 
 ```
-yarn run prettier --write
+yarn run prettier --write **/*.ts
 ```
 
 We plan to add a Markdown formatter requirement.
