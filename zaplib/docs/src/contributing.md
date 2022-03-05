@@ -1,22 +1,97 @@
 # Contributing
 
+## Formatting
+
+All Rust and JS/TS code must be formatted to pass our CI tests.
+
+1. Format Rust:
+
+```
+cargo fmt
+```
+
+2. Format JS/TS:
+
+```
+yarn run prettier --write
+```
+
+We plan to add a Markdown formatter requirement.
+
 ## Tests
 
 There are 2 types of tests available. The browser test suite is more extensive, but currently requires manual run. And the [Jest](https://jestjs.io/) tests that check the subset of Zaplib functionality using NodeJS environment.
+### Browser tests
 
-* Running browser tests
-  * Build the test suite: `cargo zaplib build -p test_suite`
-  * Have local server running: `cargo zaplib serve`
-  * Navigate to `http://localhost:3000/zaplib/web/test_suite/` and click `Run All Tests`
-  * Test [CEF](./cef.md) by running `cargo run -p test_suite` and clicking `Run All Tests` (macOS Intel only, and first install [CEF](./cef.md) using `cargo zaplib install-deps --devel`).
-  * Running these tests automatically (similar to CI):
-    * `brew install --cask chromedriver`
-    * `chromedriver`
-    * In another console window: `cargo run -p zaplib_ci -- --webdriver-url http://localhost:9515`
-  * Running these tests automatically in the same way as CI, using Browserstack:
-    * For now see how things are run in `build_web_ci.sh`.
-* Running jest tests
-  * `cd zaplib/web && yarn run jest`
+1. Build the test suite:
+
+```
+cargo zaplib build -p test_suite
+```
+
+2. Have local server running:
+
+```
+cargo zaplib serve
+```
+
+3. Navigate to <a href="http://localhost:3000/zaplib/web/test_suite/"><pre>`http://localhost:3000/zaplib/web/test_suite/`</pre></a>
+
+4. Click `Run All Tests`
+
+### Browser tests ([CEF](./cef.md))
+
+1. Install CEF (macOS Intel onl):
+
+```
+cargo zaplib install-deps --devel
+``` 
+
+2. Run the tests:
+
+```
+cargo run -p test_suite
+``` 
+
+3. Click `Run All Tests`
+
+### Browser tests via chromedriver (similar to CI):
+
+1. Install ChromeDriver:
+
+```
+brew install --cask chromedriver
+```
+
+2. Run chromedriver:
+
+```
+chromedriver
+```
+
+3. Run the CI tests: 
+
+```
+cargo run -p zaplib_ci -- --webdriver-url http://localhost:9515
+```
+
+### Jest tests
+
+1. Build Zaplib:
+
+```
+cd zaplib/web
+yarn run watch 
+```
+
+2. Run the tests:
+
+```
+cd zaplib/web
+yarn run jest --detectOpenHandles
+```
+
+Note: if Jest detects open handles, it may be due to unclosed Web Workers. Ensure that `zaplib.close()` is called after each test.
 
 ## Updating the documentation
 
