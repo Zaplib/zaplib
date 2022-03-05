@@ -24,5 +24,5 @@ pushd zaplib/web
     yarn lint
 
     # Run jest (uses test suite)
-    yarn run jest --forceExit
+    yarn run jest --detectOpenHandles
 popd
