@@ -136,6 +136,15 @@ let onPanic: (e: unknown) => void = (e: unknown) => {
   throw e;
 };
 
+const _workers = new Set<Worker>();
+const newWorker = (
+  workerType: MainWorker | TaskWorker | AsyncWorker
+): Worker => {
+  const worker = new workerType();
+  _workers.add(worker);
+  return worker;
+};
+
 // Wrap RPC so we can globally catch Rust panics
 let _rpc: Rpc<WasmWorkerRpc>;
 const rpc: Pick<typeof _rpc, "send" | "receive"> = {
@@ -553,7 +562,7 @@ export const initialize: Initialize = (initParams) => {
   }
 
   return new Promise<void>((resolve, reject) => {
-    _rpc = new Rpc(new MainWorker());
+    _rpc = new Rpc(newWorker(MainWorker));
 
     const baseUri =
       initParams.baseUri ??
@@ -587,7 +596,7 @@ export const initialize: Initialize = (initParams) => {
       // We also do this before initializing `WebAssembly.Memory`, to make sure we have
       // enough memory for both.. (This is mostly relevant on mobile; see note below.)
       const taskWorkerSab = initTaskWorkerSab();
-      const taskWorkerRpc = new Rpc(new TaskWorker());
+      const taskWorkerRpc = new Rpc(newWorker(TaskWorker));
       taskWorkerRpc.send(TaskWorkerEvent.Init, {
         taskWorkerSab,
         wasmMemory,
@@ -787,7 +796,7 @@ export const initialize: Initialize = (initParams) => {
           ctxPtr: BigInt;
           tlsAndStackData: TlsAndStackData;
         }) => {
-          const worker = new AsyncWorker();
+          const worker = newWorker(AsyncWorker);
           const workerErrorHandler = (event: unknown) => {
             console.log("Async worker error event: ", event);
           };
@@ -829,6 +838,7 @@ export const initialize: Initialize = (initParams) => {
             .finally(() => {
               worker.terminate();
               asyncWorkers.delete(worker);
+              _workers.delete(worker);
             });
         };
         rpc.receive(WorkerEvent.ThreadSpawn, threadSpawn);
@@ -902,3 +912,9 @@ export const initialize: Initialize = (initParams) => {
     }
   });
 };
+
+export const close = (): void =>
+  _workers.forEach((worker) => {
+    worker.terminate();
+    _workers.delete(worker);
+  });

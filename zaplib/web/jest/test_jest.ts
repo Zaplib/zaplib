@@ -3,7 +3,7 @@
 // @ts-ignore
 import DummyWorker from "worker-loader?inline=no-fallback!./dummy_worker";
 
-export function sendToDummyWorker(s: string): Promise<any> {
+export async function sendToDummyWorker(s: string): Promise<any> {
   const worker = DummyWorker();
   const promise = new Promise((resolve) => {
     worker.addEventListener("message", (event: any) => {
@@ -11,5 +11,7 @@ export function sendToDummyWorker(s: string): Promise<any> {
     });
   });
   worker.postMessage(s);
-  return promise;
+  const result = await promise;
+  worker.terminate();
+  return result;
 }

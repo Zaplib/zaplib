@@ -15,6 +15,10 @@ const { sendToDummyWorker } = require("../dist/test_jest.development");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const zaplib = require("../dist/zaplib_runtime.development");
 
+afterEach(() => {
+  zaplib.close();
+});
+
 test("calls dummy worker", async () => {
   const result = await sendToDummyWorker("foo");
   expect(result).toBe("dummy:foo");
@@ -32,7 +36,7 @@ test("initializes zaplib and calls rust", async () => {
 });
 
 test("creates worker with undefined url", () => {
-  expect( () => {
+  expect(() => {
     const worker = new Worker(undefined);
   }).toThrow("Creating worker with undefined url");
 });

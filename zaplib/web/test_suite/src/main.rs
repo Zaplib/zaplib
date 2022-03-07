@@ -49,6 +49,12 @@ impl TestSuiteApp {
                 Cx::post_signal(signal, location_hash!());
                 // Same for thread.
                 universal_thread::spawn(move || {});
+
+                // Ensure that we properly close all threads in the test suite
+                universal_thread::spawn(move || {
+                    // sleep for a year
+                    std::thread::sleep(std::time::Duration::from_secs(60 * 60 * 24 * 365));
+                });
             }
             Event::Signal(sig) => {
                 if let Some(statusses) = sig.signals.get(&self.signal) {
