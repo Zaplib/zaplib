@@ -81,12 +81,15 @@ const transformParamsForRust = (params: ZapParam[]): CefParams =>
     }
   });
 
-export const callRustAsync: CallRustAsync = (name, params = []) => {
+export const callRustAsync: CallRustAsync = <T extends ZapParam[]>(
+  name: string,
+  params: ZapParam[] = []
+): Promise<T> => {
   const callbackId = newCallbackId++;
-  const promise = new Promise<ZapParam[]>((resolve, _reject) => {
+  const promise = new Promise<T>((resolve, _reject) => {
     pendingCallbacks[callbackId] = (data) => {
       // TODO(Dmitry): implement retrun_error on rust side and use reject(...) to communicate the error
-      resolve(data);
+      resolve(data as T);
     };
   });
   window.cefCallRustAsync(name, transformParamsForRust(params), callbackId);
@@ -133,7 +136,7 @@ export const unregisterCallJsCallbacks = (fnNames: string[]): void => {
   });
 };
 
-const transformReturnParams = (returnParams: FromCefParams) =>
+const transformReturnParams = (returnParams: FromCefParams): ZapParam[] =>
   returnParams.map((param) => {
     if (typeof param === "string") {
       return param;
@@ -162,10 +165,13 @@ const transformReturnParams = (returnParams: FromCefParams) =>
   });
 
 // TODO(JP): Some of this code is duplicated with callRustAsync/call_js; see if we can reuse some.
-export const callRustSync: CallRustSync = (name, params = []) =>
+export const callRustSync: CallRustSync = <T extends ZapParam[]>(
+  name: string,
+  params: ZapParam[] = []
+) =>
   transformReturnParams(
     window.cefCallRustSync(name, transformParamsForRust(params))
-  );
+  ) as T;
 
 export const newWorkerPort = (): MessagePort => {
   throw new Error("`newWorkerPort` is currently not supported on CEF");
