@@ -42,6 +42,7 @@ import {
   Initialize,
   WasmExports,
   IsInitialized,
+  ZapParam,
 } from "types";
 import { WebGLRenderer } from "webgl_renderer";
 import {
@@ -229,7 +230,10 @@ export const serializeZapArrayForPostMessage = (
   };
 };
 
-export const callRustAsync: CallRustAsync = async (name, params = []) => {
+export const callRustAsync: CallRustAsync = async <T extends ZapParam[]>(
+  name: string,
+  params: ZapParam[] = []
+): Promise<T> => {
   checkWasm();
 
   const transformedParams = params.map((param) => {
@@ -253,10 +257,13 @@ export const callRustAsync: CallRustAsync = async (name, params = []) => {
       name,
       params: transformedParams,
     })
-  );
+  ) as T;
 };
 
-export const callRustSync: CallRustSync = (name, params = []) =>
+export const callRustSync: CallRustSync = <T extends ZapParam[]>(
+  name: string,
+  params: ZapParam[] = []
+) =>
   callRustSyncImpl({
     name,
     params,
@@ -265,7 +272,7 @@ export const callRustSync: CallRustSync = (name, params = []) =>
     wasmExports,
     wasmAppPtr,
     transformParamsFromRust,
-  });
+  }) as T;
 
 export const createMutableBuffer: CreateBuffer = async (data) => {
   checkWasm();

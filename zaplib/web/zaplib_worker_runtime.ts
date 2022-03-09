@@ -30,6 +30,7 @@ import {
   MutableBufferData,
   CreateBufferWorkerSync,
   IsInitialized,
+  ZapParam,
 } from "types";
 import { inWorker } from "type_of_runtime";
 import {
@@ -154,7 +155,10 @@ export const newWorkerPort = (): MessagePort => {
 };
 
 // TODO(JP): Allocate buffers on the wasm memory directly here.
-export const callRustAsync: CallRustAsync = async (name, params = []) => {
+export const callRustAsync: CallRustAsync = async <T extends ZapParam[]>(
+  name: string,
+  params: ZapParam[] = []
+) => {
   checkWasm();
 
   const transformedParams = params.map((param) => {
@@ -178,10 +182,13 @@ export const callRustAsync: CallRustAsync = async (name, params = []) => {
       name,
       params: transformedParams,
     })
-  );
+  ) as T;
 };
 
-export const callRustSync: CallRustSync = (name, params = []) =>
+export const callRustSync: CallRustSync = <T extends ZapParam[]>(
+  name: string,
+  params: ZapParam[] = []
+) =>
   callRustSyncImpl({
     name,
     params,
@@ -190,7 +197,7 @@ export const callRustSync: CallRustSync = (name, params = []) =>
     wasmExports,
     wasmAppPtr,
     transformParamsFromRust,
-  });
+  }) as T;
 
 // TODO(JP): See comment at CreateBufferWorkerSync type.
 export const createMutableBuffer: CreateBufferWorkerSync = (data) => {

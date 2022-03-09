@@ -177,12 +177,10 @@ zaplib
         const buffer = await zaplib.createReadOnlyBuffer(
           new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8])
         );
-        const result = (
-          await zaplib.callRustAsync("array_multiply_u8_readonly", [
-            JSON.stringify(10),
-            buffer,
-          ])
-        )[0] as Uint8Array;
+        const [result] = await zaplib.callRustAsync<[Uint8Array]>(
+          "array_multiply_u8_readonly",
+          [JSON.stringify(10), buffer]
+        );
         expect(result.length, 8);
         expect(result[0], 10);
         expect(result[1], 20);
@@ -228,12 +226,10 @@ zaplib
         mutableBuffer[2] = 0;
         mutableBuffer[3] = 0;
 
-        const result = (
-          await zaplib.callRustAsync("array_multiply_u8", [
-            JSON.stringify(10),
-            mutableBuffer,
-          ])
-        )[0] as Uint8Array;
+        const [result] = await zaplib.callRustAsync<[Uint8Array]>(
+          "array_multiply_u8",
+          [JSON.stringify(10), mutableBuffer]
+        );
         expect(result.length, 8);
         expect(result[0], 0);
         expect(result[1], 0);
@@ -252,12 +248,10 @@ zaplib
       "Call Rust with Float32Array": async () => {
         // Using a normal array
         const input = new Float32Array([0.1, 0.9, 0.3]);
-        const result = (
-          await zaplib.callRustAsync("array_multiply_f32", [
-            JSON.stringify(10),
-            input,
-          ])
-        )[0] as Float32Array;
+        const [result] = await zaplib.callRustAsync<[Float32Array]>(
+          "array_multiply_f32",
+          [JSON.stringify(10), input]
+        );
         expect(result.length, 3);
         expect(result[0], 1);
         expect(result[1], 9);
@@ -267,12 +261,10 @@ zaplib
         const input2 = await zaplib.createMutableBuffer(
           new Float32Array([0.1, 0.9, 0.3])
         );
-        const result2 = (
-          await zaplib.callRustAsync("array_multiply_f32", [
-            JSON.stringify(10),
-            input2,
-          ])
-        )[0] as Float32Array;
+        const [result2] = await zaplib.callRustAsync<[Float32Array]>(
+          "array_multiply_f32",
+          [JSON.stringify(10), input2]
+        );
 
         expect(result2.length, 3);
         expect(result2[0], 1);
@@ -284,12 +276,10 @@ zaplib
           new Float32Array([0.1, 0.9, 0.3])
         );
 
-        const result3 = (
-          await zaplib.callRustAsync("array_multiply_f32_readonly", [
-            JSON.stringify(10),
-            input3,
-          ])
-        )[0] as Float32Array;
+        const [result3] = await zaplib.callRustAsync<[Float32Array]>(
+          "array_multiply_f32_readonly",
+          [JSON.stringify(10), input3]
+        );
 
         expect(result3.length, 3);
         expect(result3[0], 1);
@@ -321,10 +311,10 @@ zaplib
       "Call Rust with Float32Array (in same thread)": async () => {
         // Using a normal array
         const input = new Float32Array([0.1, 0.9, 0.3]);
-        const result = zaplib.callRustSync("array_multiply_f32", [
+        const [result] = zaplib.callRustSync("array_multiply_f32", [
           JSON.stringify(10),
           input,
-        ])[0] as Float32Array;
+        ]);
         expect(result.length, 3);
         expect(result[0], 1);
         expect(result[1], 9);
@@ -334,10 +324,10 @@ zaplib
         const input2 = await zaplib.createMutableBuffer(
           new Float32Array([0.1, 0.9, 0.3])
         );
-        const result2 = zaplib.callRustSync("array_multiply_f32", [
+        const [result2] = zaplib.callRustSync("array_multiply_f32", [
           JSON.stringify(10),
           input2,
-        ])[0] as Float32Array;
+        ]);
         expect(result2.length, 3);
         expect(result2[0], 1);
         expect(result2[1], 9);
@@ -348,10 +338,10 @@ zaplib
           new Float32Array([0.1, 0.9, 0.3])
         );
 
-        const result3 = zaplib.callRustSync("array_multiply_f32_readonly", [
+        const [result3] = zaplib.callRustSync("array_multiply_f32_readonly", [
           JSON.stringify(10),
           input3,
-        ])[0] as Float32Array;
+        ]);
         expect(result3.length, 3);
         expect(result3[0], 1);
         expect(result3[1], 9);

@@ -543,7 +543,7 @@ export function transformParamsFromRustImpl(
   destructor: (arcPtr: number) => void,
   mutableDestructor: (bufferData: MutableBufferData) => void,
   params: RustZapParam[]
-): (string | ZapArray)[] {
+): ZapParam[] {
   return params.map((param) => {
     if (typeof param === "string") {
       return param;
