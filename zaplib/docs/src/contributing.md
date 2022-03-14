@@ -35,7 +35,7 @@ cargo zaplib build -p test_suite
 cargo zaplib serve
 ```
 
-3. Navigate to <a href="http://localhost:3000/zaplib/web/test_suite/"><pre>`http://localhost:3000/zaplib/web/test_suite/`</pre></a>
+3. Navigate to <a href="http://localhost:3000/zaplib/web/test_suite/" target="_blank">http://localhost:3000/zaplib/web/test_suite/</a>
 
 4. Click `Run All Tests`
 
