@@ -7,7 +7,6 @@ import {
   CallRustSync,
   ZapParam,
   PostMessageTypedArray,
-  CreateBuffer,
   ZapParamType,
   Initialize,
   IsInitialized,
@@ -280,28 +279,5 @@ export const initialize: Initialize = (initParams) =>
       resolve();
     });
   });
-
-// TODO(JP): See comment at CreateBuffer type.
-export const createMutableBuffer: CreateBuffer = async (data) => {
-  const paramType = getZapParamType(data, false);
-  const [cefBuffer] = window.cefCreateArrayBuffer(data.length, paramType);
-  copyArrayToRustBuffer(data, cefBuffer, 0);
-  return transformReturnParams([
-    [cefBuffer, undefined, paramType],
-  ])[0] as typeof data;
-};
-
-// TODO(JP): See comment at CreateBuffer type.
-export const createReadOnlyBuffer: CreateBuffer = async (data) => {
-  const paramType = getZapParamType(data, true);
-  const [cefBuffer, arcPtr] = window.cefCreateArrayBuffer(
-    data.length,
-    paramType
-  );
-  copyArrayToRustBuffer(data, cefBuffer, 0);
-  return transformReturnParams([
-    [cefBuffer, arcPtr, paramType],
-  ])[0] as typeof data;
-};
 
 export const close = (): void => void 0;

@@ -7,7 +7,7 @@ import * as cef from "cef_runtime";
 import { jsRuntime } from "type_of_runtime";
 import { isZapBuffer } from "zap_buffer";
 import { CreateBuffer } from "types";
-import { getZapParamType } from "common";
+import { createMutableBufferImpl, createReadOnlyBufferImpl } from "common";
 
 const {
   initialize,
@@ -22,26 +22,13 @@ const {
   callRustSync,
 } = jsRuntime === "cef" ? cef : wasm;
 
-const createMutableBuffer: CreateBuffer = (data) => {
-  const [buffer] = callRustSync<[typeof data]>("__zaplibCreateMutableBuffer", [
-    getZapParamType(data, false).toString(),
-    data.length.toString(),
-  ]);
-  buffer.set(data, 0);
-
-  return buffer;
-};
-
-const createReadOnlyBuffer: CreateBuffer = (data) => {
-  const buffer = createMutableBuffer(data);
-
-  const [readOnlyBuffer] = callRustSync<[typeof data]>(
-    "__zaplibMakeBufferReadOnly",
-    [buffer]
-  );
-
-  return readOnlyBuffer;
-};
+const createMutableBuffer: CreateBuffer = createMutableBufferImpl({
+  callRustSync,
+});
+const createReadOnlyBuffer: CreateBuffer = createReadOnlyBufferImpl({
+  callRustSync,
+  createMutableBuffer,
+});
 
 export {
   initialize,

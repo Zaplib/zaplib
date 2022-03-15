@@ -3,6 +3,8 @@
 
 import { RpcSpec } from "rpc_types";
 import {
+  CallRustSync,
+  CreateBuffer,
   FileHandle,
   MutableBufferData,
   RustZapParam,
@@ -577,6 +579,37 @@ export function transformParamsFromRustImpl(
     }
   });
 }
+
+export const createMutableBufferImpl =
+  ({ callRustSync }: { callRustSync: CallRustSync }) =>
+  <T extends ZapArray>(data: T): T => {
+    const [buffer] = callRustSync<[typeof data]>(
+      "__zaplibCreateMutableBuffer",
+      [getZapParamType(data, false).toString(), data.length.toString()]
+    );
+    buffer.set(data, 0);
+
+    return buffer;
+  };
+
+export const createReadOnlyBufferImpl =
+  ({
+    callRustSync,
+    createMutableBuffer,
+  }: {
+    callRustSync: CallRustSync;
+    createMutableBuffer: CreateBuffer;
+  }) =>
+  <T extends ZapArray>(data: T): T => {
+    const buffer = createMutableBuffer(data);
+
+    const [readOnlyBuffer] = callRustSync<[typeof data]>(
+      "__zaplibMakeBufferReadOnly",
+      [buffer]
+    );
+
+    return readOnlyBuffer;
+  };
 
 // TODO(JP): Some of this code is duplicated with callRustAsync/call_js; see if we can reuse some.
 export const callRustSyncImpl: (options: {
