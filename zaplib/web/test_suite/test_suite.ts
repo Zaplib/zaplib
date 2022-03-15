@@ -242,7 +242,7 @@ zaplib
 
         return Promise.all([
           expectDeallocationOrUnregister(mutableBuffer),
-          expectDeallocationOrUnregister(result), // TODO(Steve): It seems like this test is failing when the tests are run manually, unrelated to my changes (it doesn't fail when using chromewebdriver to run tests)
+          expectDeallocationOrUnregister(result),
         ]);
       },
       "Call Rust with Float32Array": async () => {
@@ -382,15 +382,13 @@ zaplib
     };
 
     const checkWasmOffline = async () => {
-      const asyncFuncs = [
-        () => zaplib.callRustAsync("call_rust_no_return"),
-        () => zaplib.createReadOnlyBuffer(new Uint8Array()), // TOOD (Steve) - move this to syncFuncs
-      ];
+      const asyncFuncs = [() => zaplib.callRustAsync("call_rust_no_return")];
       for (const f of asyncFuncs) {
         await expectThrowAsync(f, "Zaplib WebAssembly instance crashed");
       }
       const syncFuncs = [
         () => zaplib.createMutableBuffer(new Uint8Array()),
+        () => zaplib.createReadOnlyBuffer(new Uint8Array()),
         () => {
           zaplib.callRustSync("call_rust_no_return");
         },

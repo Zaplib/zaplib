@@ -320,7 +320,7 @@ impl RenderProcessHandler for MyRenderProcessHandler {
                 let params = get_zap_params(&args[1]);
 
                 if let Some(func) = *call_rust_sync_fn.read().unwrap() {
-                    let return_buffers = func(name, params);
+                    let return_buffers = self.call_rust_sync_dispatch(func, name.as_str(), params);
                     Some(Ok(make_buffers_and_arc_ptrs(return_buffers)))
                 } else {
                     panic!("call_rust_sync was called without call_rust_sync_fn being set");

@@ -530,15 +530,7 @@ impl Cx {
             let mut zerde_parser = ZerdeParser::from(zerde_ptr);
             let name = zerde_parser.parse_string();
             let params = zerde_parser.parse_zap_params();
-
-            let return_params = if name == "__zaplibCreateMutableBuffer" {
-                let size = params[0].as_str().parse::<usize>().unwrap();
-                let buffer = vec![0u8; size];
-                vec![buffer.into_param()]
-            } else {
-                func(name, params)
-            };
-            
+            let return_params = self.call_rust_sync_dispatch(func, name.as_str(), params);
             let mut zerde_builder = ZerdeBuilder::new();
             zerde_builder.build_zap_params(return_params);
             zerde_builder.take_ptr()
