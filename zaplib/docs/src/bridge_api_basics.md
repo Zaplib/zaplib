@@ -24,13 +24,46 @@ This initializes the library. A couple of things happen:
 <p></p>
 
 | Returns (Typescript)                       | Description |
-|---------------------------------------------|---------|
-| `Promise<void>`                           | Promise that resolves when you can call other functions. |
+|--------------------------------------------|---------|
+| `Promise<void>`                            | Promise that resolves when Zaplib has been initialized and you can call other Zaplib functions. |
 
 **Caveats**
 * Can only be called on the browser's main thread; in a worker use `zaplib.initializeWorker()`.
 * `wasmModule` is ignored in [CEF](./cef.md).
 * Call `zaplib.close` when you want to terminate all the Web Workers Zaplib opens. This can be useful when running tests.
+
+## zaplib.callRustSync
+
+We support calling Rust synchronously. This means that execution transfers from JS to Rust, and no other processing can happen until the function returns. It also means that no `Promise`s are involved; it's purely synchronous code.
+
+| Parameter (Typescript)                      | Description |
+|---------------------------------------------|---------|
+| `name: string`                              | Some descriptive name of what you want to call. |
+| <code>params?: (Uint8Array \| Float32Array \| string)[]</code> | Array of parameters. See [next chapter](./bridge_api_params.md) for more details. |
+
+<p></p>
+
+| Returns (Typescript)                     | Description |
+|---------------------------------------------|---------|
+| <code>(Uint8Array \| Float32Array \| string)[]</code> | Return values. Typed arrays are backed by the WebAssembly memory, and are zero-copy. Strings are always copied. |
+
+To register a callback, you have to use `cx.on_call_rust_sync()`. However, the callback function has no access to the application struct, nor to `Cx` itself:
+
+```rust,noplayground
+impl ExampleApp {
+    fn new(cx: &mut Cx) -> Self {
+        cx.on_call_rust_sync(Self::on_call_rust_sync);
+        Self {}
+    }
+
+    fn on_call_rust_sync(
+        name: String,
+        params: Vec<ZapParam>
+    ) -> Vec<ZapParam> {}
+}
+```
+
+On the JS side, call `zaplib.callRustSync`. This has the same function signature as `zaplib.callRustAsync`, except that its results are not wrapped in a `Promise`.
 
 ## zaplib.callRustAsync
 
@@ -43,18 +76,18 @@ Calls Rust with some parameters. The Rust code gets executed inside the main Rus
 
 <p></p>
 
-| Returns (Typescript)                       | Description |
+| Returns (Typescript)                     | Description |
 |---------------------------------------------|---------|
-| <code>Promise<(Uint8Array \| Float32Array \| string)[]></code> | Return parameters. Typed arrays are backed by the WebAssembly memory, and are zero-copy. Strings are always copied. |
+| <code>Promise<(Uint8Array \| Float32Array \| string)[]></code> | Return values in a `Promise`. Typed arrays are backed by the WebAssembly memory, and are zero-copy. Strings are always copied. |
 
-On the Rust side, define a function to handle `callRustAsync` calls using the `register_call_rust!()` macro:
+On the Rust side, define a function to handle these calls using the `register_call_rust!()` macro:
 
 ```rust,noplayground
 fn call_rust(name: String, params: Vec<ZapParam>) -> Vec<ZapParam> { ... }
 register_call_rust!(call_rust);
 ```
 
-Or if you have an application struct which you need access to, use `cx.on_call_rust_async()`:
+Or if you have an application struct which you need access to:
 
 ```rust,noplayground
 impl ExampleApp {
@@ -86,9 +119,7 @@ For more information about the parameter types, see the [next chapter](./bridge_
 
 ## zaplib.createReadOnlyBuffer & zaplib.createMutableBuffer
 
-Use these functions to allocate raw data on the WebAssembly heap. These are convenience functions that have the same effect as calling `zaplib.callRustAsync` with non-Zaplib-backed typed arrays and immediately returning them.
-
-Note that when called on the browser's main thread, these calls are asynchronous (they return a `Promise`), while within Web Workers they are synchronous. In the future, we would like to make them [synchronous in both cases](https://github.com/Zaplib/zaplib/issues/89).
+Use these functions to allocate raw data on the WebAssembly heap. These are convenience functions that have the same effect as calling `zaplib.callRustSync` with non-Zaplib-backed typed arrays and immediately returning them.
 
 ## zaplib.isZapBuffer
 
@@ -112,6 +143,6 @@ zaplib.registerCallJsCallbacks({
 
 Then, in Rust, use: `cx.call_js("log", vec!["Hello, World!".to_string().into_param()])`, similarly to returning params from `call_rust`.
 
-Currently these calls are one-way; it is not possible to directly return values. In order to do that, make a separate call to `zaplib.callRustAsync`.
+Currently these calls are one-way; it is not possible to directly return values. In order to do that, make a separate call to `zaplib.callRustSync` or `zaplib.callRustAsync`.
 
 In order to unregister callbacks, use e.g. `zaplib.unregisterCallJsCallbacks(["log"]);`.
