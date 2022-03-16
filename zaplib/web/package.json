@@ -3,6 +3,7 @@
     "version": "0.0.7",
     "license": "MIT",
     "main": "dist/zaplib_runtime.js",
+    "types:" : "dist/zaplib_runtime.d.ts",
     "files": [
         "dist"
     ],
