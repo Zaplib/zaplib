@@ -530,7 +530,7 @@ impl Cx {
             let mut zerde_parser = ZerdeParser::from(zerde_ptr);
             let name = zerde_parser.parse_string();
             let params = zerde_parser.parse_zap_params();
-            let return_params = Cx::call_rust_sync_dispatch(func, name.as_str(), params);
+            let return_params = Cx::call_rust_sync_dispatch(func, name, params);
             let mut zerde_builder = ZerdeBuilder::new();
             zerde_builder.build_zap_params(return_params);
             zerde_builder.take_ptr()

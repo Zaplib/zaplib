@@ -898,7 +898,7 @@ impl Cx {
         self.on_call_rust_sync_internal(func);
     }
 
-    pub fn call_rust_sync_dispatch(func: CallRustSyncFn, name: &str, mut params: Vec<ZapParam>) -> Vec<ZapParam> {
+    pub fn call_rust_sync_dispatch(func: CallRustSyncFn, name: String, mut params: Vec<ZapParam>) -> Vec<ZapParam> {
         if name == "__zaplibCreateMutableBuffer" {
             let param_type = params[0].as_str().parse::<usize>().unwrap();
             let size = params[1].as_str().parse::<usize>().unwrap();
@@ -917,7 +917,7 @@ impl Cx {
                 _ => panic!("Unknown param type"),
             }
         } else {
-            func(name.to_string(), params)
+            func(name, params)
         }
     }
 
