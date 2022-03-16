@@ -229,7 +229,7 @@ impl Area {
     /// If no such element exists, then a default element is returned.
     ///
     /// Example:
-    /// ```
+    /// ```ignore
     /// let glyph = area.get_first::<TextIns>(cx);
     /// ```
     ///
@@ -295,7 +295,7 @@ impl Area {
     /// be cleared on the next redraw.
     ///
     /// Example:
-    /// ```
+    /// ```ignore
     /// let glyph = area.get_first_mut::<TextIns>(cx);
     /// ```
     ///

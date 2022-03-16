@@ -753,7 +753,7 @@ impl Cx {
     /// See [`CxDebugFlags`] for more information on the individual flags.
     ///
     /// Example:
-    /// ```
+    /// ```ignore
     /// let flags = cx.debug_flags_mut();
     /// flags.draw_tree = CxDebugDrawTree::Instances;
     /// flags.disable_draw_call_batching = true;
