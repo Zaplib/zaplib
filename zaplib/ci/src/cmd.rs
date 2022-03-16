@@ -280,6 +280,7 @@ async fn examples_screenshots(browser_name: &str, driver: &mut WebDriver, local_
         ("tutorial_2d_rendering_step1", "tutorial_2d_rendering/step1"),
         ("tutorial_2d_rendering_step2", "tutorial_2d_rendering/step2"),
         ("tutorial_2d_rendering_step3", "tutorial_2d_rendering/step3"),
+        ("tutorial_3d_rendering_step1", "tutorial_3d_rendering/step1"),
         ("tutorial_3d_rendering_step2", "tutorial_3d_rendering/step2"),
         ("tutorial_3d_rendering_step3", "tutorial_3d_rendering/step3"),
         ("tutorial_hello_thread", "tutorial_hello_thread"),
