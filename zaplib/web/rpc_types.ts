@@ -41,8 +41,6 @@ export type WorkerCallRustAsyncParams = {
 
 export enum WorkerEvent {
   CallRustAsync = "WorkerEvent.CallRustAsync",
-  CreateBuffer = "WorkerEvent.CreateBuffer",
-  CreateReadOnlyBuffer = "WorkerEvent.CreateReadOnlyBuffer",
   BindMainWorkerPort = "WorkerEvent.BindMainWorkerPort",
   DecrementArc = "WorkerEvent.DecrementArc",
   DeallocVec = "WorkerEvent.DeallocVec",
@@ -89,14 +87,6 @@ export type WasmWorkerRpc = {
     [WorkerEvent.CallRustAsync]: [
       WorkerCallRustAsyncParams,
       Promise<RustZapParam[]>
-    ];
-    [WorkerEvent.CreateBuffer]: [ZapArray, number];
-    [WorkerEvent.CreateReadOnlyBuffer]: [
-      ZapArray,
-      {
-        bufferPtr: number;
-        arcPtr: number;
-      }
     ];
     [WorkerEvent.DragEnter]: [void, void];
     [WorkerEvent.DragOver]: [{ x: number; y: number }, void];
