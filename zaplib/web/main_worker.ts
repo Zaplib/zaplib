@@ -15,7 +15,6 @@ import {
   FileHandle,
   WasmExports,
   SizingData,
-  ZapArray,
   MutableBufferData,
   RustZapParam,
 } from "types";
