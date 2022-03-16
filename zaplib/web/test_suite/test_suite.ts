@@ -347,7 +347,7 @@ zaplib
         expect(result3[1], 9);
         expect(result3[2], 3);
       },
-      "Cast WrBuffers":  () => {
+      "Cast WrBuffers": () => {
         const input = zaplib.createMutableBuffer(new Float32Array([0.1]));
         const castArray = new Uint8Array(input.buffer);
         expect(castArray.length, 4);
