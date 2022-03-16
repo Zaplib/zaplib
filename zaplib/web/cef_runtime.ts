@@ -216,63 +216,65 @@ export const initialize: Initialize = (initParams) =>
         addDefaultStyles();
       }
 
-      const { showTextIME, textareaHasFocus } = makeTextarea(
-        (taEvent: TextareaEvent) => {
-          const slots = 20;
-          const [buffer] = window.cefCreateArrayBuffer(
-            slots * 4,
-            ZapParamType.U8Buffer
-          );
-          const zerdeBuilder = new ZerdeBuilder({
-            buffer,
-            byteOffset: 0,
-            slots,
-            growCallback: () => {
-              throw new Error("Growing of this buffer is not supported");
-            },
-          });
+      if (initParams.createTextArea || initParams.defaultStyles) {
+        const { showTextIME, textareaHasFocus } = makeTextarea(
+          (taEvent: TextareaEvent) => {
+            const slots = 20;
+            const [buffer] = window.cefCreateArrayBuffer(
+              slots * 4,
+              ZapParamType.U8Buffer
+            );
+            const zerdeBuilder = new ZerdeBuilder({
+              buffer,
+              byteOffset: 0,
+              slots,
+              growCallback: () => {
+                throw new Error("Growing of this buffer is not supported");
+              },
+            });
 
-          if (taEvent.type === WorkerEvent.KeyDown) {
-            zerdeKeyboardHandlers.keyDown(zerdeBuilder, taEvent);
-          } else if (taEvent.type === WorkerEvent.KeyUp) {
-            zerdeKeyboardHandlers.keyUp(zerdeBuilder, taEvent);
-          } else if (taEvent.type === WorkerEvent.TextInput) {
-            zerdeKeyboardHandlers.textInput(zerdeBuilder, taEvent);
-          } else if (taEvent.type === WorkerEvent.TextCopy) {
-            zerdeKeyboardHandlers.textCopy(zerdeBuilder);
+            if (taEvent.type === WorkerEvent.KeyDown) {
+              zerdeKeyboardHandlers.keyDown(zerdeBuilder, taEvent);
+            } else if (taEvent.type === WorkerEvent.KeyUp) {
+              zerdeKeyboardHandlers.keyUp(zerdeBuilder, taEvent);
+            } else if (taEvent.type === WorkerEvent.TextInput) {
+              zerdeKeyboardHandlers.textInput(zerdeBuilder, taEvent);
+            } else if (taEvent.type === WorkerEvent.TextCopy) {
+              zerdeKeyboardHandlers.textCopy(zerdeBuilder);
+            }
+
+            window.cefHandleKeyboardEvent(buffer);
           }
+        );
 
-          window.cefHandleKeyboardEvent(buffer);
-        }
-      );
+        window.fromCefSetIMEPosition = (x: number, y: number) => {
+          showTextIME({ x, y });
+        };
 
-      window.fromCefSetIMEPosition = (x: number, y: number) => {
-        showTextIME({ x, y });
-      };
+        document.addEventListener("keydown", (event) => {
+          const code = event.keyCode;
 
-      document.addEventListener("keydown", (event) => {
-        const code = event.keyCode;
+          if (event.metaKey || event.ctrlKey) {
+            if (!textareaHasFocus()) {
+              // TODO(JP): Maybe at some point we should use some library for these keycodes,
+              // e.g. see https://stackoverflow.com/questions/1465374/event-keycode-constants
+              if (code == 67 /* c */) {
+                window.cefTriggerCopy();
+              } else if (code == 88 /* x */) {
+                window.cefTriggerCut();
+              } else if (code == 65 /* a */) {
+                window.cefTriggerSelectAll();
+              }
+            }
 
-        if (event.metaKey || event.ctrlKey) {
-          if (!textareaHasFocus()) {
-            // TODO(JP): Maybe at some point we should use some library for these keycodes,
-            // e.g. see https://stackoverflow.com/questions/1465374/event-keycode-constants
-            if (code == 67 /* c */) {
-              window.cefTriggerCopy();
-            } else if (code == 88 /* x */) {
-              window.cefTriggerCut();
-            } else if (code == 65 /* a */) {
-              window.cefTriggerSelectAll();
+            // We want pastes to also be triggered when the textarea has focus, so we can
+            // handle the paste event in JS.
+            if (code == 86 /* v */) {
+              window.cefTriggerPaste();
             }
           }
-
-          // We want pastes to also be triggered when the textarea has focus, so we can
-          // handle the paste event in JS.
-          if (code == 86 /* v */) {
-            window.cefTriggerPaste();
-          }
-        }
-      });
+        });
+      }
 
       initialized = true;
       resolve();
