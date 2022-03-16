@@ -43,6 +43,7 @@ import {
   WasmExports,
   IsInitialized,
   ZapParam,
+  InitParams,
 } from "types";
 import { WebGLRenderer } from "webgl_renderer";
 import {
@@ -330,7 +331,10 @@ export const deserializeZapArrayFromPostMessage = (
   );
 };
 
-function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
+function initializeCanvas(
+  canvas: HTMLCanvasElement,
+  initParams: InitParams
+): CanvasData {
   require("./zaplib.css");
 
   canvas.className = "zaplib_canvas";
@@ -431,7 +435,11 @@ function initializeCanvas(canvas: HTMLCanvasElement): CanvasData {
   const isMobileSafari = globalThis.navigator.platform.match(/iPhone|iPad/i);
   const isAndroid = globalThis.navigator.userAgent.match(/Android/i);
 
-  if (!isMobileSafari && !isAndroid) {
+  if (
+    !isMobileSafari &&
+    !isAndroid &&
+    (initParams.createTextArea || initParams.defaultStyles)
+  ) {
     // mobile keyboards are unusable on a UI like this
     const { showTextIME } = makeTextarea((taEvent: TextareaEvent) => {
       if (wasmInitialized()) {
@@ -787,7 +795,7 @@ export const initialize: Initialize = (initParams) => {
         document.body.appendChild(canvas);
       }
       if (canvas) {
-        canvasData = initializeCanvas(canvas);
+        canvasData = initializeCanvas(canvas, initParams);
       }
 
       rpc.receive(WorkerEvent.Panic, onPanic);

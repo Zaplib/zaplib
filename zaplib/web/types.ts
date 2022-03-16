@@ -1,10 +1,12 @@
-export type Initialize = (initParams: {
+export type InitParams = {
   wasmModule: string | Promise<WebAssembly.Module>;
   canvas?: HTMLCanvasElement;
+  createTextArea?: boolean;
   baseUri?: string;
   defaultStyles?: boolean;
   onPanic?: (error: Error) => void;
-}) => Promise<void>;
+};
+export type Initialize = (initParams: InitParams) => Promise<void>;
 
 export type IsInitialized = () => boolean;
 
