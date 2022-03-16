@@ -12,7 +12,6 @@ cargo run -p cargo-zaplib -- build -p test_suite
 cargo run -p cargo-zaplib -- build -p tutorial_2d_rendering_step1
 cargo run -p cargo-zaplib -- build -p tutorial_2d_rendering_step2
 cargo run -p cargo-zaplib -- build -p tutorial_2d_rendering_step3
-cargo run -p cargo-zaplib -- build -p tutorial_3d_rendering_step1
 cargo run -p cargo-zaplib -- build -p tutorial_3d_rendering_step2
 cargo run -p cargo-zaplib -- build -p tutorial_3d_rendering_step3
 cargo run -p cargo-zaplib -- build -p tutorial_hello_thread
