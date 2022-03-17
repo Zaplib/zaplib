@@ -26,7 +26,7 @@ Zaplib is still in its early days, and there are quite a few things to stabilize
 **OSX native**
 * Redrawing seems to leak a lot of memory.
 
-**OSX CEF**
+**OSX Zapium**
 * Stuck on old version (because we only got single process working on an old version).
 * Missing APIs compared to JS<=>Wasm bridge.
 * Too many memory copies.

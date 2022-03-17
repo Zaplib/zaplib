@@ -17,7 +17,7 @@ cargo install cargo-zaplib
 cargo zaplib install-deps
 ```
 
-If you're going to do local development of Zaplib, be sue to add the `--devel` flag which installs some more dependencies, like [CEF](./cef.md) binaries.
+If you're going to do local development of Zaplib, be sue to add the `--devel` flag which installs some more dependencies, like [Zapium](./zapium.md) binaries.
 
 ```
 cargo zaplib install-deps --devel

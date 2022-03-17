@@ -47,6 +47,6 @@
 - [TypeScript](./typescript.md)
 - [Jest Integration](./jest_integration.md)
 - [Webpack Integration](./webpack_integration.md)
-- [CEF](./cef.md)
+- [Zapium](./zapium.md)
 - [Known Issues](./known_issues.md)
 - [Contributing](./contributing.md)

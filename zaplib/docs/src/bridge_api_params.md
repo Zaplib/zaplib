@@ -52,4 +52,4 @@ When a `u8` or `f32` buffer is returned to JS, you get a `ZapTypedArray`:
 
 When sending small amounts of data in either direction, we recommend simply JSON-serializing the data and sending it as a string. On the Rust side, [Serde](https://serde.rs/) is a fine library for this.
 
-Futher note that when using [CEF](./cef.md), data is often copied anyway, even when in the WebAssembly version it is not. This is one of the reasons why we do not recommend using [CEF](./cef.md) yet.
+Futher note that when using [Zapium](./zapium.md), data is often copied anyway, even when in the WebAssembly version it is not. This is one of the reasons why we do not recommend using [Zapium](./zapium.md) yet.

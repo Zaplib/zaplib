@@ -29,7 +29,7 @@ This initializes the library. A couple of things happen:
 
 **Caveats**
 * Can only be called on the browser's main thread; in a worker use `zaplib.initializeWorker()`.
-* `wasmModule` is ignored in [CEF](./cef.md).
+* `wasmModule` is ignored in [Zapium](./zapium.md).
 * Call `zaplib.close` when you want to terminate all the Web Workers Zaplib opens. This can be useful when running tests.
 
 ## zaplib.callRustSync
