@@ -15,7 +15,6 @@ import {
   FileHandle,
   WasmExports,
   SizingData,
-  ZapArray,
   MutableBufferData,
   RustZapParam,
 } from "types";
@@ -190,16 +189,6 @@ export class WasmApp {
       return promise;
     };
     rpc.receive(WorkerEvent.CallRustAsync, callRustAsync);
-
-    rpc.receive(WorkerEvent.CreateBuffer, (data: ZapArray) =>
-      this.zerdeEventloopEvents.createWasmBuffer(data)
-    );
-
-    rpc.receive(WorkerEvent.CreateReadOnlyBuffer, (data: ZapArray) => {
-      const bufferPtr = this.zerdeEventloopEvents.createWasmBuffer(data);
-      const arcPtr = this.zerdeEventloopEvents.createArcVec(bufferPtr, data);
-      return { bufferPtr, arcPtr };
-    });
 
     rpc.receive(WorkerEvent.IncrementArc, (arcPtr: number) => {
       this.exports.incrementArc(BigInt(arcPtr));

@@ -228,6 +228,7 @@ async fn run_tests(webdriver_url: String, local_port: u16, browserstack_local_id
         capabilities.add("acceptSslCerts", true).unwrap();
         let mut driver = WebDriver::new(&webdriver_url, &capabilities).await.unwrap();
         test_suite_all_tests_3x("local browser", &mut driver, local_port).await.unwrap();
+        examples_screenshots("local browser", &mut driver, local_port).await.unwrap();
         driver.quit().await.unwrap();
     }
 }
@@ -280,6 +281,7 @@ async fn examples_screenshots(browser_name: &str, driver: &mut WebDriver, local_
         ("tutorial_2d_rendering_step1", "tutorial_2d_rendering/step1"),
         ("tutorial_2d_rendering_step2", "tutorial_2d_rendering/step2"),
         ("tutorial_2d_rendering_step3", "tutorial_2d_rendering/step3"),
+        ("tutorial_3d_rendering_step1", "tutorial_3d_rendering/step1"),
         ("tutorial_3d_rendering_step2", "tutorial_3d_rendering/step2"),
         ("tutorial_3d_rendering_step3", "tutorial_3d_rendering/step3"),
         ("tutorial_hello_thread", "tutorial_hello_thread"),
@@ -297,7 +299,9 @@ async fn examples_screenshots(browser_name: &str, driver: &mut WebDriver, local_
         let script = r#"
             const done = arguments[0];
             const interval = setInterval(() => {
-                if (zaplib.isInitialized()) {
+                // tutorial_3d_rendering/step1 doesn't even import zaplib
+                // so if zaplib is undefined, continue
+                if (!window.zaplib || zaplib.isInitialized()) {
                     clearInterval(interval);
                     setTimeout(() => {
                         done("SUCCESS");

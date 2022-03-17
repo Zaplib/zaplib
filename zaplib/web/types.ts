@@ -121,13 +121,7 @@ export type ZapArray = Uint8Array | Float32Array;
 export type ZapParam = ZapArray | string;
 export type RustZapParam = BufferData | string;
 
-// TODO(JP): We currently have a different interface for `createMutableBuffer`
-// and `createReadOnlyBuffer` between the main thread and workers, because
-// we currently don't run a Wasm instance in the main thread. However, we
-// should be able to fix that by using spinlocks on the main thread (allocations
-// should typically already use this!).
-export type CreateBuffer = <T extends ZapArray>(data: T) => Promise<T>;
-export type CreateBufferWorkerSync = <T extends ZapArray>(data: T) => T;
+export type CreateBuffer = <T extends ZapArray>(data: T) => T;
 
 export type CallJsCallback = (params: ZapParam[]) => void;
 

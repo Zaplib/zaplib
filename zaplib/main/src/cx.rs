@@ -898,6 +898,29 @@ impl Cx {
         self.on_call_rust_sync_internal(func);
     }
 
+    pub fn call_rust_sync_dispatch(func: CallRustSyncFn, name: String, mut params: Vec<ZapParam>) -> Vec<ZapParam> {
+        if name == "__zaplibCreateMutableBuffer" {
+            let param_type = params[0].as_str().parse::<usize>().unwrap();
+            let size = params[1].as_str().parse::<usize>().unwrap();
+
+            if param_type == 1 || param_type == 2 {
+                vec![vec![0u8; size].into_param()]
+            } else if param_type == 3 || param_type == 4 {
+                vec![vec![0f32; size].into_param()]
+            } else {
+                panic!("Unknown param type {}", param_type);
+            }
+        } else if name == "__zaplibMakeBufferReadOnly" {
+            match params.remove(0) {
+                ZapParam::MutableU8Buffer(v) => vec![Arc::new(v).into_param()],
+                ZapParam::MutableF32Buffer(v) => vec![Arc::new(v).into_param()],
+                _ => panic!("Unknown param type"),
+            }
+        } else {
+            func(name, params)
+        }
+    }
+
     /// Mark that the `new` function of the main app has been called. Automatically called by the `main_app!` macro;
     /// don't call this in user code.
     pub fn set_finished_app_new(&mut self) {

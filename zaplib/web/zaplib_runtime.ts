@@ -6,6 +6,8 @@ import * as wasm from "wasm_runtime";
 import * as cef from "cef_runtime";
 import { jsRuntime } from "type_of_runtime";
 import { isZapBuffer } from "zap_buffer";
+import { CreateBuffer } from "types";
+import { createMutableBufferImpl, createReadOnlyBufferImpl } from "common";
 
 const {
   initialize,
@@ -18,9 +20,15 @@ const {
   serializeZapArrayForPostMessage,
   deserializeZapArrayFromPostMessage,
   callRustSync,
-  createMutableBuffer,
-  createReadOnlyBuffer,
 } = jsRuntime === "cef" ? cef : wasm;
+
+const createMutableBuffer: CreateBuffer = createMutableBufferImpl({
+  callRustSync,
+});
+const createReadOnlyBuffer: CreateBuffer = createReadOnlyBufferImpl({
+  callRustSync,
+  createMutableBuffer,
+});
 
 export {
   initialize,

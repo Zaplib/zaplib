@@ -2,11 +2,17 @@ import { CallRustAsync, ZapArray } from "types";
 import { jsRuntime } from "type_of_runtime";
 import { allocatedArcs, allocatedVecs, ZapBuffer } from "zap_buffer";
 
-export const expect = <T>(actual: T, expected: T): void => {
+export const expect = <T>(
+  actual: T,
+  expected: T,
+  failMessage?: string
+): void => {
   if (expected === actual) {
     console.debug(`Success: Got ${actual}, Expected ${expected}`);
   } else {
-    throw new Error(`Failure: Got ${actual}, Expected ${expected}`);
+    throw new Error(
+      failMessage || `Failure: Got ${actual}, Expected ${expected}`
+    );
   }
 };
 
@@ -93,7 +99,8 @@ const arcDeallocated = async (arcPtr: number) => {
       generateGarbage();
       return allocatedArcs[arcPtr] === false;
     }, 20000),
-    true
+    true,
+    "Fragile Test Failure: See https://github.com/Zaplib/zaplib/issues/67"
   );
 };
 
@@ -108,7 +115,8 @@ const vecDeallocated = async (bufferPtr: number) => {
       generateGarbage();
       return allocatedVecs[bufferPtr] === false;
     }, 20000),
-    true
+    true,
+    "Fragile Test Failure: See https://github.com/Zaplib/zaplib/issues/67"
   );
 };
 

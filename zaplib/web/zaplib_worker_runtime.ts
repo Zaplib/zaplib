@@ -12,9 +12,9 @@
 import {
   callRustSyncImpl,
   createErrorCheckers,
-  createWasmBuffer,
+  createMutableBufferImpl,
+  createReadOnlyBufferImpl,
   getWasmEnv,
-  getZapParamType,
   initThreadLocalStorageAndStackOtherWorkers,
   Rpc,
   transformParamsFromRustImpl,
@@ -28,9 +28,9 @@ import {
   ZapArray,
   RustZapParam,
   MutableBufferData,
-  CreateBufferWorkerSync,
   IsInitialized,
   ZapParam,
+  CreateBuffer,
 } from "types";
 import { inWorker } from "type_of_runtime";
 import {
@@ -199,47 +199,14 @@ export const callRustSync: CallRustSync = <T extends ZapParam[]>(
     transformParamsFromRust,
   }) as T;
 
-// TODO(JP): See comment at CreateBufferWorkerSync type.
-export const createMutableBuffer: CreateBufferWorkerSync = (data) => {
-  checkWasm();
+export const createMutableBuffer: CreateBuffer = createMutableBufferImpl({
+  callRustSync,
+});
 
-  const bufferLen = data.byteLength;
-  const bufferPtr = createWasmBuffer(wasmMemory, wasmExports, data);
-  return transformParamsFromRust([
-    {
-      paramType: getZapParamType(data, false),
-      bufferPtr,
-      bufferLen,
-      bufferCap: bufferLen,
-      readonly: false,
-    },
-  ])[0] as typeof data;
-};
-
-// TODO(JP): See comment at CreateBufferWorkerSync type.
-export const createReadOnlyBuffer: CreateBufferWorkerSync = (data) => {
-  checkWasm();
-
-  const bufferPtr = createWasmBuffer(wasmMemory, wasmExports, data);
-  const paramType = getZapParamType(data, true);
-  const arcPtr = Number(
-    wasmExports.createArcVec(
-      BigInt(bufferPtr),
-      BigInt(data.length),
-      BigInt(paramType)
-    )
-  );
-
-  return transformParamsFromRust([
-    {
-      paramType,
-      bufferPtr,
-      bufferLen: data.byteLength,
-      arcPtr,
-      readonly: true,
-    },
-  ])[0] as typeof data;
-};
+export const createReadOnlyBuffer: CreateBuffer = createReadOnlyBufferImpl({
+  callRustSync,
+  createMutableBuffer,
+});
 
 // TODO(JP): Somewhat duplicated with the other implementation.
 export const serializeZapArrayForPostMessage = (

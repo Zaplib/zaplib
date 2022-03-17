@@ -79,7 +79,7 @@ const init = async () => {
         renderer.render(scene, camera);
     }
 
-    const geometry = await loadSTLIntoGeometry("/zaplib/examples/tutorial_rendering/teapot.stl");
+    const geometry = await loadSTLIntoGeometry("/zaplib/examples/tutorial_3d_rendering/teapot.stl");
     const mesh = new THREE.InstancedMesh(geometry, material, 3);
     scene.add(mesh);
 

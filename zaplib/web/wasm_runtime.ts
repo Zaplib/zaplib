@@ -19,7 +19,6 @@ import {
   callRustSyncImpl,
   createErrorCheckers,
   getWasmEnv,
-  getZapParamType,
   initTaskWorkerSab,
   initThreadLocalStorageMainWorker,
   makeThreadLocalStorageAndStackDataOnExistingThread,
@@ -35,7 +34,6 @@ import {
   SizingData,
   TlsAndStackData,
   ZapArray,
-  CreateBuffer,
   FileHandle,
   MutableBufferData,
   RustZapParam,
@@ -274,46 +272,6 @@ export const callRustSync: CallRustSync = <T extends ZapParam[]>(
     wasmAppPtr,
     transformParamsFromRust,
   }) as T;
-
-export const createMutableBuffer: CreateBuffer = async (data) => {
-  checkWasm();
-
-  const bufferLen = data.byteLength;
-  const bufferPtr = await rpc.send(WorkerEvent.CreateBuffer, data, [
-    data.buffer,
-  ]);
-
-  return transformParamsFromRust([
-    {
-      paramType: getZapParamType(data, false),
-      bufferPtr,
-      bufferLen,
-      bufferCap: bufferLen,
-      readonly: false,
-    },
-  ])[0] as typeof data;
-};
-
-export const createReadOnlyBuffer: CreateBuffer = async (data) => {
-  checkWasm();
-
-  const bufferLen = data.byteLength;
-  const { bufferPtr, arcPtr } = await rpc.send(
-    WorkerEvent.CreateReadOnlyBuffer,
-    data,
-    [data.buffer]
-  );
-
-  return transformParamsFromRust([
-    {
-      paramType: getZapParamType(data, true),
-      bufferPtr,
-      bufferLen,
-      arcPtr,
-      readonly: true,
-    },
-  ])[0] as typeof data;
-};
 
 export const deserializeZapArrayFromPostMessage = (
   postMessageData: PostMessageTypedArray

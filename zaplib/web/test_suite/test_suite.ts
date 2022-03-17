@@ -174,7 +174,7 @@ zaplib
         expect(result, "36");
       },
       "Call Rust (with ZapBuffer)": async () => {
-        const buffer = await zaplib.createReadOnlyBuffer(
+        const buffer = zaplib.createReadOnlyBuffer(
           new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8])
         );
         const [result] = await zaplib.callRustAsync<[Uint8Array]>(
@@ -245,10 +245,10 @@ zaplib
           expectDeallocationOrUnregister(result),
         ]);
       },
-      "Call Rust with Float32Array": async () => {
+      "Call Rust with Float32Array": () => {
         // Using a normal array
         const input = new Float32Array([0.1, 0.9, 0.3]);
-        const [result] = await zaplib.callRustAsync<[Float32Array]>(
+        const [result] = zaplib.callRustSync<[Float32Array]>(
           "array_multiply_f32",
           [JSON.stringify(10), input]
         );
@@ -258,10 +258,10 @@ zaplib
         expect(result[2], 3);
 
         // Using a ZapArray
-        const input2 = await zaplib.createMutableBuffer(
+        const input2 = zaplib.createMutableBuffer(
           new Float32Array([0.1, 0.9, 0.3])
         );
-        const [result2] = await zaplib.callRustAsync<[Float32Array]>(
+        const [result2] = zaplib.callRustSync<[Float32Array]>(
           "array_multiply_f32",
           [JSON.stringify(10), input2]
         );
@@ -272,11 +272,11 @@ zaplib
         expect(result2[2], 3);
 
         // Using a readonly ZapArray
-        const input3 = await zaplib.createReadOnlyBuffer(
+        const input3 = zaplib.createReadOnlyBuffer(
           new Float32Array([0.1, 0.9, 0.3])
         );
 
-        const [result3] = await zaplib.callRustAsync<[Float32Array]>(
+        const [result3] = zaplib.callRustSync<[Float32Array]>(
           "array_multiply_f32_readonly",
           [JSON.stringify(10), input3]
         );
@@ -308,7 +308,7 @@ zaplib
         expect(result[2], 50);
         expect(result[3], 60);
       },
-      "Call Rust with Float32Array (in same thread)": async () => {
+      "Call Rust with Float32Array (in same thread)": () => {
         // Using a normal array
         const input = new Float32Array([0.1, 0.9, 0.3]);
         const [result] = zaplib.callRustSync("array_multiply_f32", [
@@ -321,7 +321,7 @@ zaplib
         expect(result[2], 3);
 
         // Using a ZapArray
-        const input2 = await zaplib.createMutableBuffer(
+        const input2 = zaplib.createMutableBuffer(
           new Float32Array([0.1, 0.9, 0.3])
         );
         const [result2] = zaplib.callRustSync("array_multiply_f32", [
@@ -334,7 +334,7 @@ zaplib
         expect(result2[2], 3);
 
         // Using a readonly ZapArray
-        const input3 = await zaplib.createReadOnlyBuffer(
+        const input3 = zaplib.createReadOnlyBuffer(
           new Float32Array([0.1, 0.9, 0.3])
         );
 
@@ -347,30 +347,28 @@ zaplib
         expect(result3[1], 9);
         expect(result3[2], 3);
       },
-      "Cast WrBuffers": async () => {
-        const input = await zaplib.createMutableBuffer(new Float32Array([0.1]));
+      "Cast WrBuffers": () => {
+        const input = zaplib.createMutableBuffer(new Float32Array([0.1]));
         const castArray = new Uint8Array(input.buffer);
         expect(castArray.length, 4);
         expect(castArray[0], 205);
         expect(castArray[1], 204);
         expect(castArray[2], 204);
         expect(castArray[3], 61);
-        await expectThrowAsync(
-          () => zaplib.callRustAsync("verify_cast_array", [castArray]),
+        expectThrow(
+          () => zaplib.callRustSync("verify_cast_array", [castArray]),
           "Cannot call Rust with a buffer which has been cast to a different type. Expected F32Buffer but got U8Buffer"
         );
 
-        const input2 = await zaplib.createReadOnlyBuffer(
-          new Float32Array([0.1])
-        );
+        const input2 = zaplib.createReadOnlyBuffer(new Float32Array([0.1]));
         const castArray2 = new Uint8Array(input2.buffer);
         expect(castArray2.length, 4);
         expect(castArray2[0], 205);
         expect(castArray2[1], 204);
         expect(castArray2[2], 204);
         expect(castArray2[3], 61);
-        await expectThrowAsync(
-          () => zaplib.callRustAsync("verify_cast_array", [castArray2]),
+        expectThrow(
+          () => zaplib.callRustSync("verify_cast_array", [castArray2]),
           "Cannot call Rust with a buffer which has been cast to a different type. Expected ReadOnlyF32Buffer but got ReadOnlyU8Buffer"
         );
       },
@@ -382,15 +380,13 @@ zaplib
     };
 
     const checkWasmOffline = async () => {
-      const asyncFuncs = [
-        () => zaplib.callRustAsync("call_rust_no_return"),
-        () => zaplib.createMutableBuffer(new Uint8Array()),
-        () => zaplib.createReadOnlyBuffer(new Uint8Array()),
-      ];
+      const asyncFuncs = [() => zaplib.callRustAsync("call_rust_no_return")];
       for (const f of asyncFuncs) {
         await expectThrowAsync(f, "Zaplib WebAssembly instance crashed");
       }
       const syncFuncs = [
+        () => zaplib.createMutableBuffer(new Uint8Array()),
+        () => zaplib.createReadOnlyBuffer(new Uint8Array()),
         () => {
           zaplib.callRustSync("call_rust_no_return");
         },
