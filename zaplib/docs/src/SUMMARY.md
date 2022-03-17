@@ -44,6 +44,7 @@
 
 # Advanced
 - [Versioning](./versioning.md)
+- [TypeScript](./typescript.md)
 - [Jest Integration](./jest_integration.md)
 - [Webpack Integration](./webpack_integration.md)
 - [CEF](./cef.md)

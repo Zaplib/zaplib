@@ -20,3 +20,7 @@ To get Rust source maps when doing local development in [Chrome](https://www.goo
 2. `Chrome DevTools > Settings (gear-icon ⚙ in top-right corner) > Experiments > WebAssembly Debugging: Enable DWARF support` ([More info](https://developer.chrome.com/blog/wasm-debugging-2020/))
 
 Note: these source maps read from hardcoded local file paths, so they'll only work on the computer that you've compiled on.
+
+# TypeScript
+
+Zaplib exports TypeScript types that should be picked up naturally. Check out the [TypeScript page of our docs](./typescript.md) for more information. 
