@@ -10,9 +10,9 @@ In production, similarly use: `zaplib_runtime.production.js` and `zaplib_worker_
 
 > Note: Zaplib performs some global setup upon import, notably modifying TypedArray implementations. We advise importing Zaplib first before other dependencies, so that all of your application code uses these modified values.
 
-Here is an overview of all the JS APIs, and their support with the WebAssembly runtime and the experimental [CEF](./cef.md) runtime.  Missing features are annotated with their ticket id.
+Here is an overview of all the JS APIs, and their support with the WebAssembly runtime and the experimental [Zapium](./zapium.md) runtime.  Missing features are annotated with their ticket id.
 
-| API                                         | Browser main thread | Browser Web Worker | [CEF](./cef.md) main thread | [CEF](./cef.md) Web Worker |
+| API                                         | Browser main thread | Browser Web Worker | [Zapium](./zapium.md) main thread | [Zapium](./zapium.md) Web Worker |
 | ------------------------------------------- | :---------------: | :---------------: | :--------------: | :--------------: |
 | zaplib.initialize                           |       ✅          |        n/a          |       ✅       |       n/a         |
 | zaplib.initializeWorker                     |      n/a          |        ✅          |       n/a       |    [#69][2] |

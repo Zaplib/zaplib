@@ -3,7 +3,7 @@ Zaplib can also be used inside of your own Web Workers. This comes with both som
 
 First, include the Web Worker entry point (`zaplib_worker_runtime.development.js`).
 
-Note that when using [CEF](./cef.md) we don't support any of these functions yet.
+Note that when using [Zapium](./zapium.md) we don't support any of these functions yet.
 
 ## zaplib.newWorkerPort & zaplib.initializeWorker
 In order to use Zaplib inside Web Workers, we first have to create a "worker port" on the main thread, using `zaplib.newWorkerPort()`. Send that port to the Web Worker using whatever `postMessage` mechanism you already use. Be sure to add the port to the list of transferables. Example:

@@ -39,7 +39,7 @@ cargo zaplib serve
 
 4. Click `Run All Tests`
 
-### Browser tests ([CEF](./cef.md))
+### Browser tests ([Zapium](./zapium.md))
 
 1. Install CEF (macOS Intel onl):
 
