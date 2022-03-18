@@ -220,6 +220,12 @@ impl ZerdeBuilder {
                 ZapParam::MutableF32Buffer(buffer) => {
                     self.build_mutable_buffer(ZAP_PARAM_FLOAT32_BUFFER, buffer);
                 }
+                ZapParam::ReadOnlyU32Buffer(buffer) => {
+                    self.build_read_only_buffer(ZAP_PARAM_READ_ONLY_UINT32_BUFFER, buffer);
+                }
+                ZapParam::MutableU32Buffer(buffer) => {
+                    self.build_mutable_buffer(ZAP_PARAM_UINT32_BUFFER, buffer);
+                }
             }
         }
     }
@@ -343,8 +349,10 @@ impl ZerdeParser {
                     ZAP_PARAM_STRING => self.parse_string().into_param(),
                     ZAP_PARAM_READ_ONLY_UINT8_BUFFER => self.parse_arc_vec::<u8>().into_param(),
                     ZAP_PARAM_READ_ONLY_FLOAT32_BUFFER => self.parse_arc_vec::<f32>().into_param(),
+                    ZAP_PARAM_READ_ONLY_UINT32_BUFFER => self.parse_arc_vec::<u32>().into_param(),
                     ZAP_PARAM_UINT8_BUFFER => self.parse_buffer::<u8>().into_param(),
                     ZAP_PARAM_FLOAT32_BUFFER => self.parse_buffer::<f32>().into_param(),
+                    ZAP_PARAM_UINT32_BUFFER => self.parse_buffer::<u32>().into_param(),
                     value => panic!("Unexpected param type: {}", value),
                 }
             })

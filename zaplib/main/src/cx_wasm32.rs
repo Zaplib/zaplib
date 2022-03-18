@@ -867,6 +867,7 @@ pub unsafe extern "C" fn create_arc_vec(vec_ptr: u64, vec_len: u64, param_type: 
     match param_type as u32 {
         ZAP_PARAM_READ_ONLY_UINT8_BUFFER => create_arc_vec_inner::<u8>(vec_ptr, vec_len),
         ZAP_PARAM_READ_ONLY_FLOAT32_BUFFER => create_arc_vec_inner::<f32>(vec_ptr, vec_len),
+        ZAP_PARAM_READ_ONLY_UINT32_BUFFER => create_arc_vec_inner::<u32>(vec_ptr, vec_len),
         v => panic!("create_arc_vec: Invalid param type: {}", v),
     }
 }
