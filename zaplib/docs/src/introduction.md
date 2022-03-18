@@ -27,7 +27,7 @@ Zaplib supports the following build targets:
 2. **Mac OS X / Metal** - Tested on 11.6 Big Sur.
 3. **Linux / OpenGL** - Not well supported. Some APIs missing, but should run.
 4. **Windows / DirectX 11** - Currently broken... sorry!
-5. [**CEF**](./cef.md) - Zaplib's equivalent of Electron. Highly experimental.
+5. [**Zapium**](./zapium.html) - Zaplib's equivalent of Electron. Highly experimental.
 
 Currently our main focus is Web Assembly / WebGL support, and native targets are  mostly used for a faster development cycle. (Compiling Rust to native is faster than to WebAssembly.)
 ## Development
