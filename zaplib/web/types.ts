@@ -117,7 +117,7 @@ export type PostMessageTypedArray = {
   byteLength: number;
 };
 
-export type ZapArray = Uint8Array | Float32Array;
+export type ZapArray = Uint8Array | Float32Array | Uint32Array;
 export type ZapParam = ZapArray | string;
 export type RustZapParam = BufferData | string;
 
@@ -141,6 +141,8 @@ export enum ZapParamType {
   U8Buffer = 2,
   F32Buffer = 3,
   ReadOnlyF32Buffer = 4,
+  U32Buffer = 5,
+  ReadOnlyU32Buffer = 6,
 }
 
 export type SizingData = {

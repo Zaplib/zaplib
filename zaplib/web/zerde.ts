@@ -220,6 +220,7 @@ export class ZerdeParser {
         params.push(this.parseString());
       } else if (
         paramType === ZapParamType.ReadOnlyU8Buffer ||
+        paramType === ZapParamType.ReadOnlyU32Buffer ||
         paramType === ZapParamType.ReadOnlyF32Buffer
       ) {
         const bufferPtr = this.parseU32();
@@ -235,6 +236,7 @@ export class ZerdeParser {
         });
       } else if (
         paramType === ZapParamType.U8Buffer ||
+        paramType === ZapParamType.U32Buffer ||
         paramType === ZapParamType.F32Buffer
       ) {
         const bufferPtr = this.parseU32();

@@ -162,6 +162,8 @@ fn make_buffers_and_arc_ptrs(params: Vec<ZapParam>) -> V8Value {
             ZapParam::MutableU8Buffer(_) => ZAP_PARAM_UINT8_BUFFER,
             ZapParam::ReadOnlyF32Buffer(_) => ZAP_PARAM_READ_ONLY_FLOAT32_BUFFER,
             ZapParam::MutableF32Buffer(_) => ZAP_PARAM_FLOAT32_BUFFER,
+            ZapParam::ReadOnlyU32Buffer(_) => ZAP_PARAM_READ_ONLY_UINT32_BUFFER,
+            ZapParam::MutableU32Buffer(_) => ZAP_PARAM_UINT32_BUFFER,
         };
         let value = match param {
             ZapParam::String(str) => V8Value::create_string(&str),
@@ -169,6 +171,8 @@ fn make_buffers_and_arc_ptrs(params: Vec<ZapParam>) -> V8Value {
             ZapParam::MutableU8Buffer(buffer) => make_mutable_buffer(param_type, buffer),
             ZapParam::ReadOnlyF32Buffer(buffer) => make_readonly_buffer(param_type, buffer),
             ZapParam::MutableF32Buffer(buffer) => make_mutable_buffer(param_type, buffer),
+            ZapParam::ReadOnlyU32Buffer(buffer) => make_readonly_buffer(param_type, buffer),
+            ZapParam::MutableU32Buffer(buffer) => make_mutable_buffer(param_type, buffer),
         };
 
         values.set_value_byindex(index, &value);
@@ -211,6 +215,16 @@ fn get_zap_params(array: &V8Value) -> Vec<ZapParam> {
                     let callback =
                         array_buffer.get_array_buffer_release_callback::<MyV8ArrayBufferReleaseCallback<f32>>().unwrap();
                     Arc::clone(&callback.buffer).into_param()
+                }
+                ZAP_PARAM_READ_ONLY_UINT32_BUFFER => {
+                    let callback =
+                        array_buffer.get_array_buffer_release_callback::<MyV8ArrayBufferReleaseCallback<u32>>().unwrap();
+                    Arc::clone(&callback.buffer).into_param()
+                }
+                ZAP_PARAM_UINT32_BUFFER => {
+                    let callback =
+                        array_buffer.get_array_buffer_release_callback::<MyV8ArrayBufferReleaseCallback<u32>>().unwrap();
+                    callback.buffer.to_vec().into_param()
                 }
                 v => panic!("Invalid param type: {}", v),
             }

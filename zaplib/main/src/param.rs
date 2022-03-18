@@ -13,6 +13,10 @@ pub(crate) const ZAP_PARAM_UINT8_BUFFER: u32 = 2;
 pub(crate) const ZAP_PARAM_FLOAT32_BUFFER: u32 = 3;
 #[cfg(any(target_arch = "wasm32", feature = "cef"))]
 pub(crate) const ZAP_PARAM_READ_ONLY_FLOAT32_BUFFER: u32 = 4;
+#[cfg(any(target_arch = "wasm32", feature = "cef"))]
+pub(crate) const ZAP_PARAM_UINT32_BUFFER: u32 = 5;
+#[cfg(any(target_arch = "wasm32", feature = "cef"))]
+pub(crate) const ZAP_PARAM_READ_ONLY_UINT32_BUFFER: u32 = 6;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum ZapParam {
@@ -22,10 +26,12 @@ pub enum ZapParam {
     String(String),
     /// Buffers to pass read-only memory from JS to Rust
     ReadOnlyU8Buffer(Arc<Vec<u8>>),
+    ReadOnlyU32Buffer(Arc<Vec<u32>>),
     ReadOnlyF32Buffer(Arc<Vec<f32>>),
     /// Buffers to transfer ownership of memory from JS to Rust
     MutableU8Buffer(Vec<u8>),
     MutableF32Buffer(Vec<f32>),
+    MutableU32Buffer(Vec<u32>),
 }
 
 impl ZapParam {
@@ -44,6 +50,14 @@ impl ZapParam {
             _ => panic!("{:?} is not a U8Buffer or ReadOnlyU8Buffer", self),
         }
     }
+    /// Borrow contents of `ZapParam::MutableU32Buffer` or `ZapParam::ReadOnlyU32Buffer` as `&[u32]`.
+    pub fn as_u32_slice(&self) -> &[u32] {
+        match self {
+            ZapParam::MutableU32Buffer(v) => v,
+            ZapParam::ReadOnlyU32Buffer(v) => v,
+            _ => panic!("{:?} is not a U32Buffer or ReadOnlyU32Buffer", self),
+        }
+    }
     /// Borrow contents of `ZapParam::MutableF32Buffer` or `ZapParam::ReadOnlyF32Buffer` as `&[f32]`.
     pub fn as_f32_slice(&self) -> &[f32] {
         match self {
@@ -59,7 +73,14 @@ impl ZapParam {
             _ => panic!("{:?} is not a ReadOnlyU8Buffer", self),
         }
     }
-    /// Get contents of `ZapParam::ReadOnlyU8Buffer`, without having to consume it.
+    /// Get contents of `ZapParam::ReadOnlyU32Buffer`, without having to consume it.
+    pub fn as_arc_vec_u32(&self) -> Arc<Vec<u32>> {
+        match self {
+            ZapParam::ReadOnlyU32Buffer(v) => Arc::clone(v),
+            _ => panic!("{:?} is not a ReadOnlyU32Buffer", self),
+        }
+    }
+    /// Get contents of `ZapParam::ReadOnlyF32Buffer`, without having to consume it.
     pub fn as_arc_vec_f32(&self) -> Arc<Vec<f32>> {
         match self {
             ZapParam::ReadOnlyF32Buffer(v) => Arc::clone(v),
@@ -78,6 +99,13 @@ impl ZapParam {
         match self {
             ZapParam::MutableU8Buffer(v) => v,
             _ => panic!("{:?} is not a U8Buffer", self),
+        }
+    }
+    /// Get contents of `ZapParam::MutableU32Buffer`, consuming it.
+    pub fn into_vec_u32(self) -> Vec<u32> {
+        match self {
+            ZapParam::MutableU32Buffer(v) => v,
+            _ => panic!("{:?} is not a U32Buffer", self),
         }
     }
     /// Get contents of `ZapParam::MutableF32Buffer`, consuming it.
@@ -116,5 +144,15 @@ impl IntoParam for Arc<Vec<u8>> {
 impl IntoParam for Arc<Vec<f32>> {
     fn into_param(self) -> ZapParam {
         ZapParam::ReadOnlyF32Buffer(self)
+    }
+}
+impl IntoParam for Arc<Vec<u32>> {
+    fn into_param(self) -> ZapParam {
+        ZapParam::ReadOnlyU32Buffer(self)
+    }
+}
+impl IntoParam for Vec<u32> {
+    fn into_param(self) -> ZapParam {
+        ZapParam::MutableU32Buffer(self)
     }
 }
