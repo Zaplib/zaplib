@@ -569,7 +569,6 @@ export function transformParamsFromRustImpl(
         [ZapParamType.ReadOnlyF32Buffer]: Float32Array,
         [ZapParamType.U32Buffer]: Uint32Array,
         [ZapParamType.ReadOnlyU32Buffer]: Uint32Array,
-
       }[param.paramType];
       return getCachedZapBuffer(
         zapBuffer,
