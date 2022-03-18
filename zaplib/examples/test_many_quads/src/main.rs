@@ -16,7 +16,7 @@ static SHADER: Shader = Shader {
     ..Shader::DEFAULT
 };
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct CounterQuad {
     quad: QuadIns,

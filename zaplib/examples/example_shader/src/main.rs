@@ -1,7 +1,7 @@
 use zaplib::*;
 use zaplib_components::*;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct ShaderQuadIns {
     base: QuadIns,

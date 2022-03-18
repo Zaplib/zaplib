@@ -24,7 +24,7 @@ impl DesktopButtonType {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct DesktopButtonIns {
     base: QuadIns,

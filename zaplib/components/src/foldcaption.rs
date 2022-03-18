@@ -83,7 +83,7 @@ impl FoldOpenState {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct FoldCaptionIns {
     base: QuadIns,

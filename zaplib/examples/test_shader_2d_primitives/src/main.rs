@@ -85,14 +85,14 @@ static MAIN_SHADER: Shader = Shader {
     ..Shader::DEFAULT
 };
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct PrimitiveInsProps {
     primitive_type: f32,
     style: f32,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct PrimitiveIns {
     base: QuadIns,

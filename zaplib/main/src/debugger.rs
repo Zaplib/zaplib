@@ -1,7 +1,7 @@
 use crate::debug_log::DebugLog;
 use crate::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct BorderIns {
     quad: QuadIns,

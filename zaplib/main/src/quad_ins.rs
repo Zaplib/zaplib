@@ -25,7 +25,7 @@ use crate::*;
 /// };
 /// cx.add_instances(&SHADER, &[s]);
 /// ```
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 pub struct QuadIns {
     /// The top-left corner position of the quad, in absolute coordinates.

@@ -4,7 +4,7 @@ use zaplib_components::*;
 mod mprstokenizer;
 use mprstokenizer::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct ShaderQuadIns {
     base: QuadIns,

@@ -2,7 +2,7 @@
 
 use zaplib::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct BackgroundIns {
     quad: QuadIns,

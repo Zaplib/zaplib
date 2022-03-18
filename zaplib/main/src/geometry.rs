@@ -9,9 +9,10 @@ use crate::*;
 /// For example, you can define that a quad has 4 vertices, spanning 2 triangles
 /// (for use in e.g. [`crate::QuadIns`]), so you don't have to manually create
 /// them every time you want to render a quad.
+#[derive(Default)]
 pub struct Geometry {
-    vertex_attributes: Box<dyn AsF32Slice>,
-    triangle_indices: Vec<[u32; 3]>,
+    vertex_attributes: Vec<f32>,
+    triangle_indices: Vec<u32>,
     vertex_number_of_bytes: usize,
 }
 impl Geometry {
@@ -25,25 +26,20 @@ impl Geometry {
     ///
     /// `triangle_indices` - the indices of vertex attributes by which to render each triangle.
     /// A triangle has 3 vertices, hence we group indices in sets of 3.
-    pub fn new<T: 'static + Sized>(vertex_attributes: Vec<T>, triangle_indices: Vec<[u32; 3]>) -> Self {
+    pub fn new<T: 'static + Copy>(vertex_attributes: Vec<T>, triangle_indices: Vec<[u32; 3]>) -> Self {
         Self {
-            vertex_attributes: Box::new(vertex_attributes),
-            triangle_indices,
+            vertex_attributes: cast_vec(vertex_attributes),
+            triangle_indices: cast_vec(triangle_indices),
             vertex_number_of_bytes: core::mem::size_of::<T>(),
         }
     }
 
     pub(crate) fn vertices_f32_slice(&self) -> &[f32] {
-        self.vertex_attributes.as_f32_slice()
+        &self.vertex_attributes
     }
 
     pub(crate) fn indices_u32_slice(&self) -> &[u32] {
-        self.triangle_indices.as_u32_slice()
-    }
-}
-impl Default for Geometry {
-    fn default() -> Self {
-        Self { vertex_attributes: Box::new(Vec::<f32>::new()), triangle_indices: Default::default(), vertex_number_of_bytes: 0 }
+        &self.triangle_indices
     }
 }
 

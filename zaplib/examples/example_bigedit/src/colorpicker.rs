@@ -1,6 +1,6 @@
 use zaplib::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct ColorPickerIns {
     base: QuadIns,

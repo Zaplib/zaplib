@@ -345,7 +345,7 @@ impl Cx {
     }
 
     /// Add a slice of instances to [`DrawCall::instances`]. See [`Cx::add_instances`].
-    fn add_instances_internal<T: Sized>(&mut self, shader: &'static Shader, data: &[T], props: DrawCallProps) -> Area {
+    fn add_instances_internal<T: 'static + Copy>(&mut self, shader: &'static Shader, data: &[T], props: DrawCallProps) -> Area {
         if data.is_empty() {
             // This is important, because otherwise you can call this function with empty data in order to force
             // a particular ordering of `DrawCall`s, and then depend on batching of `DrawCall`s. That should
@@ -373,7 +373,7 @@ impl Cx {
             instance_offset: dc.instances.len(),
             redraw_id: dc.redraw_id,
         };
-        dc.instances.extend_from_slice(data.as_f32_slice());
+        dc.instances.extend_from_slice(cast_slice::<T, f32>(&data));
         let area = Area::InstanceRange(ia);
         self.add_to_box_align_list(area);
 
@@ -389,14 +389,19 @@ impl Cx {
     ///
     /// Uses [`Cx::create_draw_call`] under the hood to find the [`DrawCall`]
     /// to add to.
-    pub fn add_instances<T: Sized>(&mut self, shader: &'static Shader, data: &[T]) -> Area {
+    pub fn add_instances<T: 'static + Copy>(&mut self, shader: &'static Shader, data: &[T]) -> Area {
         assert!(shader.build_geom.is_some(), "Can't add instances without `build_geom` defined");
 
         self.add_instances_internal(shader, data, DrawCallProps::default())
     }
 
     /// Add a slice of instances while specifying a custom Geometry
-    pub fn add_mesh_instances<T: Sized>(&mut self, shader: &'static Shader, data: &[T], gpu_geometry: GpuGeometry) -> Area {
+    pub fn add_mesh_instances<T: 'static + Copy>(
+        &mut self,
+        shader: &'static Shader,
+        data: &[T],
+        gpu_geometry: GpuGeometry,
+    ) -> Area {
         assert!(self.shader_group_instance_offsets.is_empty(), "Can't add mesh instances when in a shader group");
 
         self.add_instances_internal(shader, data, DrawCallProps { gpu_geometry: Some(gpu_geometry), ..Default::default() })
@@ -419,7 +424,7 @@ impl Cx {
     /// function, by doing `draw_scroll - draw_local_scroll`. It's not as
     /// convenient, but then again, it might not be used very often, and it would
     /// encourage people to do more stuff in shaders.
-    pub fn add_instances_with_scroll_sticky<T: Sized>(
+    pub fn add_instances_with_scroll_sticky<T: 'static + Copy>(
         &mut self,
         shader: &'static Shader,
         data: &[T],

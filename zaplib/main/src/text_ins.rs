@@ -4,7 +4,7 @@ use std::sync::RwLock;
 
 use crate::*;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 #[repr(C)]
 pub struct TextIns {
     /// Texture coordinates for the bottom-left corner of the glyph in the texture atlas

@@ -83,7 +83,7 @@ mod zerde;
 mod animator;
 mod area;
 pub mod byte_extract;
-mod cast;
+pub mod cast;
 mod colors;
 mod component_id;
 mod cursor;
@@ -121,6 +121,7 @@ mod text_ins;
 use cast::*;
 
 pub use area::*;
+pub use cast::*;
 pub use cube_ins::*;
 pub use cursor::*;
 pub use cx::*;

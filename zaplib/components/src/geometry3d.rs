@@ -3,6 +3,7 @@ use std::f32::consts::PI;
 use zaplib::*;
 
 /// Represents a single vertex used in 3d objects.
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct Geometry3d {
     /// Vertex position.

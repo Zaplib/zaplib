@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use zaplib::*;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct ColorQuad {
     base: QuadIns,

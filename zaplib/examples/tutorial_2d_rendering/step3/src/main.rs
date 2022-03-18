@@ -1,5 +1,6 @@
 use zaplib::*;
 
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct RectIns {
     quad: QuadIns,

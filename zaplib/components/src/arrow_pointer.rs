@@ -21,6 +21,7 @@ impl ArrowPointerDirection {
     }
 }
 
+#[derive(Clone, Copy)]
 pub struct ArrowPointerIns {
     pub base: QuadIns,
     pub color: Vec4,

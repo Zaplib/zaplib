@@ -1,7 +1,7 @@
 use zaplib::*;
 
 #[repr(C)]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct DrawLines3dInstance {
     /// Starting point for the previous line segment. We use this to compute
     /// the corner between the previous line segment and the current one.

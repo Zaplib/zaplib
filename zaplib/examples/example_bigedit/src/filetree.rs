@@ -2,7 +2,7 @@ use crate::listanims::*;
 use zaplib::*;
 use zaplib_components::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct FileTreeFillerIns {
     base: QuadIns,
