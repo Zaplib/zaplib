@@ -1,0 +1,9 @@
+[package]
+name = "example_flamegraph"
+version = "0.0.1"
+edition = "2021"
+publish = false
+
+[dependencies]
+zaplib = { path="../../main" }
+zaplib_components = { path="../../components" }
