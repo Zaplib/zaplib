@@ -20,11 +20,12 @@ cp -R website_dev/docs website/docs
 mkdir website/target
 cp -R website_dev/target/doc website/target/doc
 cp -R website_dev/*.html website/
-mkdir -p website/target/wasm32-unknown-unknown/release/
-cp website_dev/target/wasm32-unknown-unknown/release/*.wasm website/target/wasm32-unknown-unknown/release/
-mkdir -p website/zaplib/web/dist/
-cp website_dev/zaplib/web/dist/* website/zaplib/web/dist/
-mkdir -p website/zaplib/examples/example_bigedit/src/
-cp website_dev/zaplib/examples/example_bigedit/src/treeworld.rs website/zaplib/examples/example_bigedit/src/treeworld.rs
+# Disabling (unused) wasm demos to temporarily fix Heroku timeouts (https://github.com/Zaplib/zaplib/issues/141)
+# mkdir -p website/target/wasm32-unknown-unknown/release/
+# cp website_dev/target/wasm32-unknown-unknown/release/*.wasm website/target/wasm32-unknown-unknown/release/
+# mkdir -p website/zaplib/web/dist/
+# cp website_dev/zaplib/web/dist/* website/zaplib/web/dist/
+# mkdir -p website/zaplib/examples/example_bigedit/src/
+# cp website_dev/zaplib/examples/example_bigedit/src/treeworld.rs website/zaplib/examples/example_bigedit/src/treeworld.rs
 
 echo 'Website generated for publishing! Host using `cargo zaplib serve website/ --port 4848` or publish `website/`'
