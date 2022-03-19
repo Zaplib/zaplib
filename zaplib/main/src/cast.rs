@@ -91,7 +91,7 @@ pub fn cast_slice<FROM: 'static + Copy, TO: 'static + Copy>(slice: &[FROM]) -> &
 /// Cast a [`Vec`] from one type to another.
 ///
 /// See [`crate::cast`] for more information
-pub fn cast_vec<FROM: 'static + Copy, TO: 'static + Copy>(mut vec: Vec<FROM>) -> Vec<TO> {
+pub fn cast_vec<FROM: 'static + Copy, TO: 'static + Copy>(vec: Vec<FROM>) -> Vec<TO> {
     // We have to be careful when casting [`Vec`]s. The
     // reason for this is that when the new, casted [`Vec`] gets dropped, then
     // [`std::alloc::GlobalAlloc::dealloc`] function will get called with a different
@@ -104,6 +104,8 @@ pub fn cast_vec<FROM: 'static + Copy, TO: 'static + Copy>(mut vec: Vec<FROM>) ->
     // in some places. However, for now these casts will suffice.
     // See https://github.com/Zaplib/zaplib/issues/103
     assert_eq!(std::mem::align_of::<FROM>(), std::mem::align_of::<TO>(), "cast_vec: Alignments of both types must be the same");
+
+    let mut vec = std::mem::ManuallyDrop::new(vec);
 
     let new_vec = if std::mem::size_of::<FROM>() >= std::mem::size_of::<TO>() {
         // E.g. going from `(f32,f32,f32)` to `f32`.
@@ -127,7 +129,6 @@ pub fn cast_vec<FROM: 'static + Copy, TO: 'static + Copy>(mut vec: Vec<FROM>) ->
         unsafe { Vec::from_raw_parts(vec.as_mut_ptr() as *mut TO, vec.len() / factor, vec.capacity() / factor) }
     };
 
-    std::mem::forget(vec);
     new_vec
 }
 

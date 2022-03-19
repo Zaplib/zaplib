@@ -178,14 +178,14 @@ impl ZerdeBuilder {
         }
     }
 
-    fn build_mutable_buffer<T>(&mut self, buffer_type: u32, mut buffer: Vec<T>) {
+    fn build_mutable_buffer<T>(&mut self, buffer_type: u32, buffer: Vec<T>) {
+        let mut buffer = std::mem::ManuallyDrop::new(buffer);
+
         self.send_u32(buffer_type);
 
         self.send_u32(buffer.as_mut_ptr() as u32);
         self.send_u32((buffer.len() * std::mem::size_of::<T>()) as u32);
         self.send_u32((buffer.capacity() * std::mem::size_of::<T>()) as u32);
-
-        mem::forget(buffer);
     }
 
     fn build_read_only_buffer<T>(&mut self, buffer_type: u32, buffer: Arc<Vec<T>>) {
