@@ -17,7 +17,7 @@ use openssl::{
 use rcgen::generate_simple_self_signed;
 use serde_json::json;
 use simple_error::SimpleError;
-use thirtyfour::{Capabilities, DesiredCapabilities, WebDriver, OptionRect};
+use thirtyfour::{Capabilities, DesiredCapabilities, OptionRect, WebDriver};
 
 pub(crate) fn cmd() {
     // Use "info" logging level by default.
