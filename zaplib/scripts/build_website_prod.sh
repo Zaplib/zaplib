@@ -23,7 +23,7 @@ cp -R website_dev/*.html website/
 mkdir -p website/target/wasm32-unknown-unknown/release/
 cp website_dev/target/wasm32-unknown-unknown/release/*.wasm website/target/wasm32-unknown-unknown/release/
 mkdir -p website/zaplib/web/dist/
-cp website_dev/zaplib/web/dist/* website/zaplib/web/dist/
+cp -R website_dev/zaplib/web/dist/* website/zaplib/web/dist/
 mkdir -p website/zaplib/examples/example_bigedit/src/
 cp website_dev/zaplib/examples/example_bigedit/src/treeworld.rs website/zaplib/examples/example_bigedit/src/treeworld.rs
 
