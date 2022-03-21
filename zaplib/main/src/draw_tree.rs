@@ -373,7 +373,7 @@ impl Cx {
             instance_offset: dc.instances.len(),
             redraw_id: dc.redraw_id,
         };
-        dc.instances.extend_from_slice(cast_slice::<T, f32>(&data));
+        dc.instances.extend_from_slice(cast_slice::<T, f32>(data));
         let area = Area::InstanceRange(ia);
         self.add_to_box_align_list(area);
 

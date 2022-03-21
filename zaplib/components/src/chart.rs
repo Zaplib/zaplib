@@ -863,7 +863,7 @@ impl Chart {
                     &points,
                     dataset.point_background_color,
                     dataset.point_radius * current_dpi,
-                    dataset.point_style.clone(),
+                    dataset.point_style,
                 );
                 self.areas.push(area);
             }

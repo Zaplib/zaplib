@@ -264,7 +264,7 @@ impl LogoApp {
         self.quad.knobs_mirror[0] = vec2(1. - self.quad.knobs[0].x, self.quad.knobs[2].y);
         self.quad.knobs_mirror[2] = vec2(1. - self.quad.knobs[2].x, self.quad.knobs[0].y);
         self.quad.time = ((cx.last_event_time / ANIMATION_LENGTH) % 1.0) as f32;
-        *self.quad_area.get_first_mut(cx) = self.quad.clone();
+        *self.quad_area.get_first_mut(cx) = self.quad;
     }
 
     fn draw_shader(&mut self, cx: &mut Cx) {
@@ -285,7 +285,7 @@ impl LogoApp {
             cx.end_padding_box();
         }
         self.quad.base = QuadIns::from_rect(cx.get_box_rect()).with_draw_depth(1.0);
-        self.quad_area = cx.add_instances(&SHADER, &[self.quad.clone()]);
+        self.quad_area = cx.add_instances(&SHADER, &[self.quad]);
         self.update_shader(cx);
     }
 

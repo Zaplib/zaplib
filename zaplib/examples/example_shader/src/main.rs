@@ -255,7 +255,7 @@ impl ShaderEditor {
         cx.move_draw_pos(cx.get_width_left() - quad_size, 0.);
         self.quad.base = QuadIns::from_rect(Rect { pos: cx.get_draw_pos(), size: vec2(quad_size, quad_size) });
 
-        self.quad_area = cx.add_instances(&SHADER, &[self.quad.clone()]);
+        self.quad_area = cx.add_instances(&SHADER, &[self.quad]);
 
         cx.end_row();
         self.main_view.end_view(cx);
