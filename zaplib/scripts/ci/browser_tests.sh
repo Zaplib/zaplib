@@ -22,7 +22,6 @@ cargo run -p cargo-zaplib -- build -p tutorial_ui_components
 cargo run -p cargo-zaplib -- build -p tutorial_ui_layout
 cargo run -p cargo-zaplib -- build --release -p example_charts
 cargo run -p cargo-zaplib -- build --release -p example_lots_of_buttons
-cargo run -p cargo-zaplib -- build --release -p example_shader
 cargo run -p cargo-zaplib -- build --release -p example_single_button
 cargo run -p cargo-zaplib -- build --release -p example_text
 cargo run -p cargo-zaplib -- build --release -p test_bottom_bar
@@ -30,6 +29,7 @@ cargo run -p cargo-zaplib -- build --release -p test_geometry
 cargo run -p cargo-zaplib -- build --release -p test_layout
 cargo run -p cargo-zaplib -- build --release -p test_padding
 cargo run -p cargo-zaplib -- build --release -p test_popover
+# cargo run -p cargo-zaplib -- build --release -p example_shader // See comment in `zaplib/ci/src/cmd.rs`
 
 # Build
 pushd zaplib/web
