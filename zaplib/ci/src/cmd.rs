@@ -293,7 +293,6 @@ async fn examples_screenshots(browser_name: &str, driver: &mut WebDriver, local_
     ];
 
     for (example_name, example_path) in examples {
-        // ensure screenshot sizes are uniform so tests aren't flaky
         driver.set_window_rect(OptionRect::new().with_size(1200, 1200)).await?;
         let url = format!("https://bs-local.com:{}/zaplib/examples/{}", local_port, example_path);
         info!("[{browser_name}] Navigating to {url}...");
