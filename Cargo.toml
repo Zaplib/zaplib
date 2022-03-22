@@ -10,6 +10,7 @@ members = [
     "zaplib/examples/example_bigedit/microserde",
     "zaplib/examples/example_bigedit/microserde/derive",
     "zaplib/examples/example_charts",
+    "zaplib/examples/example_image",
     "zaplib/examples/example_lots_of_buttons",
     "zaplib/examples/example_shader",
     "zaplib/examples/example_single_button",
