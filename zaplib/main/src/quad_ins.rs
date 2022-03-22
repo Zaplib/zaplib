@@ -7,7 +7,7 @@ use crate::*;
 ///
 /// Example usage with your own struct:
 ///
-/// ```ignore
+/// ```
 /// struct MyStruct {
 ///   pub base: QuadIns,
 ///   pub field1: f32,
@@ -17,7 +17,7 @@ use crate::*;
 ///
 /// And render using:
 ///
-/// ```ignore
+/// ```
 /// let s = MyStruct {
 ///   base: QuadIns::from_rect(rect),
 ///   field1: 0.0,
