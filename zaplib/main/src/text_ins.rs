@@ -421,13 +421,20 @@ impl TextIns {
         )
     }
 
+    fn ellipsis_advance_width(cx: &Cx, font_id: usize) -> f32 {
+        let read_fonts = &cx.fonts_data.read().unwrap().fonts;
+        // Actual ellipsis char "…" is not supported in our current fonts.
+        let ellipsis_slot = read_fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map['.' as usize];
+        3.0 * read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[ellipsis_slot].horizontal_metrics.advance_width
+    }
+
     /// TODO(JP): This doesn't seem to work well with [`Direction::Down`] (or other directions for
     /// that matter). Not a high priority but might good to be aware of.
     ///
     /// [`TextInsProps::position_anchoring`] is ignored by this function.
     pub fn draw_walk(cx: &mut Cx, text: &str, props: &TextInsProps) -> Area {
         let mut width = 0.0;
-        let mut elipct = 0;
+        let mut printed_ellipsis = false;
 
         let text_style = &props.text_style;
         let font_size = text_style.font_size;
@@ -445,6 +452,8 @@ impl TextIns {
         cx.begin_row(Width::Compute, Height::Compute);
         cx.begin_padding_box(props.padding);
         cx.begin_wrapping_box();
+
+        let ellipsis_width = Self::ellipsis_advance_width(cx, font_id) * font_size_logical * props.font_scale;
 
         while let Some(c) = iter.next() {
             let last = iter.peek().is_none();
@@ -464,7 +473,7 @@ impl TextIns {
             if slot != 0 {
                 let read_fonts = &cx.fonts_data.read().unwrap().fonts;
                 let glyph = &read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[slot];
-                width += glyph.horizontal_metrics.advance_width * font_size_logical * props.font_scale;
+                let glyph_width = glyph.horizontal_metrics.advance_width * font_size_logical * props.font_scale;
                 match props.wrapping {
                     Wrapping::Char => {
                         buf.push(c);
@@ -486,18 +495,27 @@ impl TextIns {
                     Wrapping::None => {
                         buf.push(c);
                     }
-                    Wrapping::Ellipsis(ellipsis_width) => {
-                        if width > ellipsis_width {
-                            // output ...
-                            if elipct < 3 {
-                                buf.push('.');
-                                elipct += 1;
+                    Wrapping::Ellipsis(max_width) => {
+                        // If we've already printed the ellipsis, skip altogether.
+                        if !printed_ellipsis {
+                            // Put in an ellipsis if we'd otherwise overflow, but DON'T put an ellipsis if we're at the end
+                            // already and the current glyph is less wide than the ellipsis itself.
+                            if width + glyph_width >= max_width - ellipsis_width && !(last && glyph_width <= ellipsis_width) {
+                                printed_ellipsis = true;
+                                // If there's no room for the ellipsis, just pretend we printed, but don't actually print it.
+                                if width + ellipsis_width <= max_width {
+                                    // Actual ellipsis char "…" is not supported in our current fonts.
+                                    buf.push('.');
+                                    buf.push('.');
+                                    buf.push('.');
+                                }
+                            } else {
+                                buf.push(c);
                             }
-                        } else {
-                            buf.push(c)
                         }
                     }
                 }
+                width += glyph_width;
             }
             if emit {
                 let height = font_size * height_factor * props.font_scale;

@@ -201,7 +201,7 @@ impl Checkbox {
 
             cx.add_box(LayoutSize::new(Width::Fix(20.), Height::Fix(0.)));
             let draw_str_props = TextInsProps {
-                wrapping: Wrapping::Ellipsis(cx.get_width_left() - 20.),
+                wrapping: Wrapping::Ellipsis(cx.get_width_left()),
                 color: if errored {
                     vec4(0.94, 0., 0., opacity)
                 } else if checked {
