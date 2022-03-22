@@ -1,6 +1,6 @@
 //! Drawing text.
 
-use std::sync::RwLock;
+use std::{borrow::Borrow, sync::RwLock};
 
 use crate::*;
 
@@ -234,13 +234,14 @@ impl TextIns {
         color: Vec4,
         pos: Vec2,
         char_offset: usize,
-        chunk: &[char],
+        chunk: impl IntoIterator<Item = impl Borrow<char>>,
         mut char_callback: F,
     ) -> Vec<TextIns>
     where
         F: FnMut(char, usize, f32, f32) -> f32,
     {
-        let mut ret = Vec::with_capacity(chunk.len());
+        let chunk = chunk.into_iter();
+        let mut ret = Vec::with_capacity(chunk.size_hint().0);
 
         let font_id = text_style.font.font_id;
 
@@ -254,7 +255,7 @@ impl TextIns {
         let mut char_offset = char_offset;
 
         for wc in chunk {
-            let unicode = *wc as usize;
+            let unicode = *wc.borrow() as usize;
 
             // Scope the `cxfont` borrow to these variables.
             let (glyph_id, advance, w, h, min_pos_x, subpixel_x_fract, subpixel_y_fract, scaled_min_pos_x, scaled_min_pos_y) = {
@@ -335,7 +336,7 @@ impl TextIns {
                 char_offset: char_offset as f32,
 
                 // give the callback a chance to do things
-                marker: char_callback(*wc, char_offset, x, advance),
+                marker: char_callback(*wc.borrow(), char_offset, x, advance),
             });
 
             x += advance;
@@ -410,7 +411,7 @@ impl TextIns {
             props.color,
             pos,
             0,
-            &text.chars().collect::<Vec<char>>(),
+            text.chars(),
             |_, _, _, _| 0.0,
         );
 

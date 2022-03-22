@@ -1329,7 +1329,7 @@ impl TextEditor {
                     origin.y + line_geom.walk.y,
                 ),
                 0,
-                &line_number_text.chars().collect::<Vec<char>>(),
+                line_number_text.chars(),
                 |_, _, _, _| 0.0,
             ));
         }
