@@ -16,7 +16,9 @@ struct FlamegraphExampleApp {
 }
 
 pub struct Span {
-    pub rect: Rect,
+    pub offset: f32,
+    pub width: f32,
+    pub level: u32,
     pub label: String,
     pub color: Vec4,
 }
@@ -27,33 +29,42 @@ impl FlamegraphExampleApp {
     }
 
     fn handle(&mut self, cx: &mut Cx, event: &mut Event) {
-        //  self.single_button.handle(cx, event);
         for flame_rect in &mut self.flame_rects {
             flame_rect.handle(cx, event);
         }
     }
 
     fn draw(&mut self, cx: &mut Cx) {
-        /*
-        let data = vec![
-            Span { rect: Rect { pos: vec2(0.1, 0.), size: vec2(0.7, 0.1) }, label: "slow".to_string(), color: COLOR_RED },
-            Span { rect: Rect { pos: vec2(0.1, 0.3), size: vec2(0.4, 0.1) }, label: "faster".to_string(), color: COLOR_RED },
+        // From https://personal.sron.nl/~pault/#sec:qualitative
+        let colors = [
+            Vec4::color("#77AADD"),
+            Vec4::color("#EE8866"),
+            Vec4::color("#EEDD88"),
+            Vec4::color("#FFAABB"),
+            Vec4::color("#99DDFF"),
+            Vec4::color("#44BB99"),
+            Vec4::color("#BBCC33"),
+            Vec4::color("#AAAA00"),
+            Vec4::color("#DDDDDD"),
         ];
-        */
+
         let mut data = Vec::new();
         for (y, level) in levels().iter().enumerate() {
             let mut running_x = 0;
             for j in (0..level.len()).step_by(4) {
                 running_x += level[j];
                 let x = running_x as f32 / (NUM_TICKS as f32);
-                let w = level[j + 1] as f32 / (NUM_TICKS as f32);
+                let width = level[j + 1] as f32 / (NUM_TICKS as f32);
                 running_x += level[j + 1];
-                // TODO use offsets
-                let label = NAMES[level[j + 3] as usize];
+                let name_id = level[j + 3] as usize;
+                let label = NAMES[name_id];
                 data.push(Span {
-                    rect: Rect { pos: vec2(x, y as f32 * 0.07), size: vec2(w, 0.06) },
+                    offset: x,
+                    width,
+                    level: y as u32,
+                    // TODO use offsets
                     label: label.to_string(),
-                    color: COLOR_RED,
+                    color: colors[name_id % colors.len()],
                 })
             }
         }
@@ -67,7 +78,6 @@ impl FlamegraphExampleApp {
         for (i, span) in data.iter().enumerate() {
             self.flame_rects[i].draw(cx, &span)
         }
-        //self.single_button.draw(cx);
 
         cx.end_padding_box();
         self.main_view.end_view(cx);

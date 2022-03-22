@@ -16,6 +16,7 @@ struct BgIns {
     base: QuadIns,
     hover: f32,
     down: f32,
+    color: Vec4,
 }
 
 static SHADER: Shader = Shader {
@@ -27,20 +28,18 @@ static SHADER: Shader = Shader {
             r#"
             instance hover: float;
             instance down: float;
+            instance color: vec4;
 
             const shadow: float = 3.0;
             const border_radius: float = 2.5;
 
             fn pixel() -> vec4 {
                 let df = Df::viewport(pos * rect_size);
-                df.box(vec2(shadow), rect_size - shadow * (1. + down), border_radius);
-                df.blur = 6.0;
-                df.fill(mix(#0007, #0, hover));
-                df.new_path();
-                df.blur = 0.001;
-                df.box(vec2(shadow), rect_size - shadow * 2., border_radius);
-                return df.fill(mix(mix(#3, #4, hover), #2a, down));
-                //return #a00;
+                df.rect(vec2(0.0, 0.0), rect_size);
+                let new_color = mix(mix(color, #4, hover), #2a, down);
+                df.fill(new_color);
+                df.stroke(new_color, 20.0);
+                return df.result;
             }"#
         ),
     ],
@@ -63,8 +62,6 @@ const ANIM_DEFAULT: Anim = Anim {
         Track::Float { key_frames: &[(1.0, 0.0)], ease: Ease::DEFAULT },
         // BgIns::down
         Track::Float { key_frames: &[(1.0, 0.0)], ease: Ease::DEFAULT },
-        // TextIns::color
-        Track::Vec4 { key_frames: &[(1.0, vec4(0.6, 0.6, 0.6, 1.))], ease: Ease::DEFAULT },
     ],
 };
 
@@ -76,8 +73,6 @@ const ANIM_HOVER: Anim = Anim {
         Track::Float { key_frames: &[(0.0, 1.0)], ease: Ease::DEFAULT },
         // BgIns::down
         Track::Float { key_frames: &[(1.0, 0.0)], ease: Ease::DEFAULT },
-        // TextIns::color
-        Track::Vec4 { key_frames: &[(1.0, vec4(1., 1., 1., 1.))], ease: Ease::DEFAULT },
     ],
 };
 
@@ -88,18 +83,17 @@ const ANIM_DOWN: Anim = Anim {
         Track::Float { key_frames: &[(0.0, 1.0)], ease: Ease::DEFAULT },
         // BgIns::down
         Track::Float { key_frames: &[(0.0, 0.0), (1.0, 1.0)], ease: Ease::DEFAULT },
-        // TextIns::color
-        Track::Vec4 { key_frames: &[(1.0, vec4(0.8, 0.8, 0.8, 1.))], ease: Ease::DEFAULT },
     ],
     ..Anim::DEFAULT
 };
+
+const LEVEL_HEIGHT: f32 = 30.0;
 
 impl FlameRect {
     fn animate(&mut self, cx: &mut Cx) {
         let draw_bg = self.bg_area.get_first_mut::<BgIns>(cx);
         draw_bg.hover = self.animator.get_float(0);
         draw_bg.down = self.animator.get_float(1);
-        TextIns::set_color(cx, self.text_area, self.animator.get_vec4(2));
     }
 
     pub fn handle(&mut self, cx: &mut Cx, event: &mut Event) -> FlameRectEvent {
@@ -150,12 +144,23 @@ impl FlameRect {
         cx.begin_shader_group(&[&SHADER, &TEXT_INS_SHADER]);
 
         let rect = Rect {
-            pos: cx.get_draw_pos() + cx.get_box_rect().size * span.rect.pos,
-            size: cx.get_box_rect().size * span.rect.size,
+            pos: cx.get_draw_pos() + vec2(cx.get_box_rect().size.x * span.offset, span.level as f32 * LEVEL_HEIGHT),
+            size: vec2(cx.get_box_rect().size.x * span.width, LEVEL_HEIGHT),
         };
 
-        self.bg_area = cx.add_instances(&SHADER, &[BgIns { base: QuadIns::from_rect(rect), ..Default::default() }]);
-        self.text_area = TextIns::draw_str(cx, &span.label, rect.pos, &Default::default());
+        self.bg_area =
+            cx.add_instances(&SHADER, &[BgIns { base: QuadIns::from_rect(rect), color: span.color, ..Default::default() }]);
+        self.text_area = TextIns::draw_str(
+            cx,
+            &span.label,
+            rect.pos + vec2(5., LEVEL_HEIGHT / 2.0),
+            &TextInsProps {
+                text_style: TEXT_STYLE_MONO,
+                color: COLOR_BLACK,
+                position_anchoring: TEXT_ANCHOR_CENTER_V,
+                ..Default::default()
+            },
+        );
 
         self.animator.draw(cx, ANIM_DEFAULT);
         self.animate(cx);
