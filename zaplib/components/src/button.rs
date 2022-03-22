@@ -9,7 +9,7 @@ pub enum ButtonEvent {
     Up,
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct BgIns {
     base: QuadIns,

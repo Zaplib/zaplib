@@ -8,6 +8,9 @@ repository = "https://github.com/Zaplib/zaplib"
 readme = "README.md"
 description = "⚡ Zaplib is a fast, cross-platform (web+native), GPU-based application framework, written in Rust."
 
+[lib]
+doctest = false # They are mostly a pain to maintain for limited benefit. TODO(JP): Some day look into turning this back on?
+
 [features]
 disable-fonts=[]
 tls=["ureq/tls"] # TLS (for HTTPS) doesn't currently work with cross-compilation, so we allow disabling it.

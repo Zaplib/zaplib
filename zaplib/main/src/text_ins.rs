@@ -4,7 +4,7 @@ use std::sync::RwLock;
 
 use crate::*;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 #[repr(C)]
 pub struct TextIns {
     /// Texture coordinates for the bottom-left corner of the glyph in the texture atlas
@@ -375,7 +375,7 @@ impl TextIns {
             let moved_glyphs: Vec<TextIns> = glyphs
                 .iter()
                 .map(|g| {
-                    let mut g = g.clone();
+                    let mut g = *g;
                     g.rect_pos -= anchor_offset; // Offset must be subtracted
                     g
                 })

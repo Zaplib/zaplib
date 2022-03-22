@@ -58,7 +58,7 @@ Define a `SHADER` object:
 Define the struct to pass the color into the shader as an instance variable:
 
 ```rust,noplayground
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct RectIns {
     color: Vec4,
@@ -90,7 +90,7 @@ Now let's modify our example to draw 2 bordered rectangles of the given sizes on
 Modify `RectIns` to include the top-left position of rectangle and its size:
 
 ```rust,noplayground
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct RectIns {
     color: Vec4,

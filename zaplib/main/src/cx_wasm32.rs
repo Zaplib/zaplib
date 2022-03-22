@@ -821,11 +821,10 @@ impl ZerdeEventloopMsgs {
 // for use with sending wasm vec data
 #[export_name = "allocWasmVec"]
 pub unsafe extern "C" fn alloc_wasm_vec(bytes: u64) -> u64 {
-    let mut vec = vec![0u8; bytes as usize];
+    let mut vec = std::mem::ManuallyDrop::new(vec![0u8; bytes as usize]);
     // let mut vec = Vec::<u8>::with_capacity(bytes as usize);
     // vec.resize(bytes as usize, 0);
     let ptr = vec.as_mut_ptr();
-    mem::forget(vec);
     return ptr as u64;
 }
 

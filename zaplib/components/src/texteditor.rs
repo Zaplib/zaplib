@@ -169,7 +169,7 @@ static SHADER_MESSAGE_MARKER: Shader = Shader {
 /// drawn as the background by default. You pass in your own [`Shader`].
 ///
 /// Currently only used within [`TextEditor`].
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct ColorBackgroundIns {
     quad: QuadIns,
@@ -189,7 +189,7 @@ impl ColorBackground {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct IndentLinesIns {
     quad: QuadIns,
@@ -225,7 +225,7 @@ impl IndentLines {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct CursorIns {
     base: QuadIns,
@@ -258,7 +258,7 @@ impl Cursor {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 pub struct SelectionIns {
     base: QuadIns,

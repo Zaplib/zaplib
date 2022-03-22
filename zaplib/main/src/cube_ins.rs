@@ -4,7 +4,7 @@ use crate::*;
 
 /// Draw a cube; similar to [`crate::QuadIns`]. Is currently not used much, so mostly
 /// for demonstration purposes.
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct CubeIns {
     /// Raw transform matrix for the cube.

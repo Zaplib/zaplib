@@ -6,12 +6,14 @@ use zaplib::{
 };
 use zaplib_components::*;
 
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct Vertex {
     position: Vec3,
     normal: Vec3,
 }
 
+#[derive(Clone, Copy)]
 #[repr(C)]
 struct Instance {
     offset: f32,

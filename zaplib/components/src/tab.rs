@@ -2,7 +2,7 @@ use zaplib::*;
 
 use crate::{internal::tabclose::TabClose, ButtonEvent};
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct TabIns {
     base: QuadIns,

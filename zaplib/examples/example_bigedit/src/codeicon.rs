@@ -1,6 +1,6 @@
 use zaplib::*;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct CodeIconIns {
     base: QuadIns,

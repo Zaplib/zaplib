@@ -18,14 +18,14 @@ use crate::*;
 /// And render using:
 ///
 /// ```
-/// let s = DrawMyStruct {
+/// let s = MyStruct {
 ///   base: QuadIns::from_rect(rect),
 ///   field1: 0.0,
 ///   field2: 0.0,
 /// };
 /// cx.add_instances(&SHADER, &[s]);
 /// ```
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 pub struct QuadIns {
     /// The top-left corner position of the quad, in absolute coordinates.

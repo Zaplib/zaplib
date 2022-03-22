@@ -1,7 +1,7 @@
 use crate::{axis::*, ScrollBarConfig};
 use zaplib::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct ScrollBarIns {
     base: QuadIns,

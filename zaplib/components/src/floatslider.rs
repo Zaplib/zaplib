@@ -65,7 +65,7 @@ static KNOB_SHADER: Shader = Shader {
     ..Shader::DEFAULT
 };
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct FloatSliderIns {
     base: QuadIns,
@@ -106,7 +106,7 @@ const DEFAULT_BACKGROUND_RANGES: &[FloatSliderBackgroundRange] = &[FloatSliderBa
     height_pixels: 8.,
 }];
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct FloatSliderBackgroundRangeIns {
     base: QuadIns,

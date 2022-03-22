@@ -62,7 +62,7 @@ static SHADER: Shader = Shader {
 };
 
 #[repr(C)]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct DrawPoints3dInstance {
     pub position: Vec3,
     pub color: Vec3,
@@ -80,7 +80,7 @@ struct DrawPoints3dUniforms {
     vertex_transform: Mat4,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum DrawPoints3dStyle {
     Quad,
     Circle,

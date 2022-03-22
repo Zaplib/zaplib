@@ -8,4 +8,6 @@ cd "${0%/*}/../../.."
 zaplib/scripts/ci/common.sh
 
 export RUSTFLAGS="-D warnings"
-cargo test --all-targets --workspace # runs all types of tests for the entire workspace
+# Note that we don't add `--all-targets` here, because (for some reason)
+# that causes tests not to run at all!
+cargo test --workspace # runs tests for the entire workspace

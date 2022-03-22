@@ -194,7 +194,10 @@ impl Area {
     }
 
     /// Get an immutable slice for an [`Area::InstanceRange`].
-    pub fn get_slice<T: 'static>(&self, cx: &Cx) -> &[T] {
+    ///
+    /// This is not safe when T cannot be initialized with arbitrary
+    /// data, so be careful. See also [`crate::cast`].
+    pub fn get_slice<T: 'static + Copy>(&self, cx: &Cx) -> &[T] {
         if !self.is_valid(cx) {
             return &mut [];
         }
@@ -235,7 +238,10 @@ impl Area {
     ///
     /// TODO(JP): It would be nice if we can eliminate the default fallback altogether;
     /// see [`Cx::temp_default_data`] for ideas.
-    pub fn get_first<'a, T: 'static + Default>(&'a self, cx: &'a mut Cx) -> &'a T {
+    ///
+    /// This is not safe when T cannot be initialized with arbitrary
+    /// data, so be careful. See also [`crate::cast`].
+    pub fn get_first<'a, T: 'static + Copy + Default>(&'a self, cx: &'a mut Cx) -> &'a T {
         if let Some(first) = self.get_slice::<T>(cx).get(0) {
             first
         } else {
@@ -248,7 +254,10 @@ impl Area {
     }
 
     /// Get a mutable slice for an [`Area::InstanceRange`].
-    pub fn get_slice_mut<T: 'static>(&self, cx: &mut Cx) -> &mut [T] {
+    ///
+    /// This is not safe when T cannot be initialized with arbitrary
+    /// data, so be careful. See also [`crate::cast`].
+    pub fn get_slice_mut<T: 'static + Copy>(&self, cx: &mut Cx) -> &mut [T] {
         if !self.is_valid(cx) {
             return &mut [];
         }
@@ -301,7 +310,10 @@ impl Area {
     ///
     /// TODO(JP): It would be nice if we can eliminate the default fallback altogether;
     /// see [`Cx::temp_default_data`] for ideas.
-    pub fn get_first_mut<'a, T: 'static + Default>(&'a self, cx: &'a mut Cx) -> &'a mut T {
+    ///
+    /// This is not safe when T cannot be initialized with arbitrary
+    /// data, so be careful. See also [`crate::cast`].
+    pub fn get_first_mut<'a, T: 'static + Copy + Default>(&'a self, cx: &'a mut Cx) -> &'a mut T {
         if let Some(first) = self.get_slice_mut::<T>(cx).get_mut(0) {
             first
         } else {

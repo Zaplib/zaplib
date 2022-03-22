@@ -1,7 +1,7 @@
 use crate::button::*;
 use zaplib::*;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 #[repr(C)]
 struct TabCloseIns {
     base: QuadIns,

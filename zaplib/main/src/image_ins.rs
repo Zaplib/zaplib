@@ -4,7 +4,7 @@ use crate::quad_ins::*;
 use crate::*;
 
 /// For drawing a [`Texture`].
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct ImageIns {
     base: QuadIns,
