@@ -1,0 +1,9 @@
+[package]
+name = "example_image"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+zaplib = { path="../../main" }
+image = { version = "0.24.1", default-features = false, features=["jpeg"] }
