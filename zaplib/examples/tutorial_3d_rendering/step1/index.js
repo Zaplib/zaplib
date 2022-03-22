@@ -65,12 +65,12 @@ const init = async () => {
     const div = document.getElementById("root");
     const scene = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(40, div.offsetWidth / div.offsetHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, -30, 30);
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(div.offsetWidth, div.offsetHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     div.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
