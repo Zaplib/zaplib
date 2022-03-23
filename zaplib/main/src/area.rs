@@ -357,6 +357,8 @@ impl Area {
 
     /// Write a [`Texture`] value into the the [`DrawCall`] associated with this
     /// [`Area::InstanceRange`].
+    ///
+    /// TODO(JP): Fix bug: <https://github.com/Zaplib/zaplib/issues/156>
     pub fn write_texture_2d(&self, cx: &mut Cx, name: &str, texture_handle: TextureHandle) {
         if self.is_valid(cx) {
             if let Area::InstanceRange(inst) = self {
