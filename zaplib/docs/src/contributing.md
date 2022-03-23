@@ -69,7 +69,14 @@ brew install --cask chromedriver
 chromedriver
 ```
 
-3. Run the CI tests: 
+3. Build the examples:
+
+```
+cargo zaplib build --workspace
+cargo zaplib build --workspace --release
+```
+
+4. Run the CI tests: 
 
 ```
 cargo run -p zaplib_ci -- --webdriver-url http://localhost:9515

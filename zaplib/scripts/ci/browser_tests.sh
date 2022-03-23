@@ -5,6 +5,8 @@ set -euxo pipefail
 # Per https://stackoverflow.com/a/16349776; go to repo root
 cd "${0%/*}/../../.."
 
+zaplib/scripts/build_website_dev.sh
+
 # Build the wasm packages that we need in tests.
 # We specify these builds individually in order to save on build times,
 # since this job is already pretty slow now.
@@ -30,13 +32,6 @@ cargo run -p cargo-zaplib -- build --release -p test_geometry
 cargo run -p cargo-zaplib -- build --release -p test_layout
 cargo run -p cargo-zaplib -- build --release -p test_padding
 cargo run -p cargo-zaplib -- build --release -p test_popover
-
-# Build
-pushd zaplib/web
-    # Dev build (instead of prod, so we get better stack traces)
-    yarn
-    yarn run build
-popd
 
 # Integration tests with Browserstack (uses test suite)
 # Local identifier is necessary to be able to run multiple jobs in parallel.

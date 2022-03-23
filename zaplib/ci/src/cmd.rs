@@ -184,7 +184,7 @@ async fn run_tests(webdriver_url: String, local_port: u16, browserstack_local_id
                                     if browser_name == "Samsung Galaxy S21, Android 11.0" {
                                         true
                                     } else {
-                                        match examples_screenshots(browser_name, &mut driver, local_port).await {
+                                        match screenshots(browser_name, &mut driver, local_port).await {
                                             Err(err) => {
                                                 error!("[{browser_name}] Run error: {err}");
                                                 false
@@ -228,7 +228,7 @@ async fn run_tests(webdriver_url: String, local_port: u16, browserstack_local_id
         capabilities.add("acceptSslCerts", true).unwrap();
         let mut driver = WebDriver::new(&webdriver_url, &capabilities).await.unwrap();
         test_suite_all_tests_3x("local browser", &mut driver, local_port).await.unwrap();
-        examples_screenshots("local browser", &mut driver, local_port).await.unwrap();
+        screenshots("local browser", &mut driver, local_port).await.unwrap();
         driver.quit().await.unwrap();
     }
 }
@@ -260,44 +260,46 @@ async fn test_suite_all_tests_3x(browser_name: &str, driver: &mut WebDriver, loc
     }
 }
 
-async fn examples_screenshots(browser_name: &str, driver: &mut WebDriver, local_port: u16) -> Result<(), Box<dyn Error>> {
+async fn screenshots(browser_name: &str, driver: &mut WebDriver, local_port: u16) -> Result<(), Box<dyn Error>> {
     let examples = [
+        ("homepage", "/website_dev"),
+        ("docs_index", "/website_dev/docs"),
         // Tracking these TODOs in https://github.com/Zaplib/zaplib/issues/29
-        // "example_bigedit/?release", // TODO(JP): Pause animation.
-        // ("example_charts", "example_charts/?release"), // TODO(JP): Randomness.
+        // "/zaplib/examples/example_bigedit/?release", // TODO(JP): Pause animation.
+        // ("example_charts", "/zaplib/examples/example_charts/?release"), // TODO(JP): Randomness.
         // "example_lightning", // TODO(JP): Pause animation.
-        ("example_image", "example_image/?release"),
-        ("example_lots_of_buttons", "example_lots_of_buttons/?release"),
-        ("example_single_button", "example_single_button/?release"),
-        ("example_text", "example_text/?release"),
-        ("test_bottom_bar", "test_bottom_bar/?release"),
-        // ("test_geometry", "test_geometry/?release"), // TODO(JP): Pause animation.
-        ("test_layout", "test_layout/?release"),
+        ("example_image", "/zaplib/examples/example_image/?release"),
+        ("example_lots_of_buttons", "/zaplib/examples/example_lots_of_buttons/?release"),
+        ("example_single_button", "/zaplib/examples/example_single_button/?release"),
+        ("example_text", "/zaplib/examples/example_text/?release"),
+        ("test_bottom_bar", "/zaplib/examples/test_bottom_bar/?release"),
+        // ("test_geometry", "/zaplib/examples/test_geometry/?release"), // TODO(JP): Pause animation.
+        ("test_layout", "/zaplib/examples/test_layout/?release"),
         // "test_many_quads/?release", // TODO(JP): Pause animation.
         // "test_multithread/?release", // TODO(JP): Pause animation.
-        ("test_padding", "test_padding/?release"),
-        ("test_popover", "test_popover/?release"),
+        ("test_padding", "/zaplib/examples/test_padding/?release"),
+        ("test_popover", "/zaplib/examples/test_popover/?release"),
         // "test_shader_2d_primitives/", // TODO(JP): Make work in Wasm context (not just CEF).
-        ("tutorial_2d_rendering_step1", "tutorial_2d_rendering/step1"),
-        ("tutorial_2d_rendering_step2", "tutorial_2d_rendering/step2"),
-        ("tutorial_2d_rendering_step3", "tutorial_2d_rendering/step3"),
-        ("tutorial_3d_rendering_step1", "tutorial_3d_rendering/step1"),
-        ("tutorial_3d_rendering_step2", "tutorial_3d_rendering/step2"),
-        ("tutorial_3d_rendering_step3", "tutorial_3d_rendering/step3"),
-        ("tutorial_hello_thread", "tutorial_hello_thread"),
-        ("tutorial_hello_world_canvas", "tutorial_hello_world_canvas"),
-        ("tutorial_hello_world_console", "tutorial_hello_world_console"),
-        ("tutorial_js_rust_bridge", "tutorial_js_rust_bridge"),
-        ("tutorial_ui_components", "tutorial_ui_components"),
-        ("tutorial_ui_layout", "tutorial_ui_layout"),
+        ("tutorial_2d_rendering_step1", "/zaplib/examples/tutorial_2d_rendering/step1"),
+        ("tutorial_2d_rendering_step2", "/zaplib/examples/tutorial_2d_rendering/step2"),
+        ("tutorial_2d_rendering_step3", "/zaplib/examples/tutorial_2d_rendering/step3"),
+        ("tutorial_3d_rendering_step1", "/zaplib/examples/tutorial_3d_rendering/step1"),
+        ("tutorial_3d_rendering_step2", "/zaplib/examples/tutorial_3d_rendering/step2"),
+        ("tutorial_3d_rendering_step3", "/zaplib/examples/tutorial_3d_rendering/step3"),
+        ("tutorial_hello_thread", "/zaplib/examples/tutorial_hello_thread"),
+        ("tutorial_hello_world_canvas", "/zaplib/examples/tutorial_hello_world_canvas"),
+        ("tutorial_hello_world_console", "/zaplib/examples/tutorial_hello_world_console"),
+        ("tutorial_js_rust_bridge", "/zaplib/examples/tutorial_js_rust_bridge"),
+        ("tutorial_ui_components", "/zaplib/examples/tutorial_ui_components"),
+        ("tutorial_ui_layout", "/zaplib/examples/tutorial_ui_layout"),
         // This one has a bunch of non-deterministic GPU behavior and it doesn't
         // really test anything that other examples don't already test.
-        // ("example_shader", "example_shader/?release"),
+        // ("example_shader", "/zaplib/examples/example_shader/?release"),
     ];
 
     for (example_name, example_path) in examples {
         driver.set_window_rect(OptionRect::new().with_size(1200, 1200)).await?;
-        let url = format!("https://bs-local.com:{}/zaplib/examples/{}", local_port, example_path);
+        let url = format!("https://bs-local.com:{}{}", local_port, example_path);
         info!("[{browser_name}] Navigating to {url}...");
         driver.get(url).await?;
         let script = r#"
