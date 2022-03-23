@@ -401,11 +401,33 @@ impl TextIns {
         area
     }
 
-    fn ellipsis_advance_width(cx: &Cx, font_id: usize) -> f32 {
+    fn split_string_at_wrap_points<'a>(text: &'a str, wrapping: Wrapping) -> Vec<&'a str> {
+        match wrapping {
+            Wrapping::None => vec![text],
+            Wrapping::Char => text.split(|_| true).collect(),
+            Wrapping::Word => text.split_whitespace().collect(),
+            Wrapping::Line => text.lines().collect(),
+            Wrapping::Ellipsis(elipsis_width) => todo!(),
+        }
+    }
+
+    fn measure_length(cx: &mut Cx, text: &Vec<char>, props: &TextInsProps) -> f32 {
+        let text_style = &props.text_style;
+        let font_id = text_style.font.font_id;
         let read_fonts = &cx.fonts_data.read().unwrap().fonts;
-        // Actual ellipsis char "…" is not supported in our current fonts.
-        let ellipsis_slot = read_fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map['.' as usize];
-        3.0 * read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[ellipsis_slot].horizontal_metrics.advance_width
+        let font_size_logical =
+            text_style.font_size * 96.0 / (72.0 * read_fonts[font_id].font_loaded.as_ref().unwrap().units_per_em);
+
+        let mut width = 0.0;
+        for &c in text {
+            if c < '\u{10000}' {
+                let slot = read_fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map[c as usize];
+                let glyph = &read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[slot];
+                let glyph_width = glyph.horizontal_metrics.advance_width * font_size_logical * props.font_scale;
+                width += glyph_width;
+            }
+        }
+        width
     }
 
     fn truncate_to_ellipsis(cx: &mut Cx, text: &str, props: &TextInsProps, max_width: f32) -> (Vec<char>, f32) {
@@ -414,7 +436,13 @@ impl TextIns {
         let read_fonts = &cx.fonts_data.read().unwrap().fonts;
         let font_size_logical =
             text_style.font_size * 96.0 / (72.0 * read_fonts[font_id].font_loaded.as_ref().unwrap().units_per_em);
-        let ellipsis_width = Self::ellipsis_advance_width(cx, font_id) * font_size_logical * props.font_scale;
+
+        // Actual ellipsis char "…" is not supported in our current fonts.
+        let ellipsis_slot = read_fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map['.' as usize];
+        let ellipsis_width = 3.0
+            * read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[ellipsis_slot].horizontal_metrics.advance_width
+            * font_size_logical
+            * props.font_scale;
 
         let mut iter = text.chars().peekable();
         let mut width = 0.0;
@@ -490,114 +518,51 @@ impl TextIns {
     ///
     /// [`TextInsProps::position_anchoring`] is ignored by this function.
     pub fn draw_walk(cx: &mut Cx, text: &str, props: &TextInsProps) -> Area {
-        let mut width = 0.0;
-        let mut printed_ellipsis = false;
-
         let text_style = &props.text_style;
         let font_size = text_style.font_size;
         let line_spacing = text_style.line_spacing;
         let height_factor = text_style.height_factor;
-        let mut iter = text.chars().peekable();
 
-        let font_id = text_style.font.font_id;
-        let font_size_logical = text_style.font_size * 96.0
-            / (72.0 * cx.fonts_data.read().unwrap().fonts[font_id].font_loaded.as_ref().unwrap().units_per_em);
-
-        let mut buf = Vec::with_capacity(text.len() + 2);
         let mut glyphs: Vec<TextIns> = Vec::with_capacity(text.len());
 
         cx.begin_row(Width::Compute, Height::Compute);
         cx.begin_padding_box(props.padding);
         cx.begin_wrapping_box();
 
-        let ellipsis_width = Self::ellipsis_advance_width(cx, font_id) * font_size_logical * props.font_scale;
+        let measured_box_strs = if let Wrapping::Ellipsis(max_width) = props.wrapping {
+            vec![Self::truncate_to_ellipsis(cx, text, props, max_width)]
+        } else {
+            Self::split_string_at_wrap_points(text, props.wrapping)
+                .iter()
+                .map(|&chunk| {
+                    let chars = chunk.chars().collect();
+                    let width = Self::measure_length(cx, &chars, props);
+                    (chars, width)
+                })
+                .collect()
+        };
 
-        while let Some(c) = iter.next() {
-            let last = iter.peek().is_none();
+        for (chars, width) in measured_box_strs {
+            let height = font_size * height_factor * props.font_scale;
+            let rect = cx.add_box(LayoutSize { width: Width::Fix(width), height: Height::Fix(height) });
 
-            let mut emit = last;
-            let mut newline = false;
-            let slot = if c < '\u{10000}' {
-                cx.fonts_data.read().unwrap().fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map
-                    [c as usize]
-            } else {
-                0
-            };
-            if c == '\n' {
-                emit = true;
-                newline = true;
+            if !rect.pos.x.is_nan() && !rect.pos.y.is_nan() {
+                glyphs.extend(Self::generate_2d_glyphs(
+                    &props.text_style,
+                    &cx.fonts_data,
+                    cx.current_dpi_factor,
+                    props.font_scale,
+                    props.draw_depth,
+                    props.color,
+                    rect.pos,
+                    0,
+                    chars,
+                    |_, _, _, _| 0.0,
+                ));
             }
-            if slot != 0 {
-                let read_fonts = &cx.fonts_data.read().unwrap().fonts;
-                let glyph = &read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[slot];
-                let glyph_width = glyph.horizontal_metrics.advance_width * font_size_logical * props.font_scale;
-                match props.wrapping {
-                    Wrapping::Char => {
-                        buf.push(c);
-                        emit = true
-                    }
-                    Wrapping::Word => {
-                        buf.push(c);
-                        if c == ' ' || c == '\t' || c == ',' || c == '\n' {
-                            emit = true;
-                        }
-                    }
-                    Wrapping::Line => {
-                        buf.push(c);
-                        if c == 10 as char || c == 13 as char {
-                            emit = true;
-                        }
-                        newline = true;
-                    }
-                    Wrapping::None => {
-                        buf.push(c);
-                    }
-                    Wrapping::Ellipsis(max_width) => {
-                        // If we've already printed the ellipsis, skip altogether.
-                        if !printed_ellipsis {
-                            // Put in an ellipsis if we'd otherwise overflow, but DON'T put an ellipsis if we're at the end
-                            // already and the current glyph is less wide than the ellipsis itself.
-                            if width + glyph_width >= max_width - ellipsis_width && !(last && glyph_width <= ellipsis_width) {
-                                printed_ellipsis = true;
-                                // If there's no room for the ellipsis, just pretend we printed, but don't actually print it.
-                                if width + ellipsis_width <= max_width {
-                                    // Actual ellipsis char "…" is not supported in our current fonts.
-                                    buf.push('.');
-                                    buf.push('.');
-                                    buf.push('.');
-                                }
-                            } else {
-                                buf.push(c);
-                            }
-                        }
-                    }
-                }
-                width += glyph_width;
-            }
-            if emit {
-                let height = font_size * height_factor * props.font_scale;
-                let rect = cx.add_box(LayoutSize { width: Width::Fix(width), height: Height::Fix(height) });
 
-                if !rect.pos.x.is_nan() && !rect.pos.y.is_nan() {
-                    glyphs.extend(Self::generate_2d_glyphs(
-                        &props.text_style,
-                        &cx.fonts_data,
-                        cx.current_dpi_factor,
-                        props.font_scale,
-                        props.draw_depth,
-                        props.color,
-                        rect.pos,
-                        0,
-                        &buf,
-                        |_, _, _, _| 0.0,
-                    ));
-                }
-
-                width = 0.0;
-                buf.truncate(0);
-                if newline {
-                    cx.draw_new_line_min_height(font_size * line_spacing * props.font_scale);
-                }
+            if let Wrapping::Line = props.wrapping {
+                cx.draw_new_line_min_height(font_size * line_spacing * props.font_scale);
             }
         }
 
