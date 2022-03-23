@@ -11,7 +11,7 @@ cd "${0%/*}/../../.."
 # We use `--matchingThreshold` and `--thresholdPixel` because the GPU-rendered images come out slightly
 # different now and then. We suspect that this is because of differences in GPU hardware between
 # Browserstack runs.
-zaplib/web/node_modules/.bin/reg-cli screenshots/ previous_screenshots/ diff_screenshots/ --report ./index.html --json ./reg.json --ignoreChange --enableAntialias --matchingThreshold 0.15 --thresholdPixel 10
+zaplib/web/node_modules/.bin/reg-cli screenshots/ previous_screenshots/ diff_screenshots/ --report ./index.html --json ./reg.json --ignoreChange --enableAntialias --matchingThreshold 0.05 --thresholdPixel 3
 # Now let's bundle everything up in screenshots_report/
 mkdir screenshots_report/
 mv index.html screenshots_report/

@@ -267,7 +267,6 @@ async fn examples_screenshots(browser_name: &str, driver: &mut WebDriver, local_
         // ("example_charts", "example_charts/?release"), // TODO(JP): Randomness.
         // "example_lightning", // TODO(JP): Pause animation.
         ("example_lots_of_buttons", "example_lots_of_buttons/?release"),
-        ("example_shader", "example_shader/?release"),
         ("example_single_button", "example_single_button/?release"),
         ("example_text", "example_text/?release"),
         ("test_bottom_bar", "test_bottom_bar/?release"),
@@ -290,6 +289,9 @@ async fn examples_screenshots(browser_name: &str, driver: &mut WebDriver, local_
         ("tutorial_js_rust_bridge", "tutorial_js_rust_bridge"),
         ("tutorial_ui_components", "tutorial_ui_components"),
         ("tutorial_ui_layout", "tutorial_ui_layout"),
+        // This one has a bunch of non-deterministic GPU behavior and it doesn't
+        // really test anything that other examples don't already test.
+        // ("example_shader", "example_shader/?release"),
     ];
 
     for (example_name, example_path) in examples {
