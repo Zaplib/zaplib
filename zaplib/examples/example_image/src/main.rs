@@ -30,7 +30,9 @@ static IMAGE_SHADER: Shader = Shader {
             texture texture: texture2D;
 
             fn pixel() -> vec4 {
-                let color = sample2d(texture, pos).rgba;
+                // `1.0-pos.y` to turn it the right way up in Wasm.
+                // TODO(JP): Fix https://github.com/Zaplib/zaplib/issues/160
+                let color = sample2d(texture, vec2(pos.x, 1.0-pos.y)).rgba;
                 return vec4(color);
             }"#
         ),
@@ -44,6 +46,7 @@ struct JpegImage {
 
 impl JpegImage {
     fn new(bytes: Vec<u8>, cx: &mut Cx) -> JpegImage {
+        // TODO(JP): replace with Zaplib API; see https://github.com/Zaplib/zaplib/issues/161
         let decoder = JpegDecoder::new(Cursor::new(bytes)).expect("Could not decode image");
         let mut img_bytes = vec![0; decoder.total_bytes() as usize];
 
@@ -74,7 +77,8 @@ impl JpegImage {
         let area = cx.add_instances(&IMAGE_SHADER, &[QuadIns::from_rect(cx.get_box_rect())]);
         area.write_texture_2d(cx, "texture", texture_handle);
 
-        // dummy shader call to prevent texture batching
+        // Dummy shader call to prevent texture batching
+        // TODO(JP): Fix https://github.com/Zaplib/zaplib/issues/156
         cx.add_instances(&DUMMY_SHADER, &[QuadIns::default()]);
     }
 }

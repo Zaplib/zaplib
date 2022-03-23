@@ -266,6 +266,7 @@ async fn examples_screenshots(browser_name: &str, driver: &mut WebDriver, local_
         // "example_bigedit/?release", // TODO(JP): Pause animation.
         // ("example_charts", "example_charts/?release"), // TODO(JP): Randomness.
         // "example_lightning", // TODO(JP): Pause animation.
+        ("example_image", "example_image/?release"),
         ("example_lots_of_buttons", "example_lots_of_buttons/?release"),
         ("example_single_button", "example_single_button/?release"),
         ("example_text", "example_text/?release"),

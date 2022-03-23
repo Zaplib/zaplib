@@ -6,4 +6,5 @@ publish = false
 
 [dependencies]
 zaplib = { path="../../main" }
+# TODO(JP): replace with Zaplib API; see https://github.com/Zaplib/zaplib/issues/161
 image = { version = "0.24.1", default-features = false, features=["jpeg"] }
