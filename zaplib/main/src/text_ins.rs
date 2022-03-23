@@ -401,17 +401,7 @@ impl TextIns {
         area
     }
 
-    fn split_string_at_wrap_points<'a>(text: &'a str, wrapping: Wrapping) -> Vec<&'a str> {
-        match wrapping {
-            Wrapping::None => vec![text],
-            Wrapping::Char => text.split(|_| true).collect(),
-            Wrapping::Word => text.split_whitespace().collect(),
-            Wrapping::Line => text.lines().collect(),
-            Wrapping::Ellipsis(elipsis_width) => todo!(),
-        }
-    }
-
-    fn measure_length(cx: &mut Cx, text: &Vec<char>, props: &TextInsProps) -> f32 {
+    fn measure_length(cx: &Cx, chars: &Vec<char>, props: &TextInsProps) -> f32 {
         let text_style = &props.text_style;
         let font_id = text_style.font.font_id;
         let read_fonts = &cx.fonts_data.read().unwrap().fonts;
@@ -419,7 +409,7 @@ impl TextIns {
             text_style.font_size * 96.0 / (72.0 * read_fonts[font_id].font_loaded.as_ref().unwrap().units_per_em);
 
         let mut width = 0.0;
-        for &c in text {
+        for &c in chars {
             if c < '\u{10000}' {
                 let slot = read_fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map[c as usize];
                 let glyph = &read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[slot];
@@ -430,7 +420,7 @@ impl TextIns {
         width
     }
 
-    fn truncate_to_ellipsis(cx: &mut Cx, text: &str, props: &TextInsProps, max_width: f32) -> (Vec<char>, f32) {
+    fn truncate_to_ellipsis(cx: &Cx, text: &str, props: &TextInsProps, max_width: f32) -> (Vec<char>, f32) {
         let text_style = &props.text_style;
         let font_id = text_style.font.font_id;
         let read_fonts = &cx.fonts_data.read().unwrap().fonts;
@@ -475,36 +465,45 @@ impl TextIns {
         (buf, width)
     }
 
-    pub fn draw_str(cx: &mut Cx, text: &str, pos: Vec2, props: &TextInsProps) -> Area {
-        let glyphs = match props.wrapping {
-            Wrapping::Ellipsis(max_size) => {
-                let chunk = Self::truncate_to_ellipsis(cx, text, props, max_size).0;
-                Self::generate_2d_glyphs(
-                    &props.text_style,
-                    &cx.fonts_data,
-                    cx.current_dpi_factor,
-                    props.font_scale,
-                    props.draw_depth,
-                    props.color,
-                    pos,
-                    0,
-                    chunk,
-                    |_, _, _, _| 0.0,
-                )
+    fn apply_wrapping(cx: &Cx, text: &str, props: &TextInsProps) -> Vec<(Vec<char>, f32)> {
+        match props.wrapping {
+            Wrapping::Ellipsis(max_width) => vec![Self::truncate_to_ellipsis(cx, text, props, max_width)],
+            _ => {
+                let strs = match props.wrapping {
+                    Wrapping::None => vec![text],
+                    Wrapping::Char => text.split(|_| true).collect(),
+                    Wrapping::Word => text.split_whitespace().collect(),
+                    Wrapping::Line => text.lines().collect(),
+                    Wrapping::Ellipsis(_) => panic!("Already handled above"),
+                };
+                strs.iter()
+                    .map(|&chunk| {
+                        let chars = chunk.chars().collect();
+                        let width = Self::measure_length(cx, &chars, props);
+                        (chars, width)
+                    })
+                    .collect()
             }
-            _ => Self::generate_2d_glyphs(
-                &props.text_style,
-                &cx.fonts_data,
-                cx.current_dpi_factor,
-                props.font_scale,
-                props.draw_depth,
-                props.color,
-                pos,
-                0,
-                text.chars(),
-                |_, _, _, _| 0.0,
-            ),
-        };
+        }
+    }
+
+    pub fn draw_str(cx: &mut Cx, text: &str, pos: Vec2, props: &TextInsProps) -> Area {
+        let mut chunks = Self::apply_wrapping(cx, text, props);
+
+        assert_eq!(chunks.len(), 1, "TextIns::draw_str() only supports single-line text");
+
+        let glyphs = Self::generate_2d_glyphs(
+            &props.text_style,
+            &cx.fonts_data,
+            cx.current_dpi_factor,
+            props.font_scale,
+            props.draw_depth,
+            props.color,
+            pos,
+            0,
+            chunks.remove(0).0,
+            |_, _, _, _| 0.0,
+        );
 
         Self::draw_glyphs(
             cx,
@@ -529,20 +528,7 @@ impl TextIns {
         cx.begin_padding_box(props.padding);
         cx.begin_wrapping_box();
 
-        let measured_box_strs = if let Wrapping::Ellipsis(max_width) = props.wrapping {
-            vec![Self::truncate_to_ellipsis(cx, text, props, max_width)]
-        } else {
-            Self::split_string_at_wrap_points(text, props.wrapping)
-                .iter()
-                .map(|&chunk| {
-                    let chars = chunk.chars().collect();
-                    let width = Self::measure_length(cx, &chars, props);
-                    (chars, width)
-                })
-                .collect()
-        };
-
-        for (chars, width) in measured_box_strs {
+        for (chars, width) in Self::apply_wrapping(cx, text, props) {
             let height = font_size * height_factor * props.font_scale;
             let rect = cx.add_box(LayoutSize { width: Width::Fix(width), height: Height::Fix(height) });
 
