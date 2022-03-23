@@ -401,32 +401,88 @@ impl TextIns {
         area
     }
 
+    fn ellipsis_advance_width(cx: &Cx, font_id: usize) -> f32 {
+        let read_fonts = &cx.fonts_data.read().unwrap().fonts;
+        // Actual ellipsis char "…" is not supported in our current fonts.
+        let ellipsis_slot = read_fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map['.' as usize];
+        3.0 * read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[ellipsis_slot].horizontal_metrics.advance_width
+    }
+
+    fn truncate_to_ellipsis(cx: &mut Cx, text: &str, props: &TextInsProps, max_width: f32) -> (Vec<char>, f32) {
+        let text_style = &props.text_style;
+        let font_id = text_style.font.font_id;
+        let read_fonts = &cx.fonts_data.read().unwrap().fonts;
+        let font_size_logical =
+            text_style.font_size * 96.0 / (72.0 * read_fonts[font_id].font_loaded.as_ref().unwrap().units_per_em);
+        let ellipsis_width = Self::ellipsis_advance_width(cx, font_id) * font_size_logical * props.font_scale;
+
+        let mut iter = text.chars().peekable();
+        let mut width = 0.0;
+        let mut buf = Vec::with_capacity(text.len() + 2);
+
+        while let Some(c) = iter.next() {
+            let last = iter.peek().is_none();
+
+            if c < '\u{10000}' {
+                let slot = read_fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map[c as usize];
+                let glyph = &read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[slot];
+                let glyph_width = glyph.horizontal_metrics.advance_width * font_size_logical * props.font_scale;
+                // Put in an ellipsis if we'd otherwise overflow, but DON'T put an ellipsis if we're at the end
+                // already and the current glyph is less wide than the ellipsis itself.
+                if width + glyph_width >= max_width - ellipsis_width && !(last && glyph_width <= ellipsis_width) {
+                    // If there's no room for the ellipsis, return, but don't actually print it.
+                    if width + ellipsis_width <= max_width {
+                        // Actual ellipsis char "…" is not supported in our current fonts.
+                        buf.push('.');
+                        buf.push('.');
+                        buf.push('.');
+                        width += ellipsis_width;
+                    }
+                    return (buf, width);
+                }
+                buf.push(c);
+                width += glyph_width;
+            }
+        }
+        (buf, width)
+    }
+
     pub fn draw_str(cx: &mut Cx, text: &str, pos: Vec2, props: &TextInsProps) -> Area {
-        let glyphs = Self::generate_2d_glyphs(
-            &props.text_style,
-            &cx.fonts_data,
-            cx.current_dpi_factor,
-            props.font_scale,
-            props.draw_depth,
-            props.color,
-            pos,
-            0,
-            text.chars(),
-            |_, _, _, _| 0.0,
-        );
+        let glyphs = match props.wrapping {
+            Wrapping::Ellipsis(max_size) => {
+                let chunk = Self::truncate_to_ellipsis(cx, text, props, max_size).0;
+                Self::generate_2d_glyphs(
+                    &props.text_style,
+                    &cx.fonts_data,
+                    cx.current_dpi_factor,
+                    props.font_scale,
+                    props.draw_depth,
+                    props.color,
+                    pos,
+                    0,
+                    chunk,
+                    |_, _, _, _| 0.0,
+                )
+            }
+            _ => Self::generate_2d_glyphs(
+                &props.text_style,
+                &cx.fonts_data,
+                cx.current_dpi_factor,
+                props.font_scale,
+                props.draw_depth,
+                props.color,
+                pos,
+                0,
+                text.chars(),
+                |_, _, _, _| 0.0,
+            ),
+        };
 
         Self::draw_glyphs(
             cx,
             &glyphs,
             &DrawGlyphsProps { text_style: props.text_style, position_anchoring: props.position_anchoring },
         )
-    }
-
-    fn ellipsis_advance_width(cx: &Cx, font_id: usize) -> f32 {
-        let read_fonts = &cx.fonts_data.read().unwrap().fonts;
-        // Actual ellipsis char "…" is not supported in our current fonts.
-        let ellipsis_slot = read_fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map['.' as usize];
-        3.0 * read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[ellipsis_slot].horizontal_metrics.advance_width
     }
 
     /// TODO(JP): This doesn't seem to work well with [`Direction::Down`] (or other directions for
@@ -447,7 +503,7 @@ impl TextIns {
         let font_size_logical = text_style.font_size * 96.0
             / (72.0 * cx.fonts_data.read().unwrap().fonts[font_id].font_loaded.as_ref().unwrap().units_per_em);
 
-        let mut buf = Vec::with_capacity(text.len());
+        let mut buf = Vec::with_capacity(text.len() + 2);
         let mut glyphs: Vec<TextIns> = Vec::with_capacity(text.len());
 
         cx.begin_row(Width::Compute, Height::Compute);
