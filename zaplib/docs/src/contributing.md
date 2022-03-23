@@ -72,6 +72,7 @@ chromedriver
 3. Build the examples:
 
 ```
+zaplib/scripts/build_website_dev.sh
 cargo zaplib build --workspace
 cargo zaplib build --workspace --release
 ```
