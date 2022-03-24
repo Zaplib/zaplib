@@ -150,15 +150,23 @@ impl FlameRect {
 
         self.bg_area =
             cx.add_instances(&SHADER, &[BgIns { base: QuadIns::from_rect(rect), color: span.color, ..Default::default() }]);
+
+        // Stick text to the left hand side.
+        let text_x_offset = if rect.pos.x < 0.0 {
+            -rect.pos.x
+        } else {
+            0.0
+        };
+
         self.text_area = TextIns::draw_str(
             cx,
             &span.label,
-            rect.pos + vec2(PADDING, LEVEL_HEIGHT / 2.0),
+            rect.pos + vec2(text_x_offset + PADDING, LEVEL_HEIGHT / 2.0),
             &TextInsProps {
                 text_style: TEXT_STYLE_MONO,
                 color: COLOR_BLACK,
                 position_anchoring: TEXT_ANCHOR_CENTER_V,
-                wrapping: Wrapping::Ellipsis(rect.size.x - 2. * PADDING),
+                wrapping: Wrapping::Ellipsis(rect.size.x - 2. * PADDING - text_x_offset),
                 ..Default::default()
             },
         );
