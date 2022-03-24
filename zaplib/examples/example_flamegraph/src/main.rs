@@ -15,6 +15,7 @@ struct FlamegraphExampleApp {
     flame_rects: Vec<FlameRect>,
     spans: Vec<Span>,
     zoom_pan: ZoomPan,
+    target_zoom_pan: Option<(ZoomPan, ZoomPan, f64)>,
     pointer_start_x_offset: Option<f32>,
     component_id: ComponentId,
 }
@@ -43,6 +44,12 @@ pub struct Span {
     pub color: Vec4,
 }
 
+const ANIM_SECONDS: f64 = 0.5;
+
+fn lerp(from: f32, other: f32, t: f32) -> f32 {
+    from * (1.0 - t) + other * t
+}
+
 impl FlamegraphExampleApp {
     fn new(_cx: &mut Cx) -> Self {
         Self::default()
@@ -59,9 +66,9 @@ impl FlamegraphExampleApp {
                 };
                 if self.zoom_pan == new_zoom_pan {
                     // If we already were at this zoom level, then just jump back.
-                    self.zoom_pan = ZoomPan::default();
+                    self.target_zoom_pan = Some((self.zoom_pan, ZoomPan::default(), cx.last_event_time));
                 } else {
-                    self.zoom_pan = new_zoom_pan;
+                    self.target_zoom_pan = Some((self.zoom_pan, new_zoom_pan, cx.last_event_time));
                 }
                 cx.request_draw();
             }
@@ -109,6 +116,7 @@ impl FlamegraphExampleApp {
         match event.hits_pointer(cx, self.component_id, Some(view_rect)) {
             Event::PointerScroll(pse) => {
                 self.zoom_pan.width = (self.zoom_pan.width + pse.scroll.y / 300.0).clamp(0.001, 1.0);
+                self.target_zoom_pan = None;
                 cx.request_draw();
             }
             Event::PointerDown(pd) => {
@@ -123,6 +131,7 @@ impl FlamegraphExampleApp {
                 if let Some(pointer_start_x_offset) = self.pointer_start_x_offset {
                     self.zoom_pan.x_offset =
                         pointer_start_x_offset + (pm.abs.x - pm.abs_start.x) * self.zoom_pan.width / view_rect.size.x;
+                    self.target_zoom_pan = None;
                     cx.request_draw();
                 }
                 cx.request_draw();
@@ -132,6 +141,20 @@ impl FlamegraphExampleApp {
     }
 
     fn draw(&mut self, cx: &mut Cx) {
+        if let Some(target_zoom_pan) = self.target_zoom_pan {
+            // Animate to the target zoom level.
+            let t = Ease::default().map((cx.last_event_time - target_zoom_pan.2) / ANIM_SECONDS).min(1.0);
+            // TODO(JP): Add lerp function to Zaplib.
+            self.zoom_pan.x_offset = lerp(target_zoom_pan.0.x_offset, target_zoom_pan.1.x_offset, t as f32);
+            self.zoom_pan.width = lerp(target_zoom_pan.0.width, target_zoom_pan.1.width, t as f32);
+
+            if t < 1.0 {
+                cx.request_draw();
+            } else {
+                self.target_zoom_pan = None;
+            }
+        }
+
         self.window.begin_window(cx);
         self.pass.begin_pass(cx, Vec4::color("300"));
         self.main_view.begin_view(cx, LayoutSize::FILL);

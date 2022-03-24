@@ -349,7 +349,7 @@ impl Default for Ease {
 impl Ease {
     // Clippy TODO
     #[warn(clippy::many_single_char_names)]
-    fn map(&self, t: f64) -> f64 {
+    pub fn map(&self, t: f64) -> f64 {
         match self {
             Ease::Lin => t.max(0.0).min(1.0),
             Ease::Pow { begin, end } => {
