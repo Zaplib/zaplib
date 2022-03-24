@@ -14,11 +14,29 @@ struct FlamegraphExampleApp {
     main_view: View,
     flame_rects: Vec<FlameRect>,
     spans: Vec<Span>,
+    zoom_pan: ZoomPan,
+    pointer_start_x_offset: Option<f32>,
+    component_id: ComponentId,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ZoomPan {
+    x_offset: f32,
+    width: f32,
+}
+
+impl Default for ZoomPan {
+    fn default() -> Self {
+        Self { x_offset: 0.0, width: 1.0 }
+    }
 }
 
 pub struct Span {
+    /// Fraction of the width of the container.
     pub offset: f32,
+    /// Fraction of the width of the container.
     pub width: f32,
+    /// Absolute level number; top level is 0.
     pub level: u32,
     pub label: String,
     pub color: Vec4,
@@ -71,6 +89,30 @@ impl FlamegraphExampleApp {
             }
             _ => (),
         }
+
+        let view_rect = self.main_view.get_rect(cx);
+        match event.hits_pointer(cx, self.component_id, Some(view_rect)) {
+            Event::PointerScroll(pse) => {
+                self.zoom_pan.width = (self.zoom_pan.width + pse.scroll.y / 300.0).clamp(0.001, 1.0);
+                cx.request_draw();
+            }
+            Event::PointerDown(pd) => {
+                if pd.button == MouseButton::Left {
+                    self.pointer_start_x_offset = Some(self.zoom_pan.x_offset);
+                }
+            }
+            Event::PointerUp(_pd) => {
+                self.pointer_start_x_offset = None;
+            }
+            Event::PointerMove(pm) => {
+                if let Some(pointer_start_x_offset) = self.pointer_start_x_offset {
+                    self.zoom_pan.x_offset = pointer_start_x_offset + (pm.abs.x - pm.abs_start.x) * self.zoom_pan.width / view_rect.size.x;
+                    cx.request_draw();
+                }
+                cx.request_draw();
+            }
+            _ => (),
+        }
     }
 
     fn draw(&mut self, cx: &mut Cx) {
@@ -81,7 +123,7 @@ impl FlamegraphExampleApp {
 
         self.flame_rects.resize_with(self.spans.len(), Default::default);
         for (i, span) in self.spans.iter().enumerate() {
-            self.flame_rects[i].draw(cx, &span)
+            self.flame_rects[i].draw(cx, &span, self.zoom_pan);
         }
 
         cx.end_padding_box();

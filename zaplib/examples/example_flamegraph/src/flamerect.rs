@@ -1,6 +1,6 @@
 use zaplib::*;
 
-use crate::Span;
+use crate::{Span, ZoomPan};
 
 #[derive(Clone, PartialEq)]
 pub enum FlameRectEvent {
@@ -141,12 +141,12 @@ impl FlameRect {
         FlameRectEvent::None
     }
 
-    pub fn draw(&mut self, cx: &mut Cx, span: &Span) {
+    pub fn draw(&mut self, cx: &mut Cx, span: &Span, zoom_pan: ZoomPan) {
         cx.begin_shader_group(&[&SHADER, &TEXT_INS_SHADER]);
 
         let rect = Rect {
-            pos: cx.get_draw_pos() + vec2(cx.get_box_rect().size.x * span.offset, span.level as f32 * LEVEL_HEIGHT),
-            size: vec2(cx.get_box_rect().size.x * span.width, LEVEL_HEIGHT),
+            pos: cx.get_draw_pos() + vec2(cx.get_box_rect().size.x * (span.offset + zoom_pan.x_offset) / zoom_pan.width, span.level as f32 * LEVEL_HEIGHT),
+            size: vec2(cx.get_box_rect().size.x * span.width / zoom_pan.width, LEVEL_HEIGHT),
         };
 
         self.bg_area =
