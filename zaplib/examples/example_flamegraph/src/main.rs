@@ -46,10 +46,6 @@ pub struct Span {
 
 const ANIM_SECONDS: f64 = 0.5;
 
-fn lerp(from: f32, other: f32, t: f32) -> f32 {
-    from * (1.0 - t) + other * t
-}
-
 impl FlamegraphExampleApp {
     fn new(_cx: &mut Cx) -> Self {
         Self::default()
@@ -144,9 +140,8 @@ impl FlamegraphExampleApp {
         if let Some(target_zoom_pan) = self.target_zoom_pan {
             // Animate to the target zoom level.
             let t = Ease::default().map((cx.last_event_time - target_zoom_pan.2) / ANIM_SECONDS).min(1.0);
-            // TODO(JP): Add lerp function to Zaplib.
-            self.zoom_pan.x_offset = lerp(target_zoom_pan.0.x_offset, target_zoom_pan.1.x_offset, t as f32);
-            self.zoom_pan.width = lerp(target_zoom_pan.0.width, target_zoom_pan.1.width, t as f32);
+            self.zoom_pan.x_offset = f32_from_lerp(target_zoom_pan.0.x_offset, target_zoom_pan.1.x_offset, t as f32);
+            self.zoom_pan.width = f32_from_lerp(target_zoom_pan.0.width, target_zoom_pan.1.width, t as f32);
 
             if t < 1.0 {
                 cx.request_draw();
