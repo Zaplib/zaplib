@@ -5,9 +5,7 @@ use crate::{Span, ZoomPan};
 #[derive(Clone, PartialEq)]
 pub enum FlameRectEvent {
     None,
-    Clicked,
-    Down,
-    Up,
+    Clicked(usize),
 }
 
 #[derive(Clone, Copy, Default)]
@@ -52,6 +50,7 @@ pub struct FlameRect {
     bg_area: Area,
     text_area: Area,
     animator: Animator,
+    span_index: usize,
 }
 
 const ANIM_DEFAULT: Anim = Anim {
@@ -107,7 +106,6 @@ impl FlameRect {
         match hit_event {
             Event::PointerDown(_pe) => {
                 animator.play_anim(cx, ANIM_DOWN);
-                return FlameRectEvent::Down;
             }
             Event::PointerHover(pe) => {
                 cx.set_hover_mouse_cursor(MouseCursor::Hand);
@@ -130,10 +128,9 @@ impl FlameRect {
                     } else {
                         animator.play_anim(cx, ANIM_DEFAULT);
                     }
-                    return FlameRectEvent::Clicked;
+                    return FlameRectEvent::Clicked(self.span_index);
                 } else {
                     animator.play_anim(cx, ANIM_DEFAULT);
-                    return FlameRectEvent::Up;
                 }
             }
             _ => (),
@@ -141,7 +138,9 @@ impl FlameRect {
         FlameRectEvent::None
     }
 
-    pub fn draw(&mut self, cx: &mut Cx, span: &Span, zoom_pan: ZoomPan) {
+    pub fn draw(&mut self, cx: &mut Cx, span_index: usize, span: &Span, zoom_pan: ZoomPan) {
+        self.span_index = span_index;
+
         cx.begin_shader_group(&[&SHADER, &TEXT_INS_SHADER]);
 
         let rect = Rect {
