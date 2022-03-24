@@ -570,7 +570,7 @@ export const initialize: Initialize = (initParams) => {
       // enough memory for both.. (This is mostly relevant on mobile; see note below.)
       const taskWorkerSab = initTaskWorkerSab();
       const taskWorkerRpc = new Rpc(newWorker(TaskWorker));
-      taskWorkerRpc.send(TaskWorkerEvent.Init, {
+      const taskWorkerRpcInit = taskWorkerRpc.send(TaskWorkerEvent.Init, {
         taskWorkerSab,
         wasmMemory,
       });
@@ -834,24 +834,24 @@ export const initialize: Initialize = (initParams) => {
           baseUri,
         });
 
-        WebAssembly.instantiate(wasmModule, { env }).then((instance: any) => {
-          const offscreenCanvas =
-            globalThis.OffscreenCanvas &&
-            canvasData.renderingMethod instanceof OffscreenCanvas
-              ? canvasData.renderingMethod
-              : undefined;
+        WebAssembly.instantiate(wasmModule, { env }).then(
+          async (instance: any) => {
+            const offscreenCanvas =
+              globalThis.OffscreenCanvas &&
+              canvasData.renderingMethod instanceof OffscreenCanvas
+                ? canvasData.renderingMethod
+                : undefined;
 
-          wasmExports = instance.exports as WasmExports;
-          initThreadLocalStorageMainWorker(wasmExports);
-          const tlsAndStackData =
-            makeThreadLocalStorageAndStackDataOnExistingThread(wasmExports);
-          wasmAppPtr = wasmExports.createWasmApp();
-          // The calls above are safe when wasm isn't online yet, but after that let's
-          // wrap for safety.
-          wasmExports = wrapWasmExports(wasmExports);
+            wasmExports = instance.exports as WasmExports;
+            initThreadLocalStorageMainWorker(wasmExports);
+            const tlsAndStackData =
+              makeThreadLocalStorageAndStackDataOnExistingThread(wasmExports);
+            wasmAppPtr = wasmExports.createWasmApp();
+            // The calls above are safe when wasm isn't online yet, but after that let's
+            // wrap for safety.
+            wasmExports = wrapWasmExports(wasmExports);
 
-          rpc
-            .send(
+            await rpc.send(
               WorkerEvent.Init,
               {
                 wasmModule,
@@ -865,16 +865,19 @@ export const initialize: Initialize = (initParams) => {
                 wasmOnline,
               },
               offscreenCanvas ? [offscreenCanvas] : []
-            )
-            .then(() => {
-              canvasData.onScreenResize();
-              if (initParams.defaultStyles) {
-                removeLoadingIndicator();
-              }
-              initialized = true;
-              resolve();
-            });
-        }, reject);
+            );
+            canvasData.onScreenResize();
+            if (initParams.defaultStyles) {
+              removeLoadingIndicator();
+            }
+            initialized = true;
+
+            await taskWorkerRpcInit;
+
+            resolve();
+          },
+          reject
+        );
       });
     };
 
