@@ -158,6 +158,7 @@ impl FlameRect {
                 text_style: TEXT_STYLE_MONO,
                 color: COLOR_BLACK,
                 position_anchoring: TEXT_ANCHOR_CENTER_V,
+                wrapping: Wrapping::Ellipsis(rect.size.x - 10.),
                 ..Default::default()
             },
         );
