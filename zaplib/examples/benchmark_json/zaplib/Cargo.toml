@@ -1,0 +1,10 @@
+[package]
+name = "benchmark_json_zaplib"
+version = "0.0.1"
+edition = "2021"
+publish = false
+
+[dependencies]
+zaplib = { path = "../../../main" }
+serde_json = "1.0.79"
+serde = { version = "1.0.136", features = ["derive"] }
