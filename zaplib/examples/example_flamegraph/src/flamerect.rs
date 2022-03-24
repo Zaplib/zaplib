@@ -36,7 +36,7 @@ static SHADER: Shader = Shader {
             fn pixel() -> vec4 {
                 let df = Df::viewport(pos * rect_size);
                 df.rect(vec2(0.0, 0.0), rect_size);
-                let new_color = mix(mix(color, #4, hover), #2a, down);
+                let new_color = mix(mix(color, #fff, hover*0.2), #000, down*0.2);
                 df.fill(new_color);
                 df.stroke(new_color, 20.0);
                 return df.result;
