@@ -87,7 +87,8 @@ const ANIM_DOWN: Anim = Anim {
     ..Anim::DEFAULT
 };
 
-const LEVEL_HEIGHT: f32 = 30.0;
+const LEVEL_HEIGHT: f32 = 22.0;
+const PADDING: f32 = 2.;
 
 impl FlameRect {
     fn animate(&mut self, cx: &mut Cx) {
@@ -153,12 +154,12 @@ impl FlameRect {
         self.text_area = TextIns::draw_str(
             cx,
             &span.label,
-            rect.pos + vec2(5., LEVEL_HEIGHT / 2.0),
+            rect.pos + vec2(PADDING, LEVEL_HEIGHT / 2.0),
             &TextInsProps {
                 text_style: TEXT_STYLE_MONO,
                 color: COLOR_BLACK,
                 position_anchoring: TEXT_ANCHOR_CENTER_V,
-                wrapping: Wrapping::Ellipsis(rect.size.x - 10.),
+                wrapping: Wrapping::Ellipsis(rect.size.x - 2. * PADDING),
                 ..Default::default()
             },
         );
