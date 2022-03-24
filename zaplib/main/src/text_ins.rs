@@ -401,7 +401,7 @@ impl TextIns {
         area
     }
 
-    fn measure_length(cx: &Cx, chars: &Vec<char>, props: &TextInsProps) -> f32 {
+    fn measure_width(cx: &Cx, chars: &Vec<char>, props: &TextInsProps) -> f32 {
         let text_style = &props.text_style;
         let font_id = text_style.font.font_id;
         let read_fonts = &cx.fonts_data.read().unwrap().fonts;
@@ -465,6 +465,13 @@ impl TextIns {
         (buf, width)
     }
 
+    /// Outputs a `Vec<char>` for every "chunk", depending on `TextInsProps::wrapping`.
+    ///
+    /// The different chunks should be rendered as individual boxes in the layout system
+    /// so that they wrap properly when there is no more space available, e.g. using
+    /// [`Cx::begin_wrapping_box`].
+    ///
+    /// Also returns the total width per chunk.
     fn apply_wrapping(cx: &Cx, text: &str, props: &TextInsProps) -> Vec<(Vec<char>, f32)> {
         match props.wrapping {
             Wrapping::Ellipsis(max_width) => vec![Self::truncate_to_ellipsis(cx, text, props, max_width)],
@@ -479,7 +486,7 @@ impl TextIns {
                 strs.iter()
                     .map(|&chunk| {
                         let chars = chunk.chars().collect();
-                        let width = Self::measure_length(cx, &chars, props);
+                        let width = Self::measure_width(cx, &chars, props);
                         (chars, width)
                     })
                     .collect()
@@ -487,6 +494,12 @@ impl TextIns {
         }
     }
 
+    /// Draw text using absolute positioning.
+    ///
+    /// This does not use the layouting system in Zaplib.
+    ///
+    /// Only single-line text is supported. This means that you can only use
+    /// `Wrapping::None` and `Wrapping::Ellipsis` for `TextInsProps::wrapping`.
     pub fn draw_str(cx: &mut Cx, text: &str, pos: Vec2, props: &TextInsProps) -> Area {
         let mut chunks = Self::apply_wrapping(cx, text, props);
 
@@ -512,6 +525,10 @@ impl TextIns {
         )
     }
 
+    /// Draw text and walk in the layout system.
+    ///
+    /// Calls `cx.add_box` for each "chunk" of text (depending on [`TextInsProps::wrapping`]).
+    ///
     /// TODO(JP): This doesn't seem to work well with [`Direction::Down`] (or other directions for
     /// that matter). Not a high priority but might good to be aware of.
     ///
