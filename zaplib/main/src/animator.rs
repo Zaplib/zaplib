@@ -267,6 +267,9 @@ pub struct Anim {
     /// The actual tracks of values that will change during this animation.
     /// Should remain consistent between the different animations that you pass
     /// into a single [`Animator`].
+    ///
+    /// TODO(JP): Allow for dynamically defined animations:
+    /// https://github.com/Zaplib/zaplib/issues/167
     pub tracks: &'static [Track],
 }
 
