@@ -60,7 +60,9 @@ impl Default for MouseButton {
 pub struct PointerDownEvent {
     pub window_id: usize,
     pub abs: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rel: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rect: Rect,
     // Digit based system is supposed to track pointer interactions, where each pointer is a digit.
     // Its doesn't exactly work in the way its supposed to work in terms of pointer tracking.
@@ -81,9 +83,13 @@ pub struct PointerDownEvent {
 pub struct PointerMoveEvent {
     pub window_id: usize,
     pub abs: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub abs_start: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rel: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rel_start: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rect: Rect,
     pub is_over: bool,
     pub digit: usize,
@@ -103,9 +109,13 @@ impl PointerMoveEvent {
 pub struct PointerUpEvent {
     pub window_id: usize,
     pub abs: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub abs_start: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rel: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rel_start: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rect: Rect,
     pub digit: usize,
     pub button: MouseButton,
@@ -135,7 +145,9 @@ pub struct PointerHoverEvent {
     pub window_id: usize,
     pub digit: usize,
     pub abs: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rel: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rect: Rect,
     pub any_down: bool,
     pub(crate) handled: bool,
@@ -150,7 +162,9 @@ pub struct PointerScrollEvent {
     pub window_id: usize,
     pub digit: usize,
     pub abs: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rel: Vec2,
+    /// TODO(JP): This is only set by [`Event::hits_pointer`]; use an `Option` or a different `struct`?
     pub rect: Rect,
     pub scroll: Vec2,
     pub input_type: PointerInputType,
