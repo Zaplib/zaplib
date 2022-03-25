@@ -142,9 +142,12 @@ impl FlameRect {
         self.span_index = span_index;
 
         cx.begin_shader_group(&[&SHADER, &TEXT_INS_SHADER]);
-
         let rect = Rect {
-            pos: cx.get_draw_pos() + vec2(cx.get_box_rect().size.x * (span.offset + zoom_pan.x_offset) / zoom_pan.width, span.level as f32 * LEVEL_HEIGHT),
+            pos: cx.get_draw_pos()
+                + vec2(
+                    cx.get_box_rect().size.x * (span.offset + zoom_pan.x_offset) / zoom_pan.width,
+                    span.level as f32 * LEVEL_HEIGHT,
+                ),
             size: vec2(cx.get_box_rect().size.x * span.width / zoom_pan.width, LEVEL_HEIGHT),
         };
 
@@ -152,20 +155,17 @@ impl FlameRect {
             cx.add_instances(&SHADER, &[BgIns { base: QuadIns::from_rect(rect), color: span.color, ..Default::default() }]);
 
         // Stick text to the left hand side.
-        let text_x_offset = if rect.pos.x < 0.0 {
-            -rect.pos.x
-        } else {
-            0.0
-        };
+        let text_x_offset = if rect.pos.x < 0.0 { -rect.pos.x } else { 0.0 };
 
+        // WARNING(JP): This is all tweaked pretty carefully to result in crisp rendering. This might break when values are changed
+        // or if font rendering itself is modified.
         self.text_area = TextIns::draw_str(
             cx,
             &span.label,
-            rect.pos + vec2(text_x_offset + PADDING, LEVEL_HEIGHT / 2.0),
+            vec2((rect.pos.x + text_x_offset + PADDING).round() + 0.5, rect.pos.y.round() + 2.5),
             &TextInsProps {
-                text_style: TEXT_STYLE_MONO,
+                text_style: TextStyle { font_size: 12.0, curve: 1.0, ..TEXT_STYLE_NORMAL },
                 color: COLOR_BLACK,
-                position_anchoring: TEXT_ANCHOR_CENTER_V,
                 wrapping: Wrapping::Ellipsis(rect.size.x - 2. * PADDING - text_x_offset),
                 ..Default::default()
             },
