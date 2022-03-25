@@ -47,12 +47,7 @@ fn call_rust(_name: String, _params: Vec<ZapParam>) -> Vec<ZapParam> {
     calc(jobj);
     let end: UniversalInstant = Instant::now();
 
-    vec![
-        vec![
-            end_p.duration_since(start_p).as_millis() as u32, 
-            end.duration_since(start).as_millis() as u32
-        ].into_param()
-    ]
+    vec![vec![end_p.duration_since(start_p).as_millis() as u32, end.duration_since(start).as_millis() as u32].into_param()]
 }
 
 register_call_rust!(call_rust);
