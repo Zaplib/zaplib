@@ -36,7 +36,7 @@
     It would be interesting augment the Rust benchmark with a simd-powered parsing library, but I wasn't able to get one to compile on my M1 mac... yet!
   </p>
   <p>
-    You may notice that the Zaplib benchmark runs about 2x as <em>slow</em> if the devtools are open. We don't exactly know why this is – likely it's a debug or profiling mode that gets enabled.
+    You may notice that the Zaplib benchmark runs about 2x <em>slower</em> (about the same time as the JS) if the devtools are open. We don't exactly know why this is – likely it's a debug or profiling mode that gets enabled.
   </p>
   <table>
     <tr>
@@ -45,7 +45,7 @@
       <th>Compute Time (ms</th>
     </tr>
     <tr>
-      <td>JavaScript (JSON.parse)</td>
+      <td>JavaScript (<code>JSON.parse</code>)</td>
       <td id="js-parsing"></td>
       <td id="js-compute"></td>
     </tr>
