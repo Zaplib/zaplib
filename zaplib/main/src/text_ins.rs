@@ -1,4 +1,9 @@
 //! Drawing text.
+//!
+//! TODO(JP): It's hard to get text to render crisply; see
+//! * https://github.com/Zaplib/zaplib/issues/169
+//! * https://github.com/Zaplib/zaplib/issues/174
+//! * https://github.com/Zaplib/zaplib/issues/175
 
 use std::{borrow::Borrow, sync::RwLock};
 
@@ -225,6 +230,10 @@ pub struct DrawGlyphsProps {
 }
 
 impl TextIns {
+    /// TODO(JP): It's hard to get text to render crisply; see
+    /// * https://github.com/Zaplib/zaplib/issues/169
+    /// * https://github.com/Zaplib/zaplib/issues/174
+    /// * https://github.com/Zaplib/zaplib/issues/175
     pub fn generate_2d_glyphs<F>(
         text_style: &TextStyle,
         fonts_data: &RwLock<CxFontsData>,
@@ -279,6 +288,8 @@ impl TextIns {
                 let min_pos_y = pos.y - font_size_logical * glyph.bounds.p_min.y + text_style.font_size * text_style.top_drop;
 
                 // compute subpixel shift
+                // TODO(JP): It's confusing that subpixel_x_fract and subpixel_y_fract are not 0 even when the glyph is not subpixel-shifted.
+                /// See https://github.com/Zaplib/zaplib/issues/175
                 let subpixel_x_fract = min_pos_x - (min_pos_x * dpi_factor).floor() / dpi_factor;
                 let subpixel_y_fract = min_pos_y - (min_pos_y * dpi_factor).floor() / dpi_factor;
 
@@ -296,6 +307,7 @@ impl TextIns {
                 0
             } else {
                 // subtle 64 index subpixel id
+                // TODO(JP): Should this be 8.0??
                 ((subpixel_y_fract * 7.0) as usize) << 3 | (subpixel_x_fract * 7.0) as usize
             };
 
