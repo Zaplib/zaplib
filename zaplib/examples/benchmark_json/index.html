@@ -1,0 +1,82 @@
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body {
+      padding: 50px;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    td,
+    th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+  </style>
+</head>
+<body style="margin: 0; overflow: hidden">
+  <h1><a href="https://zaplib.com">Zaplib</a> (rust/wasm) vs JS: 100mb JSON parsing</h1>
+  <p>
+    This benchmark was adapted from <a href="https://github.com/kostya/benchmarks#json">kostya/benchmarks</a>, but adapted to work for JS (web) vs Zaplib (rust/wasm).
+  </p>
+  <p>
+    To re-generate the json file locally, run the generate_json.rb file in this directory.
+  </p>
+  <p>
+    It would be interesting augment the Rust benchmark with a simd-powered parsing library, but I wasn't able to get one to compile on my M1 mac... yet!
+  </p>
+  <p>
+    You may notice that the Zaplib benchmark runs about 2x as <em>slow</em> if the devtools are open. We don't exactly know why this is – likely it's a debug or profiling mode that gets enabled.
+  </p>
+  <table>
+    <tr>
+      <th>Language</th>
+      <th>Parsing Time (ms)</th>
+      <th>Compute Time (ms</th>
+    </tr>
+    <tr>
+      <td>JavaScript (JSON.parse)</td>
+      <td id="js-parsing"></td>
+      <td id="js-compute"></td>
+    </tr>
+    <tr>
+      <td>Zaplib Rust Wasm (w/ Serde)</td>
+      <td id="zaplib-serde-parsing"></td>
+      <td id="zaplib-serde-compute"></td>
+    </tr>
+  </table>
+  <script src="/zaplib/examples/benchmark_json/js/index.js"></script>
+  <script type="text/javascript" src="/zaplib/web/dist/zaplib_runtime.development.js"></script>
+  <script>
+    async function repeatedBenchmark(name, func) {
+      let totals = [0, 0];
+      for (let i = 1; i <= 10; i++) {
+        const [parsingT, computeT] = await func();
+        totals[0] += parsingT;
+        totals[1] += computeT;
+
+        document.getElementById(`${name}-parsing`).innerHTML = Math.round(totals[0] / i);
+        document.getElementById(`${name}-compute`).innerHTML = Math.round(totals[1] / i);
+        await new Promise(requestAnimationFrame);
+      }
+    }
+    
+    (async function() {
+      await repeatedBenchmark('js', benchmarkJS);
+
+      zaplib.initialize({ wasmModule: '/target/wasm32-unknown-unknown/release/benchmark_json_zaplib.wasm' }).then(() => {
+        repeatedBenchmark('zaplib-serde', async () => (await zaplib.callRustAsync(""))[0]);
+      });
+    }());
+  </script>
+</body>

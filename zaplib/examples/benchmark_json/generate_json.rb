@@ -1,3 +1,5 @@
+# https://github.com/kostya/benchmarks/blob/1dd7deb29a813d1095e6062c25ad92bd81ce0273/json/generate_json.rb 
+
 # frozen_string_literal: true
 
 require 'json'

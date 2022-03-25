@@ -16,9 +16,7 @@ struct TestStruct {
     coordinates: Vec<Coordinate>,
 }
 
-fn calc(s: &str) -> Coordinate {
-    let jobj = serde_json::from_str::<TestStruct>(s).unwrap();
-
+fn calc(jobj: TestStruct) -> Coordinate {
     let len = jobj.coordinates.len() as f64;
     let mut x = 0_f64;
     let mut y = 0_f64;
@@ -33,21 +31,28 @@ fn calc(s: &str) -> Coordinate {
     Coordinate { x: x / len, y: y / len, z: z / len }
 }
 
-fn run() {
+fn call_rust(_name: String, _params: Vec<ZapParam>) -> Vec<ZapParam> {
     let mut file = UniversalFile::open("zaplib/examples/benchmark_json/data.json").unwrap();
     let mut s = String::new();
-    file.read_to_string(&mut s);
+    let ret = file.read_to_string(&mut s);
+    if ret.is_err() {
+        panic!("Failed to read file");
+    }
+
+    let start_p = Instant::now();
+    let jobj = serde_json::from_str::<TestStruct>(&s).unwrap();
+    let end_p: UniversalInstant = Instant::now();
 
     let start = Instant::now();
-    calc(&s);
+    calc(jobj);
     let end: UniversalInstant = Instant::now();
-    log!("{:?}", end.duration_since(start));
-}
 
-fn call_rust(_name: String, _params: Vec<ZapParam>) -> Vec<ZapParam> {
-    run();
-
-    vec![]
+    vec![
+        vec![
+            end_p.duration_since(start_p).as_millis() as u32, 
+            end.duration_since(start).as_millis() as u32
+        ].into_param()
+    ]
 }
 
 register_call_rust!(call_rust);

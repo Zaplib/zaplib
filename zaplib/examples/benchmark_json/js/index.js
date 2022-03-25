@@ -2,9 +2,7 @@
 
 'use strict';
 
-function calc(text) {
-  const jobj = JSON.parse(text);
-
+function calc(jobj) {
   const coordinates = jobj['coordinates'];
   const len = coordinates.length;
   let x = 0;
@@ -25,11 +23,18 @@ function calc(text) {
   };
 }
 
-fetch('../data.json').then(response => response.text()).then(text => {
-  const start = performance.now()
-  const results = calc(text);
-  const end = performance.now();
-  
-  console.log(`Time: ${end - start} ms`);
-});
+const textP = fetch('/zaplib/examples/benchmark_json/data.json').then(response => response.text());
 
+const benchmarkJS = async function() {
+  const text = await textP;
+  
+  const startP = performance.now()
+  const jobj = JSON.parse(text);
+  const endP = performance.now();
+
+  const start = performance.now()
+  const results = calc(jobj);
+  const end = performance.now();
+
+  return [endP-startP, end - start];
+}
