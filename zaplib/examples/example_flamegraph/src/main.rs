@@ -56,10 +56,7 @@ impl FlamegraphExampleApp {
             if let FlameRectEvent::Clicked(span_index) = flame_rect.handle(cx, event) {
                 let span = &self.spans[span_index];
                 // Fully zooming/panning so it spans the entire container.
-                let new_zoom_pan = ZoomPan {
-                    x_offset: -span.offset,
-                    width: span.width,
-                };
+                let new_zoom_pan = ZoomPan { x_offset: -span.offset, width: span.width };
                 if self.zoom_pan == new_zoom_pan {
                     // If we already were at this zoom level, then just jump back.
                     self.target_zoom_pan = Some((self.zoom_pan, ZoomPan::default(), cx.last_event_time));
@@ -157,7 +154,7 @@ impl FlamegraphExampleApp {
 
         self.flame_rects.resize_with(self.spans.len(), Default::default);
         for (span_index, span) in self.spans.iter().enumerate() {
-            self.flame_rects[span_index].draw(cx, span_index, &span, self.zoom_pan);
+            self.flame_rects[span_index].draw(cx, span_index, span, self.zoom_pan);
         }
 
         cx.end_padding_box();

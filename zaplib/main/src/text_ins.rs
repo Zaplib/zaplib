@@ -1,9 +1,9 @@
 //! Drawing text.
 //!
 //! TODO(JP): It's hard to get text to render crisply; see
-//! * https://github.com/Zaplib/zaplib/issues/169
-//! * https://github.com/Zaplib/zaplib/issues/174
-//! * https://github.com/Zaplib/zaplib/issues/175
+//! * <https://github.com/Zaplib/zaplib/issues/169>
+//! * <https://github.com/Zaplib/zaplib/issues/174>
+//! * <https://github.com/Zaplib/zaplib/issues/175>
 
 use std::{borrow::Borrow, sync::RwLock};
 
@@ -231,9 +231,9 @@ pub struct DrawGlyphsProps {
 
 impl TextIns {
     /// TODO(JP): It's hard to get text to render crisply; see
-    /// * https://github.com/Zaplib/zaplib/issues/169
-    /// * https://github.com/Zaplib/zaplib/issues/174
-    /// * https://github.com/Zaplib/zaplib/issues/175
+    /// * <https://github.com/Zaplib/zaplib/issues/169>
+    /// * <https://github.com/Zaplib/zaplib/issues/174>
+    /// * <https://github.com/Zaplib/zaplib/issues/175>
     pub fn generate_2d_glyphs<F>(
         text_style: &TextStyle,
         fonts_data: &RwLock<CxFontsData>,
@@ -288,8 +288,9 @@ impl TextIns {
                 let min_pos_y = pos.y - font_size_logical * glyph.bounds.p_min.y + text_style.font_size * text_style.top_drop;
 
                 // compute subpixel shift
-                // TODO(JP): It's confusing that subpixel_x_fract and subpixel_y_fract are not 0 even when the glyph is not subpixel-shifted.
-                /// See https://github.com/Zaplib/zaplib/issues/175
+                // TODO(JP): It's confusing that subpixel_x_fract and subpixel_y_fract are not 0 even when the glyph
+                // is not subpixel-shifted.
+                // See https://github.com/Zaplib/zaplib/issues/175
                 let subpixel_x_fract = min_pos_x - (min_pos_x * dpi_factor).floor() / dpi_factor;
                 let subpixel_y_fract = min_pos_y - (min_pos_y * dpi_factor).floor() / dpi_factor;
 
@@ -413,7 +414,7 @@ impl TextIns {
         area
     }
 
-    fn measure_width(cx: &Cx, chars: &Vec<char>, props: &TextInsProps) -> f32 {
+    fn measure_width(cx: &Cx, chars: &[char], props: &TextInsProps) -> f32 {
         let text_style = &props.text_style;
         let font_id = text_style.font.font_id;
         let read_fonts = &cx.fonts_data.read().unwrap().fonts;
@@ -497,7 +498,7 @@ impl TextIns {
                 };
                 strs.iter()
                     .map(|&chunk| {
-                        let chars = chunk.chars().collect();
+                        let chars = chunk.chars().collect::<Vec<char>>();
                         let width = Self::measure_width(cx, &chars, props);
                         (chars, width)
                     })

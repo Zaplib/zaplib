@@ -157,8 +157,8 @@ impl FlameRect {
         // Stick text to the left hand side.
         let text_x_offset = if rect.pos.x < 0.0 { -rect.pos.x } else { 0.0 };
 
-        // WARNING(JP): This is all tweaked pretty carefully to result in crisp rendering. This might break when values are changed
-        // or if font rendering itself is modified.
+        // WARNING(JP): This is all tweaked pretty carefully to result in crisp rendering. This might break when
+        // values are changed or if font rendering itself is modified.
         self.text_area = TextIns::draw_str(
             cx,
             &span.label,

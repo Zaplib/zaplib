@@ -243,7 +243,12 @@ impl fmt::Display for Vec4 {
 
 impl Vec4 {
     pub fn from_lerp(a: Self, b: Self, f: f32) -> Self {
-        Self { x: f32_from_lerp(a.x, b.x, f), y: f32_from_lerp(a.y, b.y, f), z: f32_from_lerp(a.z, b.z, f), w: f32_from_lerp(a.w, b.w, f) }
+        Self {
+            x: f32_from_lerp(a.x, b.x, f),
+            y: f32_from_lerp(a.y, b.y, f),
+            z: f32_from_lerp(a.z, b.z, f),
+            w: f32_from_lerp(a.w, b.w, f),
+        }
     }
 
     pub const fn all(v: f32) -> Self {

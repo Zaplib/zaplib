@@ -269,7 +269,7 @@ pub struct Anim {
     /// into a single [`Animator`].
     ///
     /// TODO(JP): Allow for dynamically defined animations:
-    /// https://github.com/Zaplib/zaplib/issues/167
+    /// <https://github.com/Zaplib/zaplib/issues/167>
     pub tracks: &'static [Track],
 }
 
