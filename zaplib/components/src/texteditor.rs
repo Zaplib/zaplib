@@ -1305,7 +1305,7 @@ impl TextEditor {
                 scale /= 10;
             }
             let draw_str_props = TextInsProps {
-                wrapping: Wrapping::Line,
+                wrapping: Wrapping::None,
                 text_style: TEXT_STYLE_MONO,
                 font_scale: self.current_font_scale,
                 draw_depth: 1.5,
