@@ -541,6 +541,25 @@
 				"args": [],
 				"cwd": "."
 			},
+			{
+				"type": "lldb",
+				"request": "launch",
+				"name": "Debug unit tests in library 'zaplib'",
+				"cargo": {
+					"args": [
+						"test",
+						"--no-run",
+						"--lib",
+						"--package=zaplib"
+					],
+					"filter": {
+						"name": "zaplib",
+						"kind": "lib"
+					}
+				},
+				"args": [],
+				"cwd": "."
+			},
 		]
 	},
 }
