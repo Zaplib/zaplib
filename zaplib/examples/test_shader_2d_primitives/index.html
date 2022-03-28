@@ -9,18 +9,22 @@
             padding: 0;
         }
 
-        canvas {
+        #myCanvas {
             position: relative;
             margin: 40px 0 0px 640px;
             width: 601;
             height: 601;
         }
     </style>
+    <script type="text/javascript" src="/zaplib/web/dist/zaplib_runtime.development.js"></script>
 </head>
 
 <body>
     <canvas id="myCanvas" width=601 height=601></canvas>
     <script>
+        const env = new URL(window.document.location).searchParams.has("release") ? "release" : "debug";
+        zaplib.initialize({ wasmModule: `target/wasm32-unknown-unknown/${env}/test_shader_2d_primitives.wasm`, defaultStyles: true });
+
         function draw_grid(cx, w, h, cell_size) {
             const color_light = "#888";
             const color_dark = "#444"
