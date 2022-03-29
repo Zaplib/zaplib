@@ -279,7 +279,7 @@ async fn screenshots(browser_name: &str, driver: &mut WebDriver, local_port: u16
         // "test_multithread/?release", // TODO(JP): Pause animation.
         ("test_padding", "/zaplib/examples/test_padding/?release"),
         ("test_popover", "/zaplib/examples/test_popover/?release"),
-        // "test_shader_2d_primitives/", // TODO(JP): Make work in Wasm context (not just CEF).
+        ("test_shader_2d_primitives", "/zaplib/examples/test_shader_2d_primitives/?release"),
         ("tutorial_2d_rendering_step1", "/zaplib/examples/tutorial_2d_rendering/step1"),
         ("tutorial_2d_rendering_step2", "/zaplib/examples/tutorial_2d_rendering/step2"),
         ("tutorial_2d_rendering_step3", "/zaplib/examples/tutorial_2d_rendering/step3"),
