@@ -26,19 +26,22 @@
         zaplib.initialize({ wasmModule: `target/wasm32-unknown-unknown/${env}/test_shader_2d_primitives.wasm`, defaultStyles: true });
 
         function draw_grid(cx, w, h, cell_size) {
-            const color_light = "#888";
-            const color_dark = "#444"
+            // Attempt to avoid antialising by offseting all drawing by half a pixel
+            // See: https://stackoverflow.com/a/3279863
+
+            const color_light = "rgb(128, 128, 128)";
+            const color_dark = "rgb(64, 64, 64)";
 
             cx.beginPath();
             cx.lineWidth = 1;
             cx.strokeStyle = color_light;
             for (let x = 0; x <= w; x += cell_size) {
-                cx.moveTo(x, 0);
-                cx.lineTo(x, h);
+                cx.moveTo(x + 0.5, 0 + 0.5);
+                cx.lineTo(x + 0.5, h + 0.5);
             }
             for (let y = 0; y <= h; y += cell_size) {
-                cx.moveTo(0, y);
-                cx.lineTo(w, y);
+                cx.moveTo(0 + 0.5, y + 0.5);
+                cx.lineTo(w + 0.5, y + 0.5);
             }
             cx.stroke();
 
@@ -46,12 +49,12 @@
             cx.lineWidth = 1;
             cx.strokeStyle = color_dark;
             for (let x = 0.5 * cell_size; x <= w; x += cell_size) {
-                cx.moveTo(x, 0);
-                cx.lineTo(x, h);
+                cx.moveTo(x + 0.5, 0 + 0.5);
+                cx.lineTo(x + 0.5, h + 0.5);
             }
             for (let y = 0.5 * cell_size; y <= h; y += cell_size) {
-                cx.moveTo(0, y);
-                cx.lineTo(w, y);
+                cx.moveTo(0 + 0.5, y + 0.5);
+                cx.lineTo(w + 0.5, y + 0.5);
             }
             cx.stroke();
         }
@@ -202,17 +205,12 @@
         var canvas = document.getElementById("myCanvas");
         var cx = canvas.getContext("2d");
 
-        // Attempt to avoid antialising by offseting all drawing by half a pixel
-        // See: https://stackoverflow.com/a/3279863
-        cx.translate(0.5, 0.5);
-
         const { width, height } = canvas;
         const prim_count = 10;
         const cell_size = (width - 1) / prim_count;
 
         draw_grid(cx, width, height, cell_size);
         draw_primitives(cx, width, height, cell_size);
-
     </script>
 </body>
 

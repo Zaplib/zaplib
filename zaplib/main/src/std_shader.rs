@@ -228,15 +228,15 @@ impl Cx {
             // Render a box with rounded corners at p with dimensions d.
             // Use `r` to indicate the corner radius - if r is less than 1, render a basic
             // rectangle. If r is bigger than min(w, h), the result will be a circle.
-            fn box(inout self, p: vec2, d: vec2, r: float) {
-                let s = 0.5 * d;
-                let o = p + s;
-                r = min(r, min(d.x, d.y));
-                s -= r;
-                let dist = abs(o - self.pos) - s;
-                let dmin = min(dist, 0.);
-                let dmax = max(dist, 0.);
-                let df = max(dmin.x, dmin.y) + length(dmax);
+            fn box(inout self, pos: vec2, size: vec2, r: float) {
+                let half_size = 0.5 * size;
+                let center = pos + half_size;
+                r = min(r, min(size.x, size.y));
+                half_size -= r;
+                let dist_from_edge = abs(center - self.pos) - half_size;
+                let dneg = min(dist_from_edge, 0.);
+                let dpos = max(dist_from_edge, 0.);
+                let df = max(dneg.x, dneg.y) + length(dpos);
                 self.add_field(df - r);
             }
 

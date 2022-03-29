@@ -151,6 +151,9 @@ impl PrimitivesExampleApp {
     }
 
     fn draw_grid(&mut self, cx: &mut Cx, bounds: Rect, cell_size: Vec2) {
+        // Attempt to avoid antialising by offseting all drawing by half a pixel
+        // See: https://stackoverflow.com/a/3279863
+
         let color = vec4(0.5, 0.5, 0.5, 1.);
         let dark_color = vec4(0.25, 0.25, 0.25, 1.);
         let scale = 1.;
@@ -164,25 +167,45 @@ impl PrimitivesExampleApp {
 
         let mut x = min_x;
         while x <= max_x {
-            lines.push(DrawLines3dInstance::from_segment(vec3(x, min_y, 0.), vec3(x, max_y, 0.), color, scale));
+            lines.push(DrawLines3dInstance::from_segment(
+                vec3(x + 0.5, min_y + 0.5, 0.),
+                vec3(x + 0.5, max_y + 0.5, 0.),
+                color,
+                scale,
+            ));
             x += cell_size.x;
         }
 
         let mut x = min_x + 0.5 * cell_size.x;
         while x <= max_x {
-            lines.push(DrawLines3dInstance::from_segment(vec3(x, min_y, 0.), vec3(x, max_y, 0.), dark_color, scale));
+            lines.push(DrawLines3dInstance::from_segment(
+                vec3(x + 0.5, min_y + 0.5, 0.),
+                vec3(x + 0.5, max_y + 0.5, 0.),
+                dark_color,
+                scale,
+            ));
             x += cell_size.x;
         }
 
         let mut y = min_y;
         while y <= max_y {
-            lines.push(DrawLines3dInstance::from_segment(vec3(min_x, y, 0.), vec3(max_x, y, 0.), color, scale));
+            lines.push(DrawLines3dInstance::from_segment(
+                vec3(min_x + 0.5, y + 0.5, 0.),
+                vec3(max_x + 0.5, y + 0.5, 0.),
+                color,
+                scale,
+            ));
             y += cell_size.y;
         }
 
         let mut y = min_y + 0.5 * cell_size.y;
         while y <= max_y {
-            lines.push(DrawLines3dInstance::from_segment(vec3(min_x, y, 0.), vec3(max_x, y, 0.), dark_color, scale));
+            lines.push(DrawLines3dInstance::from_segment(
+                vec3(min_x + 0.5, y + 0.5, 0.),
+                vec3(max_x + 0.5, y + 0.5, 0.),
+                dark_color,
+                scale,
+            ));
             y += cell_size.y;
         }
 
