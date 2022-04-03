@@ -42,3 +42,7 @@ background: linear-gradient(90deg, rgba(14,36,0,1) 0%, rgba(1,107,161,1) 0%, rgb
 .content {
   position: relative;
 }
+
+.nav-wide-wrapper {
+  display: none;
+}
