@@ -6,15 +6,13 @@ The goal of Zaplib is to make it easy to build performance-intensive application
 
 Zaplib is designed to be **incrementally adoptable**. Start by porting over a single function you know is slow. Then port over an entire UI component, leaving the rest of your app alone. Over time, you could port your entire codebase over to Rust, or you might keep JavaScript and Rust code side-by-side.
 
-Zaplib is in alpha, but it's rapidly improving. If you want to use this library in production, please say hi in our [Slack](/slack.html), so we can work with you on the integration. Don't be shy - please reach out if you run into any issues at all 😄
+Zaplib is in alpha, but it's rapidly improving. If you want to use this library in production, please say hi in our [Slack](/slack.html), so we can work with you on the integration. Don't be shy — please reach out if you run into any issues at all 😄
 
 ## Demo
 
-The following demo is fully rendered within Zaplib: using Rust, in a Web Worker, and using our custom 2d rendering engine. We render the Zaplib lightning bolt logo, with draggable control points, and a live editable shader (in an editor originally built by the <a href="https://github.com/makepad/makepad">Makepad</a> folks). Try changing `LINES` or `LINE_BASE_LENGTH`. It's best viewed on desktop in a modern browser.
+The following demo is [fully rendered within Zaplib](https://github.com/Zaplib/zaplib/blob/main/zaplib/examples/example_lightning/src/main.rs): using Rust, in a Web Worker, and using our custom 2d rendering engine. We render the Zaplib lightning bolt logo, with draggable control points, and a live editable shader (in a fully Rust-based editor originally built by the <a href="https://github.com/makepad/makepad">Makepad</a> folks). Try changing `LINES` or `LINE_BASE_LENGTH`. It's best viewed on desktop in a modern browser.
 
-<div style="height: 600px">
-<iframe src="/example_lightning.html?release" style="position: absolute; left: 0; width: 100%; height: 600px; border: none;"></iframe>
-</div>
+<div style="height: 600px"><iframe src="/example_lightning.html?release" style="position: absolute; left: 0; width: 100%; height: 600px; border: none;"></iframe></div>
 
 ## Structure
 

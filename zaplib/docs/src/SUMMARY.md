@@ -1,6 +1,7 @@
 # Summary
 
 - [Introduction](./introduction.md)
+- [Demos](./demos.md)
 - [Getting Started](./getting_started.md)
 - [Developer Environment](./developer_environment.md)
 - [API Reference](./api_reference.md)
