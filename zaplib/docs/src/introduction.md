@@ -8,6 +8,14 @@ Zaplib is designed to be **incrementally adoptable**. Start by porting over a si
 
 Zaplib is in alpha, but it's rapidly improving. If you want to use this library in production, please say hi in our [Slack](/slack.html), so we can work with you on the integration. Don't be shy - please reach out if you run into any issues at all 😄
 
+## Demo
+
+The following demo is fully rendered within Zaplib: using Rust, in a Web Worker, and using our custom 2d rendering engine. We render the Zaplib lightning bolt logo, with draggable control points, and a live editable shader (in an editor originally built by the <a href="https://github.com/makepad/makepad">Makepad</a> folks). Try changing `LINES` or `LINE_BASE_LENGTH`. It's best viewed on desktop in a modern browser.
+
+<div style="height: 600px">
+<iframe src="/example_lightning.html?release" style="position: absolute; left: 0; width: 100%; height: 600px; border: none;"></iframe>
+</div>
+
 ## Structure
 
 Zaplib roughly consists of these parts:
