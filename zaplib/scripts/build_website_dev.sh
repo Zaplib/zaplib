@@ -22,21 +22,39 @@ CARGO_TARGET_DIR="website_dev/target" RUSTDOCFLAGS="-Dwarnings" cargo doc --no-d
 mkdir -p website_dev/zaplib/examples/example_bigedit/src/
 cp zaplib/examples/example_bigedit/src/treeworld.rs website_dev/zaplib/examples/example_bigedit/src/treeworld.rs
 
-cp zaplib/examples/example_bigedit/index.html website_dev/example_bigedit.html
-cp zaplib/examples/example_charts/index.html website_dev/example_charts.html
 cp zaplib/examples/example_lightning/index.html website_dev/example_lightning.html
-cp zaplib/examples/example_lots_of_buttons/index.html website_dev/example_lots_of_buttons.html
+cp zaplib/examples/example_charts/index.html website_dev/example_charts.html
 cp zaplib/examples/example_shader/index.html website_dev/example_shader.html
 cp zaplib/examples/example_single_button/index.html website_dev/example_single_button.html
+cp zaplib/examples/example_lots_of_buttons/index.html website_dev/example_lots_of_buttons.html
+cp zaplib/examples/example_bigedit/index.html website_dev/example_bigedit.html
+cp zaplib/examples/example_image/index.html website_dev/example_image.html
 cp zaplib/examples/example_text/index.html website_dev/example_text.html
+cp zaplib/examples/test_bottom_bar/index.html website_dev/test_bottom_bar.html
+cp zaplib/examples/test_geometry/index.html website_dev/test_geometry.html
+cp zaplib/examples/test_layout/index.html website_dev/test_layout.html
+cp zaplib/examples/test_many_quads/index.html website_dev/test_many_quads.html
+cp zaplib/examples/test_multithread/index.html website_dev/test_multithread.html
+cp zaplib/examples/test_padding/index.html website_dev/test_padding.html
+cp zaplib/examples/test_popover/index.html website_dev/test_popover.html
+cp zaplib/examples/test_shader_2d_primitives/index.html website_dev/test_shader_2d_primitives.html
 
-CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_bigedit --release
-CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_charts --release
 CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_lightning --release
-CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_lots_of_buttons --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_charts --release
 CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_shader --release
 CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_single_button --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_lots_of_buttons --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_bigedit --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_image --release
 CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_text --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p test_bottom_bar --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p test_geometry --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p test_layout --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p test_many_quads --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p test_multithread --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p test_padding --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p test_popover --release
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p test_shader_2d_primitives --release
 
 pushd zaplib/web/
     yarn

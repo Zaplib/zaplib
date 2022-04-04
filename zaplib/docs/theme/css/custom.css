@@ -10,7 +10,7 @@
 }
 
 .right-buttons {
-  display: flex; 
+  display: flex;
   align-items:center;
 }
 
@@ -37,4 +37,12 @@ background: linear-gradient(90deg, rgba(14,36,0,1) 0%, rgba(1,107,161,1) 0%, rgb
   color: rgb(245, 245, 245);
   z-index: 999999;
   position: relative;
+}
+
+.content {
+  position: relative;
+}
+
+.nav-wide-wrapper {
+  display: none;
 }

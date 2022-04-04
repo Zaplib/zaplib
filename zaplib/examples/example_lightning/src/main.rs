@@ -143,8 +143,8 @@ impl LogoApp {
             folded: false,
             #[cfg(not(feature = "disable-interaction"))]
             splitter: Splitter {
-                pos: 540.,
-                align: SplitterAlign::Last,
+                align: SplitterAlign::Weighted,
+                pos: 0.5,
                 _hit_state_margin: Some(Padding::vh(0., 10.)),
                 ..Splitter::default()
             },
