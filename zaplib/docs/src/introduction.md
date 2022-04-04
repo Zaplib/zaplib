@@ -10,9 +10,9 @@ Zaplib is in alpha, but it's rapidly improving. If you want to use this library 
 
 ## Demo
 
-The following demo is [fully rendered within Zaplib](https://github.com/Zaplib/zaplib/blob/main/zaplib/examples/example_lightning/src/main.rs): using Rust, in a Web Worker, and using our custom 2d rendering engine. We render the Zaplib lightning bolt logo, with draggable control points, and a live editable shader (in a fully Rust-based editor originally built by the <a href="https://github.com/makepad/makepad">Makepad</a> folks). Try changing `LINES` or `LINE_BASE_LENGTH`. It's best viewed on desktop in a modern browser.
+The following demo (including the text!) is [fully rendered within Zaplib](https://github.com/Zaplib/zaplib/blob/main/zaplib/examples/example_lightning/src/main.rs): using Rust, in a Web Worker, and using our custom 2d rendering engine. We render the Zaplib lightning bolt logo, with draggable control points, and a live editable shader (in a fully Rust-based editor originally built by the <a href="https://github.com/makepad/makepad">Makepad</a> folks). Try changing `LINES` or `LINE_BASE_LENGTH`. It's best viewed on desktop in a modern browser. For more demos, check out [demos](./demos.md).
 
-<div style="height: 600px"><iframe src="/example_lightning.html?release" style="position: absolute; left: 0; width: 100%; height: 600px; border: none;"></iframe></div>
+<div style="height: 600px"><iframe src="/example_lightning.html?release" style="position: absolute; left: 50%; transform: translateX(-50%); width: 100%; max-width: 1000px; height: 600px; border: none;"></iframe></div>
 
 ## Structure
 

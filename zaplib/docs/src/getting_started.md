@@ -32,7 +32,7 @@ Now you're ready to run a simple example natively. Here are some fun ones to pla
 * `cargo run -p example_lightning --release` (best to do a release build; see below)
 * `cargo run -p example_bigedit --release` (best to do a release build; see below)
 
-Feel free to check out the `examples` directory for more examples to play with!
+Feel free to check out the `examples` directory for more examples to play with! You can also view most of these on our [Introduction](./introduction.md) and [Demos](./demos.md) pages.
 
 **Warning:** On Mac we currently have a memory leak bug, so some examples might crash after a while. Windows doens't work at all currently. Linux hasn't been tested very well recently. WebAssembly (below) should generally work well though. Early alpha software.. stay tuned!
 
@@ -41,7 +41,7 @@ Feel free to check out the `examples` directory for more examples to play with!
 Of course, Zaplib is a WebAssembly framework, so let's run these in **Chrome** (more browser support coming soon):
 
 1. Build all the examples:
-   
+
 ```
 cargo zaplib build --workspace
 ```
@@ -52,7 +52,7 @@ cargo zaplib build --workspace
 cargo zaplib serve
 ```
 
-3. Navigate Chrome to: 
+3. Navigate Chrome to:
 
 <a target="_blank" href="http://localhost:3000/zaplib/examples/example_single_button">http://localhost:3000/zaplib/examples/example_single_button</a>
 
