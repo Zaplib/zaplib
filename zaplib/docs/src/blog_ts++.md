@@ -2,7 +2,35 @@
 
 _JP Posma, April 2022_
 
-Typescript and Rust feel pretty similar. In some ways, Rust feels like a more restrictive but faster version of Typescript. But Typescript/Javascript can be very fast too; owing to years of hard work by browser vendors. In this article we'll look at the performance characteristics in more detail, and if we can have the best of both worlds.
+Typescript and Rust can feel pretty similar:
+
+```typescript
+// Typescript
+type Vec2 = { x: number, y: number };
+
+function avgLen(vecs: Vec2[]): number {
+    let total = 0;
+    for (const vec in vecs) {
+        total += Math.sqrt(vec.x*vec.x + vec.y*vec.y);
+    }
+    return total / vecs.length;
+}
+```
+
+```rust,noplayground
+// Rust
+struct Vec2 { x: f64, y: f64 }
+
+fn avg_len(vecs: &[Vec2]) -> f64 {
+    let mut total = 0.0;
+    for vec in vecs {
+        total += (vec.x*vec.x + vec.y*vec.y).sqrt();
+    }
+    return total / vecs.len() as f64;
+}
+```
+
+In some ways, Rust feels like a more restrictive but faster version of Typescript. But Typescript/Javascript can be very fast too; owing to years of hard work by browser vendors. In this article we'll look at the performance characteristics in more detail, and if we can have the best of both worlds.
 
 ## JS vs Wasm performance
 
@@ -14,7 +42,7 @@ Another problem with benchmarks is that they often don't measure realistic scena
 
 Let's be a bit more precise about comparing JS vs Wasm. First, there are two metrics that are interesting:
 1. **Maximum performance.** How fast can a significantly hand-tuned implementation get?
-2. **Canonical performance.** How fast can you get using standard language features or libraries?
+2. **Idiomatic performance.** How fast can you get using standard language features or libraries?
 
 ### Maximum performance
 
@@ -25,21 +53,23 @@ In terms of maximum performance, JS and Wasm are roughly the same (except in a s
 
 This is the case that most of the benchmarks mentioned above focus on. Even there, you can find benchmarks which produce spectacular results, like the [hash-wasm benchmark](https://daninet.github.io/hash-wasm-benchmark/), in which the Wasm version is often 10x faster. But in most cases you'll find much more modest results, because the JavaScript benchmarks are manually managing memory (which is the slowest part of JavaScript).
 
-As of current writing, there are a couple of differences in language features and implementations that give either JS or Wasm an edge:
-* **JS**: Access to zero-copy native APIs, like `TextEncoder` and `FileReader.readAsArrayBuffer`. In JS you can immediately use the result of these functions, whereas in Wasm you first need to copy the result into the Wasm memory.
-* **JS**: Zero-copy multiple memories. You can cheaply create multiple `ArrayBuffer`s, whereas in Wasm there is only a single memory, and growing it is fairly expensive.
-* **Wasm**: SIMD instructions. SIMD.js APIs have been [deprecated](https://github.com/tc39/ecmascript_simd) in favour of a Wasm-only implementation.
-* **Wasm**: Upfront compiler optimizations. JS can hot-swap in optimized bytecode (even profile-guided optimization based actual program behavior), but this takes a while to kick in. Running such an optimizer also consumes resources. With Wasm you can run an optimizer upfront, and for much longer.
+As of current writing, there are a couple of differences in language features and implementations that give either JS or Wasm an edge. JS has an edge in these ways:
+* Access to zero-copy native APIs, like `TextEncoder` and `FileReader.readAsArrayBuffer`. In JS you can immediately use the result of these functions, whereas in Wasm you first need to copy the result into the Wasm memory.
+* Zero-copy multiple memories. You can cheaply create multiple `ArrayBuffer`s, whereas in Wasm there is only a single memory, and growing it is fairly expensive.
 
-### Canonical performance
+And Wasm has these advantages:
+* SIMD instructions. SIMD.js APIs have been [deprecated](https://github.com/tc39/ecmascript_simd) in favour of a Wasm-only implementation.
+* Upfront compiler optimizations. JS can hot-swap in optimized bytecode (even profile-guided optimization based actual program behavior), but this takes a while to kick in. Running such an optimizer also consumes resources. With Wasm you can run an optimizer upfront, and for much longer.
 
-Canonical performance might be more interesting to most people. You want the code that is naturally easy to write and maintain to be performant. However, even here we have to be careful! For most software, performance follows a power law, where a small fraction of code takes most of the time. In that case it's not a big deal to hand-optimize that part. Canonical performance is more important if such "hot code" is spread out over the entire codebase, which is quite rare.
+### Idiomatic performance
+
+Idiomatic performance might be more interesting to most people. You want the code that is naturally easy to write and maintain to be performant. However, even here we have to be careful! For most software, performance follows a power law, where a small fraction of code takes most of the time. In that case it's not a big deal to hand-optimize that part. Idiomatic performance is more important if such "hot code" is spread out over the entire codebase, which is quite rare.
 
 ![](./img/benchmark.gif)
 
 
-[This 3d character animation benchmark](https://www.lucidchart.com/techblog/2017/05/16/webassembly-overview-so-fast-so-fun-sorta-difficult/) is the best benchmark I've found so far for canonical performance:
-1. It's an dual implementation of a relatively complex system in canonical Javascript and canonical C++ (compiled to Wasm).
+[This 3d character animation benchmark](https://www.lucidchart.com/techblog/2017/05/16/webassembly-overview-so-fast-so-fun-sorta-difficult/) is the best benchmark I've found so far for idiomatic performance:
+1. It's an dual implementation of a relatively complex system in idiomatic Javascript and idiomatic C++ (compiled to Wasm).
 2. It's a system that uses a lot of individual objects in a nester hierarchy; which is pretty representative of many real-world applications.
 3. It measures continuously, giving garbage collection no place to hide.
 4. It makes you viscerally feel the difference in performance.
@@ -48,7 +78,7 @@ Canonical performance might be more interesting to most people. You want the cod
 
 ## Simple example
 
-Let's make all these differences a bit more concrete. Let's say that we're writing a function that takes the average length of a bunch of 2d vectors. In Typescript this could look something like this:
+Let's make all these differences a bit more concrete, by revisiting the example from the start of this article. Let's say that we're writing a function that takes the average length of a bunch of 2d vectors. In Typescript this could look something like this:
 
 ```typescript
 // Unoptimized Typescript
@@ -63,9 +93,13 @@ function avgLen(vecs: Vec2[]): number {
 }
 ```
 
-That isn't too bad by itself, but if these `vecs` get regenerated a lot, then this can cause pretty long garbage collection pauses. Even if these objects are mostly static, they can slow down the garbage collector, since they add to the total number of objects that need to be checked. Finally, if the Javascript compiler can't infer that these objects are always just static objects with `x` and `y` fields, it might fall back to a slower code path where it needs to do an expensive attribute lookup every time. That is to say, the performance of this code might be a bit unpredictable.
+That isn't too bad by itself, but there are some issues:
+1. If these `vecs` get regenerated a lot, then this can cause pretty long garbage collection pauses.
+2. Even if these objects are mostly static, they can slow down the garbage collector, since they add to the total number of objects that need to be checked.
+3. If the Javascript compiler can't infer that these objects are always just static objects with `x` and `y` fields, it might fall back to a slower code path where it needs to do an expensive attribute lookup every time. That is to say, the performance of this code might be a bit unpredictable.
+4. If you want to run this function inside a Web Worker, then it's expensive to send `vecs` to the Web Worker, since it'll do a [structured clone](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm).
 
-It's pretty easy to address these concerns if we're willing to write less canonical code, by storing all `vecs` in a big ArrayBuffer, where every pair of numbers is represented as 16 bytes: first the `x` coordinate as a 64-bit (8-byte) floating point number, followed by the `y` coordinate in the same format:
+It's pretty easy to address these concerns if we're willing to write less idiomatic code, by storing all `vecs` in a big ArrayBuffer, where every pair of numbers is represented as 16 bytes: first the `x` coordinate as a 64-bit (8-byte) floating point number, followed by the `y` coordinate in the same format:
 
 ```typescript
 // Optimized Typescript, using ArrayBuffers
@@ -81,9 +115,9 @@ function avgLen(vecs: ArrayBuffer): number {
 }
 ```
 
-This is less ergonomic, but avoids all of the problems that we had with the canonical implementation. 
+This is less ergonomic, but avoids all of the problems that we had with the idiomatic implementation.
 
-The strength of WebAssembly is that you can write this same code in a managed-memory language, so the canonical version is as fast as JavaScript's maximally-hand-tuned version. For example, the equivalent in Rust:
+The strength of WebAssembly is that you can write this same code in a managed-memory language, so the idiomatic version is as fast as JavaScript's maximally-hand-tuned version. For example, the equivalent in Rust:
 
 ```rust,noplayground
 // Unoptimized Rust
@@ -100,17 +134,17 @@ fn avg_len(vecs: &[Vec2]) -> f64 {
 
 ## Best of both worlds
 
-With Zaplib we try to make it easier to get the canonical expressiveness and speed of Rust, while embedding it inside an otherwise Javascript-heavy application. However, switching to Rust+Wasm has some significant downsides as well:
+With Zaplib we try to make it easier to get the idiomatic expressiveness and speed of Rust, while embedding it inside an otherwise Javascript-heavy application. However, switching to Rust+Wasm has some significant downsides as well:
 1. Rust can be scary! While easier to learn than C++, the learning curve can still be steep, especially when you have to learn to think about ownership and the borrow checker.
 2. Toolchain integration can be daunting. You need to set up Rust in development builds, production builds, local testing, continuous integration, and so on.
 3. Communicating data between JS and Rust is a bit of work to set up, and can even be expensive, if you need to copy data back and forth a lot.
 4. People have often already invested a lot into JS optimizations, and have developed expertise.
 
-With Zaplib we try to make all of this easier; e.g. for (1) we make the Rust APIs in our framework as easy to use as possible; for (2) we've already built Webpack and Node.js integrations and are planning more; and for (3) we're building a JS-Rust bridge that is hopefully easier to use than [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen). But still, in many cases the juice might not be worth the squeeze, if instead you can just do some local optimizations of the Javascript instead. Even if that makes some parts of the codebase less canonical / ergonomic, it might be the right tradeoff.
+With Zaplib we try to make all of this easier; e.g. for (1) we make the Rust APIs in our framework as easy to use as possible; for (2) we've already built Webpack and Node.js integrations and are planning more; and for (3) we're building a JS-Rust bridge that is hopefully easier to use than [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen). But still, in many cases the juice might not be worth the squeeze, if instead you can just do some local optimizations of the Javascript instead. Even if that makes some parts of the codebase less idiomatic / ergonomic, it might be the right tradeoff.
 
 ### Typescript++
 
-I'm wondering if there is a way to bring some of the benefits of Rust to Typescript, by adding the ergonomics from Rust, but transpiling to Javascript — no Wasm needed. There are different ways we could go about this. For example, you could imagine a syntax very similar to the original Typescript, but which would trasnpile to the optimized Typescript with ArrayBuffers:
+I'm wondering if there is a way to bring some of the benefits of Rust to Typescript, by adding the ergonomics from Rust, but transpiling to Javascript — no Wasm needed. There are different ways we could go about this. For example, you could imagine a syntax very similar to the original Typescript, but which would transpile to the optimized Typescript with ArrayBuffers:
 
 ```typescript
 // Typescript++
@@ -127,9 +161,9 @@ function avgLen(vecs: ArrayBuffer<Vec2>): number {
 
 This would be an extension of the language; so we could call it "Typescript++" or so, since every Typescript program would also be a valid Typescript++ program, but not the other way around. Of course, it is possible to something like this purely with libraries, like [BufferBackedObject](https://github.com/GoogleChromeLabs/buffer-backed-object), but doing this at the language level feels a lot more ergonomic.
 
-This might be a bit of a niche analogy, but this quote about using C-style datatypes in LuaJIT captures it quite well:
+This might be a bit of a niche analogy, but [this quote](https://twitter.com/rsnous/status/1309673353045704705) about using C-style datatypes in LuaJIT captures it quite well:
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">this is cool (from <a href="https://t.co/rPYJ0nXuLt">https://t.co/rPYJ0nXuLt</a>)<br><br>&quot;I often write my LuaJIT programs from the ground up designed around C data types and C-style memory allocation discipline. But I can always ditch that in areas where I know I don&#39;t care…&quot; <a href="https://t.co/898pcPvhaP">pic.twitter.com/898pcPvhaP</a></p>&mdash; Omar Rizwan (@rsnous) <a href="https://twitter.com/rsnous/status/1309673353045704705?ref_src=twsrc%5Etfw">September 26, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+> I often write my LuaJIT programs from the ground up designed around C data types and C-style memory allocation discipline. But I can always ditch that in areas where I know I don't care…
 
 ### Typescript––
 
