@@ -51,3 +51,6 @@
 - [Zapium](./zapium.md)
 - [Known Issues](./known_issues.md)
 - [Contributing](./contributing.md)
+
+# Blog
+- [Language idea: Typescript++](./blog_ts++.md)
