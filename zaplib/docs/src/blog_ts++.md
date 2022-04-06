@@ -33,7 +33,7 @@ As of current writing, there are a couple of differences in language features an
 
 ### Canonical performance
 
-Canonical performance might be more interesting to most people. You want the code that is naturally easy to write to be performant. However, even here we have to be careful! For most software, performance follows a power law, where a small fraction of code takes most of the time. In that case it's not a big deal to hand-optimize that part. Canonical performance is more important if such "hot code" is spread out over the entire codebase, which is quite rare.
+Canonical performance might be more interesting to most people. You want the code that is naturally easy to write and maintain to be performant. However, even here we have to be careful! For most software, performance follows a power law, where a small fraction of code takes most of the time. In that case it's not a big deal to hand-optimize that part. Canonical performance is more important if such "hot code" is spread out over the entire codebase, which is quite rare.
 
 ![](./img/benchmark.gif)
 
