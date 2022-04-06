@@ -39,7 +39,7 @@ Canonical performance might be more interesting to most people. You want the cod
 
 
 [This 3d character animation benchmark](https://www.lucidchart.com/techblog/2017/05/16/webassembly-overview-so-fast-so-fun-sorta-difficult/) is the best benchmark I've found so far for canonical performance:
-1. It's an dual implementation of a relatively complex system in canonical Javascript and canonical JS.
+1. It's an dual implementation of a relatively complex system in canonical Javascript and canonical C++ (compiled to Wasm).
 2. It's a system that uses a lot of individual objects in a nester hierarchy; which is pretty representative of many real-world applications.
 3. It measures continuously, giving garbage collection no place to hide.
 4. It makes you viscerally feel the difference in performance.
