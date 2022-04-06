@@ -81,7 +81,9 @@ function avgLen(vecs: ArrayBuffer): number {
 }
 ```
 
-This is less ergonomic, but avoids all of the problems that we had with the canonical implementation. Now, the strength of WebAssembly is that you can write this faster version without having to compromise on ergnomics. For example, the equivalent of this second version in Rust would look like this:
+This is less ergonomic, but avoids all of the problems that we had with the canonical implementation. 
+
+The strength of WebAssembly is that you can write this same code in a managed-memory language, so the canonical version is as fast as JavaScript's maximally-hand-tuned version. For example, the equivalent in Rust:
 
 ```rust,noplayground
 // Unoptimized Rust
