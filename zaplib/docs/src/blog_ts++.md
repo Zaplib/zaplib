@@ -18,7 +18,7 @@ Let's be a bit more precise about comparing JS vs Wasm. First, there are two met
 
 ### Maximum performance
 
-In terms of maximum performance, JS gets pretty close to Wasm. In both cases, it's possible to operate directly on byte arrays (`ArrayBuffer`):
+In terms of maximum performance, JS and Wasm are roughly the same (except in a small number of edge cases), because in either it's possible to operate directly on byte arrays (`ArrayBuffer`). In other words, JavaScript is able to simulate a memory managed language if you use `ArrayBuffer` and manually manage your memory:
 1. This means that you avoid any garbage collection or Javascript object overhead.
 2. You're in full control over allocations / cache locality / etc.
 3. Javascript is very fast when just using loops, local variables, arithmethic, function calls, etc.
