@@ -110,7 +110,7 @@ With Zaplib we try to make all of this easier; e.g. for (1) we make the Rust API
 
 ### Typescript++
 
-I'm wondering if there is a way to bring some of the benefits of Rust to Typescript, by adding the ergonomics from Rust, but still compiling to Javascript — no Wasm needed. There are different ways we could go about this. For example, you could imagine a syntax very similar to the original Typescript, but which would compile to the optimized Typescript with ArrayBuffers:
+I'm wondering if there is a way to bring some of the benefits of Rust to Typescript, by adding the ergonomics from Rust, but transpiling to Javascript — no Wasm needed. There are different ways we could go about this. For example, you could imagine a syntax very similar to the original Typescript, but which would trasnpile to the optimized Typescript with ArrayBuffers:
 
 ```typescript
 // Typescript++
