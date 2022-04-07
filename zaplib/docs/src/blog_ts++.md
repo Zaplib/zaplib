@@ -12,7 +12,7 @@ type Vec2 = { x: number, y: number };
 
 function avgLen(vecs: Vec2[]): number {
     let total = 0;
-    for (const vec in vecs) {
+    for (const vec of vecs) {
         total += Math.sqrt(vec.x*vec.x + vec.y*vec.y);
     }
     return total / vecs.length;
@@ -88,7 +88,7 @@ type Vec2 = { x: number, y: number };
 
 function avgLen(vecs: Vec2[]): number {
     let total = 0;
-    for (const vec in vecs) {
+    for (const vec of vecs) {
         total += Math.sqrt(vec.x*vec.x + vec.y*vec.y);
     }
     return total / vecs.length;
@@ -154,7 +154,7 @@ type Vec2 = { x: number, y: number };
 
 function avgLen(vecs: ArrayBuffer<Vec2>): number {
     let total = 0;
-    for (const vec in vecs) {
+    for (const vec of vecs) {
         total += Math.sqrt(vec.x*vec.x + vec.y*vec.y);
     }
     return total / vecs.length;
