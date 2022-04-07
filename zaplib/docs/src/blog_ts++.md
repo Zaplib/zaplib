@@ -30,7 +30,7 @@ fn avg_len(vecs: &[Vec2]) -> f64 {
 }
 ```
 
-In some ways, Rust feels like a more restrictive but faster version of Typescript. But Typescript/Javascript can be very fast too; owing to years of hard work by browser vendors. In this article we'll look at the performance characteristics in more detail, and if we can have the best of both worlds.
+In some ways, Rust feels like a more restrictive but faster version of Typescript. But Typescript/Javascript can be very fast too; owing to years of hard work by browser vendors. In this article we'll look at the performance characteristics of each in more detail, and see if we can have the best of both worlds.
 
 ## JS vs Wasm performance
 
@@ -42,11 +42,11 @@ Another problem with benchmarks is that they often don't measure realistic scena
 
 Let's be a bit more precise about comparing JS vs Wasm. First, there are two metrics that are interesting:
 1. **Maximum performance.** How fast can a significantly hand-tuned implementation get?
-2. **Idiomatic performance.** How fast can you get using standard language features or libraries?
+2. **Idiomatic performance.** How fast can you get using standard language features and libraries?
 
 ### Maximum performance
 
-In terms of maximum performance, JS and Wasm are roughly the same (except in a small number of edge cases), because in either it's possible to operate directly on byte arrays (`ArrayBuffer`). In other words, JavaScript is able to simulate a memory managed language if you use `ArrayBuffer` and manually manage your memory:
+In terms of maximum performance, JS and Wasm are roughly the same (except in a small number of edge cases), since JavaScript is able to simulate a memory managed language, by using `ArrayBuffer` and manually managing your memory:
 1. This means that you avoid any garbage collection or Javascript object overhead.
 2. You're in full control over allocations / cache locality / etc.
 3. Javascript is very fast when just using loops, local variables, arithmethic, function calls, etc.
@@ -55,11 +55,11 @@ This is the case that most of the benchmarks mentioned above focus on. Even ther
 
 As of current writing, there are a couple of differences in language features and implementations that give either JS or Wasm an edge. JS has an edge in these ways:
 * Access to zero-copy native APIs, like `TextEncoder` and `FileReader.readAsArrayBuffer`. In JS you can immediately use the result of these functions, whereas in Wasm you first need to copy the result into the Wasm memory.
-* Zero-copy multiple memories. You can cheaply create multiple `ArrayBuffer`s, whereas in Wasm there is only a single memory, and growing it is fairly expensive.
+* Zero-copy multiple memories. You can cheaply create multiple `ArrayBuffers`, whereas in Wasm there is only a single memory, and growing it is fairly expensive.
 
 And Wasm has these advantages:
 * SIMD instructions. SIMD.js APIs have been [deprecated](https://github.com/tc39/ecmascript_simd) in favour of a Wasm-only implementation.
-* Upfront compiler optimizations. JS can hot-swap in optimized bytecode (even profile-guided optimization based actual program behavior), but this takes a while to kick in. Running such an optimizer also consumes resources. With Wasm you can run an optimizer upfront, and for much longer.
+* Upfront compiler optimizations. JS can hot-swap in optimized bytecode (even profile-guided optimization based actual program behavior), but this takes a while to kick in. Running such an optimizer also consumes resources. With Wasm you can run an optimizer upfront, and for much longer, resulting in more immediate and higher quality results.
 
 ### Idiomatic performance
 
@@ -70,15 +70,15 @@ Idiomatic performance might be more interesting to most people. You want the cod
 
 [This 3d character animation benchmark](https://www.lucidchart.com/techblog/2017/05/16/webassembly-overview-so-fast-so-fun-sorta-difficult/) is the best benchmark I've found so far for idiomatic performance:
 1. It's an dual implementation of a relatively complex system in idiomatic Javascript and idiomatic C++ (compiled to Wasm).
-2. It's a system that uses a lot of individual objects in a nester hierarchy; which is pretty representative of many real-world applications.
+2. It's a system that uses a lot of individual objects in a nested hierarchy; which is pretty representative of many real-world applications.
 3. It measures continuously, giving garbage collection no place to hide.
 4. It makes you viscerally feel the difference in performance.
 
-5 years ago, when this benchmark was made, Wasm was about 10x faster than JS. On my M1 Mac in 2022 in Chrome, it's only about 5x faster, suggesting that JS has become quite a bit faster since then. But also keep in mind that this was compiled using Emscripten from 5 years ago; that project has also gotten better since then, and can use newer WebAssembly features.
+5 years ago, when this benchmark was made, Wasm was about 10x faster than JS. On my M1 Mac in 2022 in Chrome, it's only about 5x faster, suggesting that JS has become quite a bit faster since then. But also keep in mind that this was compiled using Emscripten from 5 years ago; that project has also gotten better since then, and can nowadays use newer WebAssembly features.
 
 ## Simple example
 
-Let's make all these differences a bit more concrete, by revisiting the example from the start of this article. Let's say that we're writing a function that takes the average length of a bunch of 2d vectors. In Typescript this could look something like this:
+Let's make all these differences a bit more concrete, by revisiting the example from the start of this article. Let's say that we're writing a function that takes the average length of a bunch of 2d vectors. In Typescript that could look something like this:
 
 ```typescript
 // Unoptimized Typescript
@@ -99,13 +99,13 @@ That isn't too bad by itself, but there are some issues:
 3. If the Javascript compiler can't infer that these objects are always just static objects with `x` and `y` fields, it might fall back to a slower code path where it needs to do an expensive attribute lookup every time. That is to say, the performance of this code might be a bit unpredictable.
 4. If you want to run this function inside a Web Worker, then it's expensive to send `vecs` to the Web Worker, since it'll do a [structured clone](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm).
 
-It's pretty easy to address these concerns if we're willing to write less idiomatic code, by storing all `vecs` in a big ArrayBuffer, where every pair of numbers is represented as 16 bytes: first the `x` coordinate as a 64-bit (8-byte) floating point number, followed by the `y` coordinate in the same format:
+It's pretty easy to address these concerns if we're willing to write less idiomatic code, by storing all `vecs` in a big `ArrayBuffer`, where every pair of numbers is represented as 16 bytes: first the `x` coordinate as a 64-bit (8-byte) floating point number, followed by the `y` coordinate in the same format:
 
 ```typescript
 // Optimized Typescript, using ArrayBuffers
 function avgLen(vecs: ArrayBuffer): number {
     let total = 0;
-    let float64 = new Float64Array(vecs);
+    const float64 = new Float64Array(vecs);
     for (let i=0; i<float64.length; i += 2) {
         const x = float64[i];
         const y = float64[i+1];
@@ -159,24 +159,24 @@ function avgLen(vecs: ArrayBuffer<Vec2>): number {
 }
 ```
 
-This would be an extension of the language; so we could call it "Typescript++" or so, since every Typescript program would also be a valid Typescript++ program, but not the other way around. Of course, it is possible to something like this purely with libraries, like [BufferBackedObject](https://github.com/GoogleChromeLabs/buffer-backed-object), but doing this at the language level feels a lot more ergonomic.
+This would be an extension of the language; so we could call it “Typescript++”, since every Typescript program would also be a valid Typescript++ program, but not the other way around. Of course, it is possible to something like this purely with libraries, like [BufferBackedObject](https://github.com/GoogleChromeLabs/buffer-backed-object) or [typed-struct](https://github.com/sarakusha/typed-struct), but doing this at the language level feels a lot more ergonomic.
 
-This might be a bit of a niche analogy, but [this quote](https://twitter.com/rsnous/status/1309673353045704705) about using C-style datatypes in LuaJIT captures it quite well:
+This might be a bit of a niche analogy, but [this quote](https://twitter.com/rsnous/status/1309673353045704705) about using C-style datatypes in [LuaJIT](https://luajit.org/) captures it quite well:
 
-> I often write my LuaJIT programs from the ground up designed around C data types and C-style memory allocation discipline. But I can always ditch that in areas where I know I don't care…
+> “I often write my LuaJIT programs from the ground up designed around C data types and C-style memory allocation discipline. But I can always ditch that in areas where I know I don't care…”
 
 ### Typescript––
 
-The other option would be to not add to the language, but to instead automatically allocate objects in a big linear `ArrayBuffer`, like in Wasm. This would mean that we'd have to add an ownership model, like Rust's borrow checker, which we could add as a linter. We might still need annotations in the code to specify where ownership is transferred vs borrowed, so maybe some light language additions are necessary, but they could be pretty minimal. And they could also be expressed in Typescripts existing type system, e.g.:
+The other option would be to not add features to the language, but to instead automatically allocate objects in a big linear `ArrayBuffer`, like in Wasm. This would mean that we'd have to add an ownership model, like Rust's borrow checker, which we could add as a linter. We might still need annotations in the code to specify where ownership is transferred vs borrowed, so maybe some light language additions are necessary, but they could be pretty minimal. And they could also be expressed in Typescripts existing type system, e.g.:
 
 ```typescript
 // Typescript--
 function avgLen(vecs: Borrow<Vec2[]>): number {
 ```
 
-Overall, this would put restrictions on the language, so we could call this Typescript––, since every Typescript–– program is a valid Typescript program, but not the other way around. In practice, you wouldn't want to do this for your entire program, so you should be able to specify at the file, type, or function level where to use TS–– versus regular TS.
+Overall, this would put restrictions on the language, so we could call this “Typescript––”, since every Typescript–– program is a valid Typescript program, but not the other way around. In practice, you wouldn't want to do this for your entire program, so you should be able to specify at the file, type, or function level where to use TS–– versus regular TS.
 
-Another idea to make Typescript–– a bit less restrictive and more ergonomic, would be to use reference-counting of objects, and then try to optimize most away using [compile-time reference counting as pioneered by Lobster](https://aardappel.github.io/lobster/memory_management.html). This gives most of the advantages of manually managed memory, but makes the ownership model much easier to read about. It is however slightly less performant, and more importantly, makes performance less predictable, since it becomes more reliant on compiler cleverness.
+Another idea to make Typescript–– a bit less restrictive and more ergonomic, would be to use reference-counting of objects, and then try to optimize most away using [compile-time reference counting as pioneered by Lobster](https://aardappel.github.io/lobster/memory_management.html). This gives most of the advantages of manually managed memory, but makes the ownership model much easier to reason about. It is however slightly less performant, and more importantly, makes performance less predictable, since it becomes more reliant on compiler cleverness.
 
 ### Other ideas
 

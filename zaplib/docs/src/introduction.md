@@ -57,3 +57,5 @@ Also a big shoutout to the <a href="https://github.com/makepad/makepad">Makepad<
 Zaplib is distributed under the terms of both the MIT license and the Apache License (version 2.0).
 
 See `LICENSE-APACHE` and `LICENSE-MIT` in the repo root for details. Third party license notices are available in `LICENSES-THIRD-PARTY`.
+
+We're currently exploring how to make a sustainable company around Zaplib. We hope and expect to keep the vast majority of code open source, but there is a possibility that some parts of this repo (such as [Zapium](./zapium.md) for example) move to a source-available but more restrictive license in the future. The trust of the open source community is our biggest asset, so we'd always be very careful and communicative about such decisions.
