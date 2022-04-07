@@ -33,6 +33,7 @@ cargo run -p cargo-zaplib -- build --release -p test_geometry
 cargo run -p cargo-zaplib -- build --release -p test_layout
 cargo run -p cargo-zaplib -- build --release -p test_padding
 cargo run -p cargo-zaplib -- build --release -p test_popover
+cargo run -p cargo-zaplib -- build --release -p test_shader_2d_primitives
 
 # Integration tests with Browserstack (uses test suite)
 # Local identifier is necessary to be able to run multiple jobs in parallel.
