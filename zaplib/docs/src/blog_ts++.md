@@ -1,6 +1,6 @@
 # Typescript as fast as Rust: Typescript++
 
-_JP Posma, April 2022_
+_JP Posma, April 2022_ — [Discuss on Hacker News](https://news.ycombinator.com/item?id=30947680)
 
 Typescript and Rust can feel pretty similar:
 
