@@ -1,4 +1,4 @@
-# Language idea: Typescript++
+# Typescript as fast as Rust: Typescript++
 
 _JP Posma, April 2022_
 

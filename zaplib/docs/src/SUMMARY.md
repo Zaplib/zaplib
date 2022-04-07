@@ -53,4 +53,4 @@
 - [Contributing](./contributing.md)
 
 # Blog
-- [Language idea: Typescript++](./blog_ts++.md)
+- [Typescript as fast as Rust: Typescript++](./blog_ts++.md)
