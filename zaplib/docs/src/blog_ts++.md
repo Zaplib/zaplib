@@ -2,6 +2,8 @@
 
 _JP Posma, April 2022_ — [Discuss on Hacker News](https://news.ycombinator.com/item?id=30947680)
 
+_TL;DR: This is a proposal to create a language that sits somewhere between Typescript and Rust, and which you can incrementally adopt if you already use Typescript._
+
 Typescript and Rust can feel pretty similar:
 
 ```typescript
