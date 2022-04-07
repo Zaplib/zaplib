@@ -368,6 +368,13 @@ impl Cx {
         }
     }
 
+    #[cfg(test)]
+    pub fn new_test() -> Self {
+        let mut cx = Self::new(TypeId::of::<()>());
+        cx.load_fonts();
+        cx
+    }
+
     pub(crate) fn process_pre_event(&mut self, event: &mut Event) {
         match event {
             Event::PointerHover(pe) => {

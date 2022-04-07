@@ -24,6 +24,7 @@ cargo run -p cargo-zaplib -- build -p tutorial_ui_components
 cargo run -p cargo-zaplib -- build -p tutorial_ui_layout
 cargo run -p cargo-zaplib -- build --release -p example_charts
 cargo run -p cargo-zaplib -- build --release -p example_image
+cargo run -p cargo-zaplib -- build --release -p example_flamegraph
 cargo run -p cargo-zaplib -- build --release -p example_lots_of_buttons
 cargo run -p cargo-zaplib -- build --release -p example_single_button
 cargo run -p cargo-zaplib -- build --release -p example_text

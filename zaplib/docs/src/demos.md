@@ -4,6 +4,9 @@ Besides the lightning bolt demo in the [introduction](./introduction.md), we hav
 
 <!-- TODO(JP): add some missing examples that have text editing, after fixing that when having multiple iframes with Zaplib on the same page -->
 
+[example_flamegraph](https://github.com/Zaplib/zaplib/blob/main/zaplib/examples/example_flamegraph/src/main.rs)
+<div style="height: 600px"><iframe src="/example_flamegraph.html?release" style="position: absolute; left: 0; width: 100%; height: 600px; border: none;"></iframe></div>
+
 [example_charts](https://github.com/Zaplib/zaplib/blob/main/zaplib/examples/example_charts/src/main.rs)
 <div style="height: 600px"><iframe src="/example_charts.html?release" style="position: absolute; left: 0; width: 100%; height: 600px; border: none;"></iframe></div>
 

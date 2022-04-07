@@ -1,4 +1,9 @@
 //! Font drawing primitives.
+//!
+//! TODO(JP): It's hard to get text to render crisply; see
+//! * <https://github.com/Zaplib/zaplib/issues/169>
+//! * <https://github.com/Zaplib/zaplib/issues/174>
+//! * <https://github.com/Zaplib/zaplib/issues/175>
 
 use std::sync::RwLock;
 use std::sync::RwLockReadGuard;
@@ -47,7 +52,10 @@ pub struct Font {
 }
 
 /// Style for how to render text.
+///
 /// TODO(hernan): Should we include color and font scaling as part of the text style?
+///
+/// TODO(JP): Make these more easily debuggable: <https://github.com/Zaplib/zaplib/issues/174>
 #[derive(Clone, Debug, Copy)]
 pub struct TextStyle {
     pub font: Font,
@@ -424,6 +432,8 @@ pub(crate) struct CxFontAtlasGlyph {
     pub(crate) ty2: f32,
 }
 
+/// TODO(JP): subpixel_x_fract and subpixel_y_fract work in confusing (maybe even wrong) ways.
+/// See <https://github.com/Zaplib/zaplib/issues/175>
 #[derive(Default, Debug)]
 pub(crate) struct CxFontsAtlasTodo {
     pub(crate) subpixel_x_fract: f32,

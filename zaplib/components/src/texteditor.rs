@@ -1305,7 +1305,7 @@ impl TextEditor {
                 scale /= 10;
             }
             let draw_str_props = TextInsProps {
-                wrapping: Wrapping::Line,
+                wrapping: Wrapping::None,
                 text_style: TEXT_STYLE_MONO,
                 font_scale: self.current_font_scale,
                 draw_depth: 1.5,
@@ -1329,7 +1329,7 @@ impl TextEditor {
                     origin.y + line_geom.walk.y,
                 ),
                 0,
-                &line_number_text.chars().collect::<Vec<char>>(),
+                line_number_text.chars(),
                 |_, _, _, _| 0.0,
             ));
         }

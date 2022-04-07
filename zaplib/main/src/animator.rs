@@ -267,6 +267,9 @@ pub struct Anim {
     /// The actual tracks of values that will change during this animation.
     /// Should remain consistent between the different animations that you pass
     /// into a single [`Animator`].
+    ///
+    /// TODO(JP): Allow for dynamically defined animations:
+    /// <https://github.com/Zaplib/zaplib/issues/167>
     pub tracks: &'static [Track],
 }
 
@@ -349,7 +352,7 @@ impl Default for Ease {
 impl Ease {
     // Clippy TODO
     #[warn(clippy::many_single_char_names)]
-    fn map(&self, t: f64) -> f64 {
+    pub fn map(&self, t: f64) -> f64 {
         match self {
             Ease::Lin => t.max(0.0).min(1.0),
             Ease::Pow { begin, end } => {

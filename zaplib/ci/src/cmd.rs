@@ -269,6 +269,7 @@ async fn screenshots(browser_name: &str, driver: &mut WebDriver, local_port: u16
         // ("example_charts", "/zaplib/examples/example_charts/?release"), // TODO(JP): Randomness.
         // "example_lightning", // TODO(JP): Pause animation.
         ("example_image", "/zaplib/examples/example_image/?release"),
+        ("example_flamegraph", "/zaplib/examples/example_flamegraph/?release"),
         ("example_lots_of_buttons", "/zaplib/examples/example_lots_of_buttons/?release"),
         ("example_single_button", "/zaplib/examples/example_single_button/?release"),
         ("example_text", "/zaplib/examples/example_text/?release"),

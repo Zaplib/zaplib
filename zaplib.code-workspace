@@ -76,6 +76,24 @@
 			{
 				"type": "lldb",
 				"request": "launch",
+				"name": "Debug executable 'example_flamegraph'",
+				"cargo": {
+					"args": [
+						"build",
+						"--bin=example_flamegraph",
+						"--package=example_flamegraph"
+					],
+					"filter": {
+						"name": "example_flamegraph",
+						"kind": "bin"
+					}
+				},
+				"args": [],
+				"cwd": "."
+			},
+			{
+				"type": "lldb",
+				"request": "launch",
 				"name": "Debug executable 'example_lots_of_buttons'",
 				"cargo": {
 					"args": [
@@ -518,6 +536,25 @@
 					"filter": {
 						"name": "test_suite",
 						"kind": "bin"
+					}
+				},
+				"args": [],
+				"cwd": "."
+			},
+			{
+				"type": "lldb",
+				"request": "launch",
+				"name": "Debug unit tests in library 'zaplib'",
+				"cargo": {
+					"args": [
+						"test",
+						"--no-run",
+						"--lib",
+						"--package=zaplib"
+					],
+					"filter": {
+						"name": "zaplib",
+						"kind": "lib"
 					}
 				},
 				"args": [],

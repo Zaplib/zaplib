@@ -215,8 +215,7 @@ impl FoldCaption {
                 cx.request_draw();
             }
             cx.begin_right_box();
-            let draw_str_props =
-                TextInsProps { wrapping: Wrapping::Ellipsis(cx.get_width_left() - 10.), ..TextInsProps::DEFAULT };
+            let draw_str_props = TextInsProps { wrapping: Wrapping::Ellipsis(cx.get_width_left()), ..TextInsProps::DEFAULT };
             TextIns::draw_walk(cx, label, &draw_str_props);
             cx.end_right_box();
         }

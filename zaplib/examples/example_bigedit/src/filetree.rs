@@ -410,8 +410,7 @@ impl FileTree {
                     cx.begin_row(self.node_layout_size.width, self.node_layout_size.height);
                     cx.begin_center_y_align();
                     tree_text_props.color = self.color_tree_folder;
-                    let wleft = cx.get_width_left() - 10.;
-                    tree_text_props.wrapping = Wrapping::Ellipsis(wleft);
+                    tree_text_props.wrapping = Wrapping::Ellipsis(cx.get_width_left());
                     TextIns::draw_walk(cx, name, &tree_text_props);
                     cx.end_center_y_align();
                     cx.end_row();
@@ -443,8 +442,7 @@ impl FileTree {
                 FileNode::File { name, .. } => {
                     cx.begin_row(self.node_layout_size.width, self.node_layout_size.height);
                     cx.begin_center_y_align();
-                    let wleft = cx.get_width_left() - 10.;
-                    tree_text_props.wrapping = Wrapping::Ellipsis(wleft);
+                    tree_text_props.wrapping = Wrapping::Ellipsis(cx.get_width_left());
                     tree_text_props.color = if is_marked { self.color_tree_folder } else { self.color_tree_file };
                     TextIns::draw_walk(cx, name, &tree_text_props);
                     cx.end_center_y_align();

@@ -4,6 +4,10 @@ use std::f32::EPSILON;
 use std::fmt;
 use std::ops;
 
+pub fn f32_from_lerp(from: f32, to: f32, t: f32) -> f32 {
+    from * (1.0 - t) + to * t
+}
+
 /// 4x4 matrix; very common in graphics programming.
 #[derive(Clone, Copy, Default, PartialEq, Debug)]
 #[repr(C)]
@@ -81,6 +85,10 @@ pub struct Vec2 {
 }
 
 impl Vec2 {
+    pub fn from_lerp(a: Self, b: Self, f: f32) -> Self {
+        Self { x: f32_from_lerp(a.x, b.x, f), y: f32_from_lerp(a.y, b.y, f) }
+    }
+
     pub const fn all(x: f32) -> Vec2 {
         Vec2 { x, y: x }
     }
@@ -150,8 +158,8 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
-    pub fn from_lerp(a: Vec3, b: Vec3, f: f32) -> Vec3 {
-        Vec3 { x: (b.x - a.x) * f + a.x, y: (b.y - a.y) * f + a.y, z: (b.z - a.z) * f + a.z }
+    pub fn from_lerp(a: Self, b: Self, f: f32) -> Self {
+        Self { x: f32_from_lerp(a.x, b.x, f), y: f32_from_lerp(a.y, b.y, f), z: f32_from_lerp(a.z, b.z, f) }
     }
 
     pub const fn all(x: f32) -> Vec3 {
@@ -234,6 +242,15 @@ impl fmt::Display for Vec4 {
 }
 
 impl Vec4 {
+    pub fn from_lerp(a: Self, b: Self, f: f32) -> Self {
+        Self {
+            x: f32_from_lerp(a.x, b.x, f),
+            y: f32_from_lerp(a.y, b.y, f),
+            z: f32_from_lerp(a.z, b.z, f),
+            w: f32_from_lerp(a.w, b.w, f),
+        }
+    }
+
     pub const fn all(v: f32) -> Self {
         Self { x: v, y: v, z: v, w: v }
     }
@@ -1411,5 +1428,19 @@ impl ops::DivAssign<f32> for Vec4 {
         self.y = self.y / rhs;
         self.z = self.z / rhs;
         self.w = self.w / rhs;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::math::*;
+
+    #[test]
+    fn test_vec4_from_lerp() {
+        let a = vec4(1.0, 2.0, 3.0, 4.0);
+        let b = vec4(5.0, 6.0, 7.0, 8.0);
+        let t = 0.5;
+        let c = Vec4::from_lerp(a, b, t);
+        assert_eq!(c, vec4(3.0, 4.0, 5.0, 6.0));
     }
 }

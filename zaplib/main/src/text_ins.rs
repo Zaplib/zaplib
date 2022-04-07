@@ -1,6 +1,11 @@
 //! Drawing text.
+//!
+//! TODO(JP): It's hard to get text to render crisply; see
+//! * <https://github.com/Zaplib/zaplib/issues/169>
+//! * <https://github.com/Zaplib/zaplib/issues/174>
+//! * <https://github.com/Zaplib/zaplib/issues/175>
 
-use std::sync::RwLock;
+use std::{borrow::Borrow, sync::RwLock};
 
 use crate::*;
 
@@ -200,11 +205,6 @@ pub enum Wrapping {
     None,
     Char,
     Word,
-    /// TODO(JP): This seems to be equivalent to Wrapping::None (except for strings
-    /// with specifically char code 10 as newline) because we already do a check
-    /// to set emit=true and newline=true (and note that the newline=true
-    /// doesn't do anything without emit=true).
-    Line,
     Ellipsis(f32),
 }
 impl Wrapping {
@@ -224,7 +224,24 @@ pub struct DrawGlyphsProps {
     pub position_anchoring: Vec2,
 }
 
+/// A chunk of text, to be put in an individual layout box.
+///
+/// Typically includes whitespace.
+#[derive(Debug)]
+struct TextChunk {
+    /// The text to render.
+    chars: Vec<char>,
+    /// The measured width of the text.
+    width: f32,
+    /// Whether to emit a newline after this chunk.
+    newline: bool,
+}
+
 impl TextIns {
+    /// TODO(JP): It's hard to get text to render crisply; see
+    /// * <https://github.com/Zaplib/zaplib/issues/169>
+    /// * <https://github.com/Zaplib/zaplib/issues/174>
+    /// * <https://github.com/Zaplib/zaplib/issues/175>
     pub fn generate_2d_glyphs<F>(
         text_style: &TextStyle,
         fonts_data: &RwLock<CxFontsData>,
@@ -234,13 +251,14 @@ impl TextIns {
         color: Vec4,
         pos: Vec2,
         char_offset: usize,
-        chunk: &[char],
+        chars: impl IntoIterator<Item = impl Borrow<char>>,
         mut char_callback: F,
     ) -> Vec<TextIns>
     where
         F: FnMut(char, usize, f32, f32) -> f32,
     {
-        let mut ret = Vec::with_capacity(chunk.len());
+        let chars = chars.into_iter();
+        let mut ret = Vec::with_capacity(chars.size_hint().0);
 
         let font_id = text_style.font.font_id;
 
@@ -253,8 +271,8 @@ impl TextIns {
         let mut x = pos.x;
         let mut char_offset = char_offset;
 
-        for wc in chunk {
-            let unicode = *wc as usize;
+        for wc in chars {
+            let unicode = *wc.borrow() as usize;
 
             // Scope the `cxfont` borrow to these variables.
             let (glyph_id, advance, w, h, min_pos_x, subpixel_x_fract, subpixel_y_fract, scaled_min_pos_x, scaled_min_pos_y) = {
@@ -278,6 +296,9 @@ impl TextIns {
                 let min_pos_y = pos.y - font_size_logical * glyph.bounds.p_min.y + text_style.font_size * text_style.top_drop;
 
                 // compute subpixel shift
+                // TODO(JP): It's confusing that subpixel_x_fract and subpixel_y_fract are not 0 even when the glyph
+                // is not subpixel-shifted.
+                // See https://github.com/Zaplib/zaplib/issues/175
                 let subpixel_x_fract = min_pos_x - (min_pos_x * dpi_factor).floor() / dpi_factor;
                 let subpixel_y_fract = min_pos_y - (min_pos_y * dpi_factor).floor() / dpi_factor;
 
@@ -295,6 +316,7 @@ impl TextIns {
                 0
             } else {
                 // subtle 64 index subpixel id
+                // TODO(JP): Should this be 8.0??
                 ((subpixel_y_fract * 7.0) as usize) << 3 | (subpixel_x_fract * 7.0) as usize
             };
 
@@ -335,7 +357,7 @@ impl TextIns {
                 char_offset: char_offset as f32,
 
                 // give the callback a chance to do things
-                marker: char_callback(*wc, char_offset, x, advance),
+                marker: char_callback(*wc.borrow(), char_offset, x, advance),
             });
 
             x += advance;
@@ -400,7 +422,116 @@ impl TextIns {
         area
     }
 
+    /// Measures the width of the text, not including newlines.
+    fn measure_width(cx: &Cx, chars: &[char], props: &TextInsProps) -> f32 {
+        let text_style = &props.text_style;
+        let font_id = text_style.font.font_id;
+        let read_fonts = &cx.fonts_data.read().unwrap().fonts;
+        let font_size_logical =
+            text_style.font_size * 96.0 / (72.0 * read_fonts[font_id].font_loaded.as_ref().unwrap().units_per_em);
+
+        let mut width = 0.0;
+        for &c in chars {
+            if c < '\u{10000}' && c != '\n' {
+                let slot = read_fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map[c as usize];
+                let glyph = &read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[slot];
+                let glyph_width = glyph.horizontal_metrics.advance_width * font_size_logical * props.font_scale;
+                width += glyph_width;
+            }
+        }
+        width
+    }
+
+    /// Adds an ellipsis to the end of the text if it is too long, or nothing at all
+    /// if even the ellipsis is too long.
+    fn truncate_to_ellipsis(cx: &Cx, text: &str, props: &TextInsProps, max_width: f32) -> TextChunk {
+        let text_style = &props.text_style;
+        let font_id = text_style.font.font_id;
+        let read_fonts = &cx.fonts_data.read().unwrap().fonts;
+        let font_size_logical =
+            text_style.font_size * 96.0 / (72.0 * read_fonts[font_id].font_loaded.as_ref().unwrap().units_per_em);
+
+        // Actual ellipsis char "…" is not supported in our current fonts.
+        let ellipsis_slot = read_fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map['.' as usize];
+        let ellipsis_width = 3.0
+            * read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[ellipsis_slot].horizontal_metrics.advance_width
+            * font_size_logical
+            * props.font_scale;
+
+        let mut iter = text.chars().peekable();
+        let mut width = 0.0;
+        let mut chars = Vec::with_capacity(text.len() + 2);
+
+        while let Some(c) = iter.next() {
+            let last = iter.peek().is_none();
+
+            if c < '\u{10000}' {
+                let slot = read_fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map[c as usize];
+                let glyph = &read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[slot];
+                let glyph_width = glyph.horizontal_metrics.advance_width * font_size_logical * props.font_scale;
+                // Put in an ellipsis if we'd otherwise overflow, but DON'T put an ellipsis if we're at the end
+                // already and the current glyph is less wide than the ellipsis itself.
+                if width + glyph_width >= max_width - ellipsis_width && !(last && glyph_width <= ellipsis_width) {
+                    // If there's no room for the ellipsis, return, but don't actually print it.
+                    if width + ellipsis_width <= max_width {
+                        // Actual ellipsis char "…" is not supported in our current fonts.
+                        chars.push('.');
+                        chars.push('.');
+                        chars.push('.');
+                        width += ellipsis_width;
+                    }
+                    return TextChunk { chars, width, newline: false };
+                }
+                chars.push(c);
+                width += glyph_width;
+            }
+        }
+        TextChunk { chars, width, newline: false }
+    }
+
+    /// Outputs a `Vec<char>` for every "chunk", depending on `TextInsProps::wrapping`.
+    ///
+    /// The different chunks should be rendered as individual boxes in the layout system
+    /// so that they wrap properly when there is no more space available, e.g. using
+    /// [`Cx::begin_wrapping_box`].
+    ///
+    /// Also returns the total width per chunk, and whether to add a newline after the chunk.
+    ///
+    /// Does NOT strip '\n' characters from the input text. No characters are dropped;
+    /// concatenating the characters together always results in the original `text`, except in
+    /// the case of `Wrapping::Ellipsis`.
+    fn apply_wrapping(cx: &Cx, text: &str, props: &TextInsProps) -> Vec<TextChunk> {
+        fn make_text_chunk(cx: &Cx, s: &str, props: &TextInsProps) -> TextChunk {
+            let chars = s.chars().collect::<Vec<char>>();
+            let width = TextIns::measure_width(cx, &chars, props);
+            let newline = chars.last() == Some(&'\n');
+            TextChunk { chars, width, newline }
+        }
+
+        match props.wrapping {
+            Wrapping::Ellipsis(max_width) => vec![Self::truncate_to_ellipsis(cx, text, props, max_width)],
+            _ => match props.wrapping {
+                Wrapping::None => text.split_inclusive('\n').map(|s| make_text_chunk(cx, s, props)).collect(),
+                Wrapping::Char => text.split_inclusive(|_| true).map(|s| make_text_chunk(cx, s, props)).collect(),
+                Wrapping::Word => {
+                    text.split_inclusive(|ch: char| ch.is_whitespace()).map(|s| make_text_chunk(cx, s, props)).collect()
+                }
+                Wrapping::Ellipsis(_) => panic!("Already handled above"),
+            },
+        }
+    }
+
+    /// Draw text using absolute positioning.
+    ///
+    /// This does not use the layouting system in Zaplib.
+    ///
+    /// Only single-line text is supported. This means that you can only use
+    /// `Wrapping::None` and `Wrapping::Ellipsis` for `TextInsProps::wrapping`.
     pub fn draw_str(cx: &mut Cx, text: &str, pos: Vec2, props: &TextInsProps) -> Area {
+        let mut chunks = Self::apply_wrapping(cx, text, props);
+
+        assert_eq!(chunks.len(), 1, "TextIns::draw_str() only supports single-line text");
+
         let glyphs = Self::generate_2d_glyphs(
             &props.text_style,
             &cx.fonts_data,
@@ -410,7 +541,7 @@ impl TextIns {
             props.color,
             pos,
             0,
-            &text.chars().collect::<Vec<char>>(),
+            chunks.remove(0).chars,
             |_, _, _, _| 0.0,
         );
 
@@ -421,108 +552,47 @@ impl TextIns {
         )
     }
 
+    /// Draw text and walk in the layout system.
+    ///
+    /// Calls `cx.add_box` for each "chunk" of text (depending on [`TextInsProps::wrapping`]).
+    ///
     /// TODO(JP): This doesn't seem to work well with [`Direction::Down`] (or other directions for
     /// that matter). Not a high priority but might good to be aware of.
     ///
     /// [`TextInsProps::position_anchoring`] is ignored by this function.
     pub fn draw_walk(cx: &mut Cx, text: &str, props: &TextInsProps) -> Area {
-        let mut width = 0.0;
-        let mut elipct = 0;
-
         let text_style = &props.text_style;
         let font_size = text_style.font_size;
         let line_spacing = text_style.line_spacing;
         let height_factor = text_style.height_factor;
-        let mut iter = text.chars().peekable();
 
-        let font_id = text_style.font.font_id;
-        let font_size_logical = text_style.font_size * 96.0
-            / (72.0 * cx.fonts_data.read().unwrap().fonts[font_id].font_loaded.as_ref().unwrap().units_per_em);
-
-        let mut buf = Vec::with_capacity(text.len());
         let mut glyphs: Vec<TextIns> = Vec::with_capacity(text.len());
 
         cx.begin_row(Width::Compute, Height::Compute);
         cx.begin_padding_box(props.padding);
         cx.begin_wrapping_box();
 
-        while let Some(c) = iter.next() {
-            let last = iter.peek().is_none();
+        for chunk in Self::apply_wrapping(cx, text, props) {
+            let height = font_size * height_factor * props.font_scale;
+            let rect = cx.add_box(LayoutSize { width: Width::Fix(chunk.width), height: Height::Fix(height) });
 
-            let mut emit = last;
-            let mut newline = false;
-            let slot = if c < '\u{10000}' {
-                cx.fonts_data.read().unwrap().fonts[font_id].font_loaded.as_ref().unwrap().char_code_to_glyph_index_map
-                    [c as usize]
-            } else {
-                0
-            };
-            if c == '\n' {
-                emit = true;
-                newline = true;
+            if !rect.pos.x.is_nan() && !rect.pos.y.is_nan() {
+                glyphs.extend(Self::generate_2d_glyphs(
+                    &props.text_style,
+                    &cx.fonts_data,
+                    cx.current_dpi_factor,
+                    props.font_scale,
+                    props.draw_depth,
+                    props.color,
+                    rect.pos,
+                    0,
+                    chunk.chars,
+                    |_, _, _, _| 0.0,
+                ));
             }
-            if slot != 0 {
-                let read_fonts = &cx.fonts_data.read().unwrap().fonts;
-                let glyph = &read_fonts[font_id].font_loaded.as_ref().unwrap().glyphs[slot];
-                width += glyph.horizontal_metrics.advance_width * font_size_logical * props.font_scale;
-                match props.wrapping {
-                    Wrapping::Char => {
-                        buf.push(c);
-                        emit = true
-                    }
-                    Wrapping::Word => {
-                        buf.push(c);
-                        if c == ' ' || c == '\t' || c == ',' || c == '\n' {
-                            emit = true;
-                        }
-                    }
-                    Wrapping::Line => {
-                        buf.push(c);
-                        if c == 10 as char || c == 13 as char {
-                            emit = true;
-                        }
-                        newline = true;
-                    }
-                    Wrapping::None => {
-                        buf.push(c);
-                    }
-                    Wrapping::Ellipsis(ellipsis_width) => {
-                        if width > ellipsis_width {
-                            // output ...
-                            if elipct < 3 {
-                                buf.push('.');
-                                elipct += 1;
-                            }
-                        } else {
-                            buf.push(c)
-                        }
-                    }
-                }
-            }
-            if emit {
-                let height = font_size * height_factor * props.font_scale;
-                let rect = cx.add_box(LayoutSize { width: Width::Fix(width), height: Height::Fix(height) });
 
-                if !rect.pos.x.is_nan() && !rect.pos.y.is_nan() {
-                    glyphs.extend(Self::generate_2d_glyphs(
-                        &props.text_style,
-                        &cx.fonts_data,
-                        cx.current_dpi_factor,
-                        props.font_scale,
-                        props.draw_depth,
-                        props.color,
-                        rect.pos,
-                        0,
-                        &buf,
-                        |_, _, _, _| 0.0,
-                    ));
-                }
-
-                width = 0.0;
-                buf.truncate(0);
-                if newline {
-                    cx.draw_new_line_min_height(font_size * line_spacing * props.font_scale);
-                }
+            if chunk.newline {
+                cx.draw_new_line_min_height(font_size * line_spacing * props.font_scale);
             }
         }
 
@@ -588,5 +658,105 @@ impl TextIns {
 
         //let font_size = if let Some(font_size) = font_size{font_size}else{self.font_size};
         Vec2 { x: glyph.horizontal_metrics.advance_width * (96.0 / (72.0 * font.units_per_em)), y: text_style.line_spacing }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::*;
+
+    #[test]
+    fn test_measure_width_newline_zero() {
+        let cx = Cx::new_test();
+        let text_style = TextStyle { font_size: 10.0, ..TEXT_STYLE_MONO };
+        assert_eq!(
+            TextIns::measure_width(
+                &cx,
+                &"\n".chars().collect::<Vec<char>>(),
+                &TextInsProps { text_style, ..TextInsProps::default() }
+            ),
+            0.0
+        );
+    }
+
+    #[test]
+    fn test_apply_wrapping() {
+        let cx = Cx::new_test();
+        let text = "Hello World  !\nAnother line  :)";
+        let text_style = TextStyle { font_size: 10.0, ..TEXT_STYLE_MONO };
+        let glyph_width = 8.0;
+
+        fn extract_chars_and_newline_from_chunks(chunks: &[text_ins::TextChunk]) -> Vec<(String, bool)> {
+            chunks.iter().map(|chunk| (String::from_iter(chunk.chars.clone()), chunk.newline)).collect::<Vec<_>>()
+        }
+
+        // None
+        let chunks =
+            TextIns::apply_wrapping(&cx, text, &TextInsProps { text_style, wrapping: Wrapping::None, ..TextInsProps::default() });
+        assert_eq!(
+            extract_chars_and_newline_from_chunks(&chunks),
+            vec![("Hello World  !\n".to_string(), true), ("Another line  :)".to_string(), false),]
+        );
+
+        // Also make sure the widths are correct.
+        assert!((chunks[0].width - "Hello World  !".len() as f32 * glyph_width).abs() < 0.1);
+        assert!((chunks[1].width - "Another line  :)".len() as f32 * glyph_width).abs() < 0.1);
+
+        // Char
+        let chunks =
+            TextIns::apply_wrapping(&cx, text, &TextInsProps { text_style, wrapping: Wrapping::Char, ..TextInsProps::default() });
+        assert_eq!(
+            extract_chars_and_newline_from_chunks(&chunks),
+            vec![
+                ("H".to_string(), false),
+                ("e".to_string(), false),
+                ("l".to_string(), false),
+                ("l".to_string(), false),
+                ("o".to_string(), false),
+                (" ".to_string(), false),
+                ("W".to_string(), false),
+                ("o".to_string(), false),
+                ("r".to_string(), false),
+                ("l".to_string(), false),
+                ("d".to_string(), false),
+                (" ".to_string(), false),
+                (" ".to_string(), false),
+                ("!".to_string(), false),
+                ("\n".to_string(), true),
+                ("A".to_string(), false),
+                ("n".to_string(), false),
+                ("o".to_string(), false),
+                ("t".to_string(), false),
+                ("h".to_string(), false),
+                ("e".to_string(), false),
+                ("r".to_string(), false),
+                (" ".to_string(), false),
+                ("l".to_string(), false),
+                ("i".to_string(), false),
+                ("n".to_string(), false),
+                ("e".to_string(), false),
+                (" ".to_string(), false),
+                (" ".to_string(), false),
+                (":".to_string(), false),
+                (")".to_string(), false)
+            ]
+        );
+
+        // Word
+        let chunks =
+            TextIns::apply_wrapping(&cx, text, &TextInsProps { text_style, wrapping: Wrapping::Word, ..TextInsProps::default() });
+        assert_eq!(
+            extract_chars_and_newline_from_chunks(&chunks),
+            vec![
+                ("Hello ".to_string(), false),
+                ("World ".to_string(), false),
+                (" ".to_string(), false),
+                ("!\n".to_string(), true),
+                ("Another ".to_string(), false),
+                ("line ".to_string(), false),
+                (" ".to_string(), false),
+                (":)".to_string(), false)
+            ]
+        );
     }
 }

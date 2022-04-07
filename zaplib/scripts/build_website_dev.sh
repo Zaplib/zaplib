@@ -22,6 +22,7 @@ CARGO_TARGET_DIR="website_dev/target" RUSTDOCFLAGS="-Dwarnings" cargo doc --no-d
 mkdir -p website_dev/zaplib/examples/example_bigedit/src/
 cp zaplib/examples/example_bigedit/src/treeworld.rs website_dev/zaplib/examples/example_bigedit/src/treeworld.rs
 
+cp zaplib/examples/example_flamegraph/index.html website_dev/example_flamegraph.html
 cp zaplib/examples/example_lightning/index.html website_dev/example_lightning.html
 cp zaplib/examples/example_charts/index.html website_dev/example_charts.html
 cp zaplib/examples/example_shader/index.html website_dev/example_shader.html
@@ -39,6 +40,7 @@ cp zaplib/examples/test_padding/index.html website_dev/test_padding.html
 cp zaplib/examples/test_popover/index.html website_dev/test_popover.html
 cp zaplib/examples/test_shader_2d_primitives/index.html website_dev/test_shader_2d_primitives.html
 
+CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_flamegraph --release
 CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_lightning --release
 CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_charts --release
 CARGO_TARGET_DIR="website_dev/target" cargo run -p cargo-zaplib -- build -p example_shader --release
