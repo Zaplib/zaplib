@@ -107,11 +107,12 @@ impl FlamegraphExampleApp {
 
         let view_rect = self.main_view.get_rect(cx);
         match event.hits_pointer(cx, self.component_id, Some(view_rect)) {
-            Event::PointerScroll(pse) => {
-                self.zoom_pan.width = (self.zoom_pan.width + pse.scroll.y / 300.0).clamp(0.001, 1.0);
-                self.target_zoom_pan = None;
-                cx.request_draw();
-            }
+            // Doesn't work well on our "demos" page.
+            // Event::PointerScroll(pse) => {
+            //     self.zoom_pan.width = (self.zoom_pan.width + pse.scroll.y / 300.0).clamp(0.001, 1.0);
+            //     self.target_zoom_pan = None;
+            //     cx.request_draw();
+            // }
             Event::PointerDown(pd) => {
                 if pd.button == MouseButton::Left {
                     self.pointer_start_x_offset = Some(self.zoom_pan.x_offset);
