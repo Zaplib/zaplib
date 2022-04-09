@@ -22,6 +22,7 @@ import {
   initTaskWorkerSab,
   initThreadLocalStorageMainWorker,
   makeThreadLocalStorageAndStackDataOnExistingThread,
+  normalizeInitParams,
   Rpc,
   transformParamsFromRustImpl,
 } from "common";
@@ -391,11 +392,7 @@ function initializeCanvas(
   const isMobileSafari = globalThis.navigator.platform.match(/iPhone|iPad/i);
   const isAndroid = globalThis.navigator.userAgent.match(/Android/i);
 
-  if (
-    !isMobileSafari &&
-    !isAndroid &&
-    (initParams.createTextArea || initParams.defaultStyles)
-  ) {
+  if (!isMobileSafari && !isAndroid && initParams.createTextArea) {
     // mobile keyboards are unusable on a UI like this
     const { showTextIME } = makeTextarea((taEvent: TextareaEvent) => {
       if (wasmInitialized()) {
@@ -502,6 +499,8 @@ export const isInitialized: IsInitialized = () => initialized;
 
 let alreadyCalledInitialize = false;
 export const initialize: Initialize = (initParams) => {
+  initParams = normalizeInitParams(initParams);
+
   if (alreadyCalledInitialize) {
     throw new Error("Only call zaplib.initialize() once");
   }

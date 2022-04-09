@@ -23,7 +23,7 @@
     <canvas id="myCanvas" width=601 height=601></canvas>
     <script>
         const env = new URL(window.document.location).searchParams.has("release") ? "release" : "debug";
-        zaplib.initialize({ wasmModule: `target/wasm32-unknown-unknown/${env}/test_shader_2d_primitives.wasm`, defaultStyles: true });
+        zaplib.initialize({ wasmModule: `target/wasm32-unknown-unknown/${env}/test_shader_2d_primitives.wasm`, defaultStyles: true, createTextArea: false });
 
         function draw_grid(cx, w, h, cell_size) {
             // Attempt to avoid antialising by offseting all drawing by half a pixel
