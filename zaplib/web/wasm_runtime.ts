@@ -321,8 +321,6 @@ function initializeCanvas(
     }
   });
   window.addEventListener("mousemove", (event) => {
-    document.body.scrollTop = 0;
-    document.body.scrollLeft = 0;
     if (wasmInitialized()) {
       rpc
         .send(WorkerEvent.WindowMouseMove, makeRpcMouseEvent(event))
