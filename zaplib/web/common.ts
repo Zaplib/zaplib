@@ -6,6 +6,7 @@ import {
   CallRustSync,
   CreateBuffer,
   FileHandle,
+  InitParams,
   MutableBufferData,
   RustZapParam,
   TlsAndStackData,
@@ -724,3 +725,15 @@ export const createErrorCheckers = (
       }),
   };
 };
+
+export function normalizeInitParams(initParams: InitParams): InitParams {
+  const newInitParams: InitParams = { ...initParams };
+  if (
+    (newInitParams.createTextArea === undefined ||
+      newInitParams.createTextArea === null) &&
+    newInitParams.defaultStyles
+  ) {
+    newInitParams.createTextArea = true;
+  }
+  return newInitParams;
+}

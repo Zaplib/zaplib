@@ -1,5 +1,9 @@
 import { cursorMap } from "cursor_map";
-import { copyArrayToRustBuffer, getZapParamType } from "common";
+import {
+  copyArrayToRustBuffer,
+  getZapParamType,
+  normalizeInitParams,
+} from "common";
 import { makeTextarea, TextareaEvent } from "make_textarea";
 import {
   CallRustAsync,
@@ -200,6 +204,8 @@ export const isInitialized: IsInitialized = () => initialized;
 
 export const initialize: Initialize = (initParams) =>
   new Promise<void>((resolve) => {
+    initParams = normalizeInitParams(initParams);
+
     window.fromCefSetMouseCursor = (cursorId) => {
       if (document.body) {
         document.body.style.cursor = cursorMap[cursorId] || "default";
@@ -217,7 +223,7 @@ export const initialize: Initialize = (initParams) =>
         addDefaultStyles();
       }
 
-      if (initParams.createTextArea || initParams.defaultStyles) {
+      if (initParams.createTextArea) {
         const { showTextIME, textareaHasFocus } = makeTextarea(
           (taEvent: TextareaEvent) => {
             const slots = 20;
