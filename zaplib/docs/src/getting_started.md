@@ -46,7 +46,7 @@ Of course, Zaplib is a WebAssembly framework, so let's run these in **Chrome** (
 cargo zaplib build --workspace
 ```
 
-2. Run a server:
+2. Run a server (this will also build the JS dependency):
 
 ```
 cargo zaplib serve
