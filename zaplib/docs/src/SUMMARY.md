@@ -54,3 +54,4 @@
 
 # Blog
 - [Typescript as fast as Rust: Typescript++](./blog_ts++.md)
+- [Zaplib post-mortem](./blog_post_mortem.md)
