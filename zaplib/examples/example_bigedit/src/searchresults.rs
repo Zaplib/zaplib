@@ -370,7 +370,7 @@ impl SearchResultDraw {
         self.item_bg.begin_draw(
             cx,
             Width::Fill,
-            // Draw filler node of fixed height, until hitting the visibile boundaries, to prevent unneccesary scrolling
+            // Draw filler node of fixed height, until hitting the visibile boundaries, to prevent unnecessary scrolling
             Height::FillUntil(ITEM_CLOSED_HEIGHT),
             if counter & 1 == 0 { vec4(0.16, 0.16, 0.16, 1.0) } else { vec4(0.15, 0.15, 0.15, 1.0) },
         );

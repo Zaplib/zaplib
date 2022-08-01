@@ -98,7 +98,7 @@ impl BuildManager {
         let markers = &mut atb.text_buffer.markers;
         markers.mutation_id = atb.text_buffer.mutation_id.max(1);
         if markers.message_cursors.len() > 100000 {
-            // crash saftey
+            // crash safety
             return;
         }
         if let Some((head, tail)) = loc_message.range {

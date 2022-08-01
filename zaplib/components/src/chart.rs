@@ -310,7 +310,7 @@ pub enum ChartEvent {
         /// This value might not be part of the input data. Instead, it's interpolated
         /// based on normalized values.
         cursor_value: Vec2,
-        /// If exists, we also retreive the element in the input data that is closest
+        /// If exists, we also retrieve the element in the input data that is closest
         /// to the current mouse position
         current_element: Option<ChartCurrentElement>,
     },

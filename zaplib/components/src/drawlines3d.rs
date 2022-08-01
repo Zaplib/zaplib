@@ -181,8 +181,8 @@ static SHADER: Shader = Shader {
                 let clip_end = clip(project(in_pos_end)).xy;
                 let clip_after = clip(project(in_pos_after)).xy;
 
-                // Vector comparision (i.e, `clip_before == clip_start`) is not allowed?
-                // TODO(hernan): fix vector comparision
+                // Vector comparison (i.e, `clip_before == clip_start`) is not allowed?
+                // TODO(hernan): fix vector comparison
                 let is_first = length(clip_before - clip_start) < 0.001;
                 let is_last = length(clip_end - clip_after) < 0.001;
                 let is_endpoint = is_left ? is_first : is_last;
