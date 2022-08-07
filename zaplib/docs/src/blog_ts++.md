@@ -51,7 +51,7 @@ Let's be a bit more precise about comparing JS vs Wasm. First, there are two met
 In terms of maximum performance, JS and Wasm are roughly the same (except in a small number of edge cases), since JavaScript is able to simulate a memory managed language, by using `ArrayBuffer` and manually managing your memory:
 1. This means that you avoid any garbage collection or Javascript object overhead.
 2. You're in full control over allocations / cache locality / etc.
-3. Javascript is very fast when just using loops, local variables, arithmethic, function calls, etc.
+3. Javascript is very fast when just using loops, local variables, arithmetic, function calls, etc.
 
 This is the case that most of the benchmarks mentioned above focus on. Even there, you can find benchmarks which produce spectacular results, like the [hash-wasm benchmark](https://daninet.github.io/hash-wasm-benchmark/), in which the Wasm version is often 10x faster. But in most cases you'll find much more modest results, because the JavaScript benchmarks are manually managing memory (which is the slowest part of JavaScript).
 
