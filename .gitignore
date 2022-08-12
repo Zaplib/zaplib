@@ -22,3 +22,5 @@ cef.log
 /website_dev
 
 screenshots/
+
+zaplib/examples/benchmark_json/data.json
