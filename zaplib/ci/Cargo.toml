@@ -17,4 +17,4 @@ serde = { version = "1" }
 futures = "0.3.21"
 simple-error = "0.2.3"
 rcgen = "0.9.1"
-openssl = "0.10.38"
+openssl = "0.10.48"
